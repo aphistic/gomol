@@ -1,7 +1,5 @@
 package gomol
 
-var curBase *Base
-
 const (
 	levelDbg     = 7
 	levelInfo    = 6
@@ -10,10 +8,6 @@ const (
 	levelFatal   = 2
 	levelUnknown = -1
 )
-
-func init() {
-	curBase = newBase()
-}
 
 type Base struct {
 	loggers   []Logger

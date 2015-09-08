@@ -11,6 +11,12 @@ type GomolSuite struct{}
 
 var _ = Suite(&GomolSuite{})
 
+func (s *GomolSuite) SetUpTest(c *C) {
+	b := newBase()
+	b.AddLogger(NewMemLogger())
+	SetDefault(b)
+}
+
 func (s *GomolSuite) TestAddLogger(c *C) {
 	b := newBase()
 	c.Check(b.loggers, HasLen, 0)
