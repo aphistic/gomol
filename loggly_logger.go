@@ -45,10 +45,6 @@ func (l *LogglyLogger) getFacility(m map[string]interface{}) string {
 	return ""
 }
 
-func (l *LogglyLogger) logf(level int, msg string, a ...interface{}) {
-	fmt.Printf(msg, a...)
-}
-
 func (l *LogglyLogger) getMsg(m map[string]interface{}, msg string, a ...interface{}) loggly.Message {
 	lm := loggly.Message{"message": fmt.Sprintf(msg, a...)}
 
