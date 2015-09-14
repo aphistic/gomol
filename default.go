@@ -18,10 +18,22 @@ func AddLogger(logger Logger) {
 	curDefault.AddLogger(logger)
 }
 func InitLoggers() error {
+	startQueueWorkers()
 	return curDefault.InitLoggers()
 }
+
+/*
+Calls ShutdownLogger() on all loggers that are part of the current default
+logger base, then calls FlushMessages() to wait for all messages to be logged
+before returning.
+*/
 func ShutdownLoggers() error {
-	return curDefault.ShutdownLoggers()
+	err := curDefault.ShutdownLoggers()
+	if err != nil {
+		return err
+	}
+	FlushMessages()
+	return nil
 }
 
 func ClearAttrs() {

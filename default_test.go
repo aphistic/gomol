@@ -32,6 +32,7 @@ func (s *GomolSuite) TestDefaultShutdownLogger(c *C) {
 
 func (s *GomolSuite) TestDefaultDbg(c *C) {
 	Dbg("test")
+	FlushMessages()
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, levelDbg)
@@ -41,6 +42,7 @@ func (s *GomolSuite) TestDefaultDbg(c *C) {
 
 func (s *GomolSuite) TestDefaultDbgf(c *C) {
 	Dbgf("test %v", 1234)
+	FlushMessages()
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, levelDbg)
@@ -54,6 +56,7 @@ func (s *GomolSuite) TestDefaultDbgm(c *C) {
 			"attr1": 4321,
 		},
 		"test %v", 1234)
+	FlushMessages()
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, levelDbg)
@@ -64,6 +67,7 @@ func (s *GomolSuite) TestDefaultDbgm(c *C) {
 
 func (s *GomolSuite) TestDefaultInfo(c *C) {
 	Info("test")
+	FlushMessages()
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, levelInfo)
@@ -73,6 +77,7 @@ func (s *GomolSuite) TestDefaultInfo(c *C) {
 
 func (s *GomolSuite) TestDefaultInfof(c *C) {
 	Infof("test %v", 1234)
+	FlushMessages()
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, levelInfo)
@@ -86,6 +91,7 @@ func (s *GomolSuite) TestDefaultInfom(c *C) {
 			"attr1": 4321,
 		},
 		"test %v", 1234)
+	FlushMessages()
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, levelInfo)
@@ -96,6 +102,7 @@ func (s *GomolSuite) TestDefaultInfom(c *C) {
 
 func (s *GomolSuite) TestDefaultWarn(c *C) {
 	Warn("test")
+	FlushMessages()
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, levelWarn)
@@ -105,6 +112,7 @@ func (s *GomolSuite) TestDefaultWarn(c *C) {
 
 func (s *GomolSuite) TestDefaultWarnf(c *C) {
 	Warnf("test %v", 1234)
+	FlushMessages()
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, levelWarn)
@@ -118,6 +126,7 @@ func (s *GomolSuite) TestDefaultWarnm(c *C) {
 			"attr1": 4321,
 		},
 		"test %v", 1234)
+	FlushMessages()
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, levelWarn)
@@ -128,6 +137,7 @@ func (s *GomolSuite) TestDefaultWarnm(c *C) {
 
 func (s *GomolSuite) TestDefaultErr(c *C) {
 	Err("test")
+	FlushMessages()
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, levelError)
@@ -137,6 +147,7 @@ func (s *GomolSuite) TestDefaultErr(c *C) {
 
 func (s *GomolSuite) TestDefaultErrf(c *C) {
 	Errf("test %v", 1234)
+	FlushMessages()
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, levelError)
@@ -150,6 +161,7 @@ func (s *GomolSuite) TestDefaultErrm(c *C) {
 			"attr1": 4321,
 		},
 		"test %v", 1234)
+	FlushMessages()
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, levelError)
@@ -160,6 +172,7 @@ func (s *GomolSuite) TestDefaultErrm(c *C) {
 
 func (s *GomolSuite) TestDefaultFatal(c *C) {
 	Fatal("test")
+	FlushMessages()
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, levelFatal)
@@ -169,6 +182,7 @@ func (s *GomolSuite) TestDefaultFatal(c *C) {
 
 func (s *GomolSuite) TestDefaultFatalf(c *C) {
 	Fatalf("test %v", 1234)
+	FlushMessages()
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, levelFatal)
@@ -182,6 +196,7 @@ func (s *GomolSuite) TestDefaultFatalm(c *C) {
 			"attr1": 4321,
 		},
 		"test %v", 1234)
+	FlushMessages()
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, levelFatal)

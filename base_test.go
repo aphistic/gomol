@@ -12,9 +12,14 @@ type GomolSuite struct{}
 var _ = Suite(&GomolSuite{})
 
 func (s *GomolSuite) SetUpTest(c *C) {
+	startQueueWorkers()
 	b := newBase()
 	b.AddLogger(NewMemLogger())
 	SetDefault(b)
+}
+
+func (s *GomolSuite) TearDownTest(c *C) {
+	FlushMessages()
 }
 
 func (s *GomolSuite) TestAddLogger(c *C) {
@@ -104,6 +109,7 @@ func (s *GomolSuite) TestBaseDbg(c *C) {
 	b.AddLogger(l2)
 
 	b.Dbg("test")
+	FlushMessages()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test")
@@ -126,6 +132,7 @@ func (s *GomolSuite) TestBaseDbgf(c *C) {
 	b.AddLogger(l2)
 
 	b.Dbgf("test %v", 1234)
+	FlushMessages()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -155,6 +162,7 @@ func (s *GomolSuite) TestBaseDbgm(c *C) {
 		},
 		"test %v",
 		1234)
+	FlushMessages()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -183,6 +191,7 @@ func (s *GomolSuite) TestBaseInfo(c *C) {
 	b.AddLogger(l2)
 
 	b.Info("test")
+	FlushMessages()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test")
@@ -205,6 +214,7 @@ func (s *GomolSuite) TestBaseInfof(c *C) {
 	b.AddLogger(l2)
 
 	b.Infof("test %v", 1234)
+	FlushMessages()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -234,6 +244,7 @@ func (s *GomolSuite) TestBaseInfom(c *C) {
 		},
 		"test %v",
 		1234)
+	FlushMessages()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -262,6 +273,7 @@ func (s *GomolSuite) TestBaseWarn(c *C) {
 	b.AddLogger(l2)
 
 	b.Warn("test")
+	FlushMessages()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test")
@@ -284,6 +296,7 @@ func (s *GomolSuite) TestBaseWarnf(c *C) {
 	b.AddLogger(l2)
 
 	b.Warnf("test %v", 1234)
+	FlushMessages()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -313,6 +326,7 @@ func (s *GomolSuite) TestBaseWarnm(c *C) {
 		},
 		"test %v",
 		1234)
+	FlushMessages()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -341,6 +355,7 @@ func (s *GomolSuite) TestBaseErr(c *C) {
 	b.AddLogger(l2)
 
 	b.Err("test")
+	FlushMessages()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test")
@@ -363,6 +378,7 @@ func (s *GomolSuite) TestBaseErrf(c *C) {
 	b.AddLogger(l2)
 
 	b.Errf("test %v", 1234)
+	FlushMessages()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -392,6 +408,7 @@ func (s *GomolSuite) TestBaseErrm(c *C) {
 		},
 		"test %v",
 		1234)
+	FlushMessages()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -420,6 +437,7 @@ func (s *GomolSuite) TestBaseFatal(c *C) {
 	b.AddLogger(l2)
 
 	b.Fatal("test")
+	FlushMessages()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test")
@@ -442,6 +460,7 @@ func (s *GomolSuite) TestBaseFatalf(c *C) {
 	b.AddLogger(l2)
 
 	b.Fatalf("test %v", 1234)
+	FlushMessages()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -471,6 +490,7 @@ func (s *GomolSuite) TestBaseFatalm(c *C) {
 		},
 		"test %v",
 		1234)
+	FlushMessages()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -487,4 +507,59 @@ func (s *GomolSuite) TestBaseFatalm(c *C) {
 	c.Check(l2.Messages[0].Attrs["attr2"], Equals, 4321)
 	c.Check(l2.Messages[0].Attrs["attr3"], Equals, "val3")
 	c.Check(l2.Messages[0].Level, Equals, levelFatal)
+}
+
+func (s *GomolSuite) TestBaseOrdering(c *C) {
+	b := newBase()
+	b.SetAttr("attr1", 1234)
+
+	l1 := NewMemLogger()
+	l2 := NewMemLogger()
+
+	b.AddLogger(l1)
+	b.AddLogger(l2)
+
+	b.Fatalm(
+		map[string]interface{}{
+			"attr2": 4321,
+			"attr3": "val3",
+		},
+		"test %v",
+		1234)
+	b.Fatalm(
+		map[string]interface{}{
+			"attr4": 4321,
+			"attr5": "val3",
+		},
+		"test %v",
+		4321)
+	FlushMessages()
+
+	c.Assert(l1.Messages, HasLen, 2)
+	c.Check(l1.Messages[0].Message, Equals, "test 1234")
+	c.Assert(l1.Messages[0].Attrs, HasLen, 3)
+	c.Check(l1.Messages[0].Attrs["attr1"], Equals, 1234)
+	c.Check(l1.Messages[0].Attrs["attr2"], Equals, 4321)
+	c.Check(l1.Messages[0].Attrs["attr3"], Equals, "val3")
+	c.Check(l1.Messages[0].Level, Equals, levelFatal)
+	c.Check(l1.Messages[1].Message, Equals, "test 4321")
+	c.Assert(l1.Messages[1].Attrs, HasLen, 3)
+	c.Check(l1.Messages[1].Attrs["attr1"], Equals, 1234)
+	c.Check(l1.Messages[1].Attrs["attr4"], Equals, 4321)
+	c.Check(l1.Messages[1].Attrs["attr5"], Equals, "val3")
+	c.Check(l1.Messages[1].Level, Equals, levelFatal)
+
+	c.Assert(l2.Messages, HasLen, 2)
+	c.Check(l2.Messages[0].Message, Equals, "test 1234")
+	c.Assert(l2.Messages[0].Attrs, HasLen, 3)
+	c.Check(l2.Messages[0].Attrs["attr1"], Equals, 1234)
+	c.Check(l2.Messages[0].Attrs["attr2"], Equals, 4321)
+	c.Check(l2.Messages[0].Attrs["attr3"], Equals, "val3")
+	c.Check(l2.Messages[0].Level, Equals, levelFatal)
+	c.Check(l2.Messages[1].Message, Equals, "test 4321")
+	c.Assert(l2.Messages[1].Attrs, HasLen, 3)
+	c.Check(l2.Messages[1].Attrs["attr1"], Equals, 1234)
+	c.Check(l2.Messages[1].Attrs["attr4"], Equals, 4321)
+	c.Check(l2.Messages[1].Attrs["attr5"], Equals, "val3")
+	c.Check(l2.Messages[1].Level, Equals, levelFatal)
 }

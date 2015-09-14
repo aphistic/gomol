@@ -12,6 +12,9 @@ const (
 type Base struct {
 	loggers   []Logger
 	BaseAttrs map[string]interface{}
+
+	senderQueue chan *message
+	senderExit  chan int
 }
 
 func newBase() *Base {
@@ -57,141 +60,81 @@ func (b *Base) RemoveAttr(key string) {
 }
 
 func (b *Base) Dbg(msg string) error {
-	for _, l := range b.loggers {
-		err := l.Dbg(msg)
-		if err != nil {
-			return err
-		}
-	}
+	nm := newMessage(b, levelDbg, nil, msg)
+	queueMessage(nm)
 	return nil
 }
 func (b *Base) Dbgf(msg string, a ...interface{}) error {
-	for _, l := range b.loggers {
-		err := l.Dbgf(msg, a...)
-		if err != nil {
-			return err
-		}
-	}
+	nm := newMessage(b, levelDbg, nil, msg, a...)
+	queueMessage(nm)
 	return nil
 }
 func (b *Base) Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
-	for _, l := range b.loggers {
-		err := l.Dbgm(m, msg, a...)
-		if err != nil {
-			return err
-		}
-	}
+	nm := newMessage(b, levelDbg, m, msg, a...)
+	queueMessage(nm)
 	return nil
 }
 
 func (b *Base) Info(msg string) error {
-	for _, l := range b.loggers {
-		err := l.Info(msg)
-		if err != nil {
-			return err
-		}
-	}
+	nm := newMessage(b, levelInfo, nil, msg)
+	queueMessage(nm)
 	return nil
 }
 func (b *Base) Infof(msg string, a ...interface{}) error {
-	for _, l := range b.loggers {
-		err := l.Infof(msg, a...)
-		if err != nil {
-			return err
-		}
-	}
+	nm := newMessage(b, levelInfo, nil, msg, a...)
+	queueMessage(nm)
 	return nil
 }
 func (b *Base) Infom(m map[string]interface{}, msg string, a ...interface{}) error {
-	for _, l := range b.loggers {
-		err := l.Infom(m, msg, a...)
-		if err != nil {
-			return err
-		}
-	}
+	nm := newMessage(b, levelInfo, m, msg, a...)
+	queueMessage(nm)
 	return nil
 }
 
 func (b *Base) Warn(msg string) error {
-	for _, l := range b.loggers {
-		err := l.Warn(msg)
-		if err != nil {
-			return err
-		}
-	}
+	nm := newMessage(b, levelWarn, nil, msg)
+	queueMessage(nm)
 	return nil
 }
 func (b *Base) Warnf(msg string, a ...interface{}) error {
-	for _, l := range b.loggers {
-		err := l.Warnf(msg, a...)
-		if err != nil {
-			return err
-		}
-	}
+	nm := newMessage(b, levelWarn, nil, msg, a...)
+	queueMessage(nm)
 	return nil
 }
 func (b *Base) Warnm(m map[string]interface{}, msg string, a ...interface{}) error {
-	for _, l := range b.loggers {
-		err := l.Warnm(m, msg, a...)
-		if err != nil {
-			return err
-		}
-	}
+	nm := newMessage(b, levelWarn, m, msg, a...)
+	queueMessage(nm)
 	return nil
 }
 
 func (b *Base) Err(msg string) error {
-	for _, l := range b.loggers {
-		err := l.Err(msg)
-		if err != nil {
-			return err
-		}
-	}
+	nm := newMessage(b, levelError, nil, msg)
+	queueMessage(nm)
 	return nil
 }
 func (b *Base) Errf(msg string, a ...interface{}) error {
-	for _, l := range b.loggers {
-		err := l.Errf(msg, a...)
-		if err != nil {
-			return err
-		}
-	}
+	nm := newMessage(b, levelError, nil, msg, a...)
+	queueMessage(nm)
 	return nil
 }
 func (b *Base) Errm(m map[string]interface{}, msg string, a ...interface{}) error {
-	for _, l := range b.loggers {
-		err := l.Errm(m, msg, a...)
-		if err != nil {
-			return err
-		}
-	}
+	nm := newMessage(b, levelError, m, msg, a...)
+	queueMessage(nm)
 	return nil
 }
 
 func (b *Base) Fatal(msg string) error {
-	for _, l := range b.loggers {
-		err := l.Fatal(msg)
-		if err != nil {
-			return err
-		}
-	}
+	nm := newMessage(b, levelFatal, nil, msg)
+	queueMessage(nm)
 	return nil
 }
 func (b *Base) Fatalf(msg string, a ...interface{}) error {
-	for _, l := range b.loggers {
-		err := l.Fatalf(msg, a...)
-		if err != nil {
-			return err
-		}
-	}
+	nm := newMessage(b, levelFatal, nil, msg, a...)
+	queueMessage(nm)
 	return nil
 }
 func (b *Base) Fatalm(m map[string]interface{}, msg string, a ...interface{}) error {
-	for _, l := range b.loggers {
-		err := l.Fatalm(m, msg, a...)
-		if err != nil {
-			return err
-		}
-	}
+	nm := newMessage(b, levelFatal, m, msg, a...)
+	queueMessage(nm)
 	return nil
 }
