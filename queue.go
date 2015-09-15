@@ -1,7 +1,6 @@
 package gomol
 
 import (
-	"runtime"
 	"sync"
 )
 
@@ -13,8 +12,9 @@ type queue struct {
 
 	queueChan chan *message
 
-	queue    []*message
-	queueMut sync.RWMutex
+	queue        []*message
+	msgAddedChan chan int
+	queueMut     sync.RWMutex
 }
 
 var curQueue *queue
@@ -25,11 +25,12 @@ func init() {
 
 func newQueue() *queue {
 	return &queue{
-		running:   false,
-		queueChan: make(chan *message, 1000),
-		queueCtl:  make(chan int),
-		senderCtl: make(chan int),
-		queue:     make([]*message, 0),
+		running:      false,
+		queueChan:    make(chan *message, 1000),
+		queueCtl:     make(chan int),
+		senderCtl:    make(chan int),
+		queue:        make([]*message, 0),
+		msgAddedChan: make(chan int, 1),
 	}
 }
 
@@ -52,6 +53,7 @@ func (queue *queue) queueWorker() {
 			queue.queueMut.Lock()
 			queue.queue = append(queue.queue, msg)
 			queue.queueMut.Unlock()
+			queue.msgAddedChan <- 1
 		case <-queue.queueCtl:
 			exiting = true
 		}
@@ -67,37 +69,36 @@ func (queue *queue) senderWorker() {
 	queue.workersDone.Add(1)
 	exiting := false
 	for {
+		if exiting && len(queue.queue) == 0 {
+			break
+		}
+
 		select {
 		case <-queue.senderCtl:
 			exiting = true
-		default:
+		case <-queue.msgAddedChan:
 		}
 
-		if exiting && len(queue.queue) == 0 {
-			break
-		} else if len(queue.queue) == 0 {
-			runtime.Gosched()
-			continue
-		}
+		for {
+			msg := queue.NextMessage()
 
-		msg := queue.NextMessage()
+			if msg == nil {
+				break
+			}
 
-		if msg == nil {
-			continue
-		}
-
-		for _, l := range msg.Base.loggers {
-			switch msg.Level {
-			case levelDbg:
-				l.Dbgm(msg.Attrs, msg.Msg)
-			case levelInfo:
-				l.Infom(msg.Attrs, msg.Msg)
-			case levelWarn:
-				l.Warnm(msg.Attrs, msg.Msg)
-			case levelError:
-				l.Errm(msg.Attrs, msg.Msg)
-			case levelFatal:
-				l.Fatalm(msg.Attrs, msg.Msg)
+			for _, l := range msg.Base.loggers {
+				switch msg.Level {
+				case levelDbg:
+					l.Dbgm(msg.Attrs, msg.Msg)
+				case levelInfo:
+					l.Infom(msg.Attrs, msg.Msg)
+				case levelWarn:
+					l.Warnm(msg.Attrs, msg.Msg)
+				case levelError:
+					l.Errm(msg.Attrs, msg.Msg)
+				case levelFatal:
+					l.Fatalm(msg.Attrs, msg.Msg)
+				}
 			}
 		}
 	}
@@ -109,10 +110,15 @@ func (queue *queue) QueueMessage(msg *message) {
 }
 
 func (queue *queue) NextMessage() *message {
+	var msg *message
 	queue.queueMut.Lock()
-	q := queue.queue
-	msg, q := q[0], q[1:]
-	queue.queue = q
+	if len(queue.queue) > 0 {
+		q := queue.queue
+		msg, q = q[0], q[1:]
+		queue.queue = q
+	} else {
+		msg = nil
+	}
 	queue.queueMut.Unlock()
 
 	return msg
