@@ -52,8 +52,11 @@ func (queue *queue) queueWorker() {
 		case msg := <-queue.queueChan:
 			queue.queueMut.Lock()
 			queue.queue = append(queue.queue, msg)
+			select {
+			case queue.msgAddedChan <- 1:
+			default:
+			}
 			queue.queueMut.Unlock()
-			queue.msgAddedChan <- 1
 		case <-queue.queueCtl:
 			exiting = true
 		}
