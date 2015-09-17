@@ -18,6 +18,15 @@ func (s *GomolSuite) TestShutdownLogger(c *C) {
 	c.Check(ml.IsShutdown, Equals, true)
 }
 
+func (s *GomolSuite) TestClearMessages(c *C) {
+	ml := NewMemLogger()
+	c.Check(ml.Messages, HasLen, 0)
+	ml.Dbg("test")
+	c.Check(ml.Messages, HasLen, 1)
+	ml.ClearMessages()
+	c.Check(ml.Messages, HasLen, 0)
+}
+
 func (s *GomolSuite) TestMemDbg(c *C) {
 	ml := NewMemLogger()
 	ml.Dbg("test")

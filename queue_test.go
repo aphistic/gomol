@@ -29,11 +29,30 @@ func (s *GomolSuite) TestQueueLen(c *C) {
 	c.Check(q.Length(), Equals, 2)
 }
 
+func (s *GomolSuite) TestQueueMessageWithoutWorkers(c *C) {
+	q := newQueue()
+	err := q.QueueMessage(&message{})
+	c.Check(err, NotNil)
+	c.Check(err.Error(), Equals, "The logging system is not running, has InitLoggers() been executed?")
+}
+
 func (s *GomolSuite) TestQueueStartWorkers(c *C) {
 	q := newQueue()
 	q.startQueueWorkers()
 	c.Check(q.running, Equals, true)
 	c.Check(q.queue, HasLen, 0)
+	q.stopQueueWorkers()
+}
+
+func (s *GomolSuite) TestQueueStartWorkersTwice(c *C) {
+	q := newQueue()
+	err := q.startQueueWorkers()
+	c.Check(err, IsNil)
+	c.Check(q.running, Equals, true)
+	c.Check(q.queue, HasLen, 0)
+	err = q.startQueueWorkers()
+	c.Check(err, NotNil)
+	c.Check(err.Error(), Equals, "Workers are already running")
 	q.stopQueueWorkers()
 }
 
@@ -45,6 +64,20 @@ func (s *GomolSuite) TestQueueStopWorkers(c *C) {
 	c.Check(q.running, Equals, false)
 	c.Check(q.queue, HasLen, 0)
 	c.Check(len(q.queueChan), Equals, 0)
+}
+
+func (s *GomolSuite) TestQueueStopWorkersTwice(c *C) {
+	q := newQueue()
+	q.startQueueWorkers()
+
+	err := q.stopQueueWorkers()
+	c.Check(err, IsNil)
+	c.Check(q.running, Equals, false)
+	c.Check(q.queue, HasLen, 0)
+	c.Check(len(q.queueChan), Equals, 0)
+	err = q.stopQueueWorkers()
+	c.Check(err, NotNil)
+	c.Check(err.Error(), Equals, "Workers are not running")
 }
 
 func (s *GomolSuite) TestQueueFlushMessages(c *C) {

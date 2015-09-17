@@ -30,24 +30,30 @@ func newQueue() *queue {
 	}
 }
 
-func (queue *queue) startQueueWorkers() {
+func (queue *queue) startQueueWorkers() error {
 	if queue.running {
-		return
+		return errors.New("Workers are already running")
 	}
 	queue.running = true
 	queue.workersStart.Add(2)
 	go queue.queueWorker()
 	go queue.senderWorker()
 	queue.workersStart.Wait()
+
+	return nil
 }
 
-func (queue *queue) stopQueueWorkers() {
+func (queue *queue) stopQueueWorkers() error {
 	if queue.running {
 		queue.queueCtl <- 1
 
 		queue.workersDone.Wait()
 		queue.running = false
+
+		return nil
 	}
+
+	return errors.New("Workers are not running")
 }
 
 func (queue *queue) queueWorker() {
