@@ -18,11 +18,7 @@ Calls ShutdownLogger() on all loggers that are part of the current default
 logger base.
 */
 func ShutdownLoggers() error {
-	err := curDefault.ShutdownLoggers()
-	if err != nil {
-		return err
-	}
-	return nil
+	return curDefault.ShutdownLoggers()
 }
 
 func ClearAttrs() {
