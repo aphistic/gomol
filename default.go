@@ -15,8 +15,7 @@ func InitLoggers() error {
 
 /*
 Calls ShutdownLogger() on all loggers that are part of the current default
-logger base, then calls FlushMessages() to wait for all messages to be logged
-before returning.
+logger base.
 */
 func ShutdownLoggers() error {
 	err := curDefault.ShutdownLoggers()

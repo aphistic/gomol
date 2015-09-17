@@ -57,6 +57,23 @@ func (s *GomolSuite) TestInitLoggers(c *C) {
 	c.Check(ml2.IsInitialized, Equals, true)
 }
 
+func (s *GomolSuite) TestInitLoggersFail(c *C) {
+	b := newBase()
+
+	ml1 := NewMemLoggerWithConfig(MemLoggerConfig{FailInit: true})
+	ml2 := NewMemLoggerWithConfig(MemLoggerConfig{FailInit: true})
+
+	b.AddLogger(ml1)
+	b.AddLogger(ml2)
+
+	err := b.InitLoggers()
+	c.Check(err, NotNil)
+	c.Check(err.Error(), Equals, "Init failed")
+
+	c.Check(ml1.IsInitialized, Equals, false)
+	c.Check(ml2.IsInitialized, Equals, false)
+}
+
 func (s *GomolSuite) TestShutdownLoggers(c *C) {
 	b := newBase()
 
@@ -71,6 +88,24 @@ func (s *GomolSuite) TestShutdownLoggers(c *C) {
 
 	c.Check(ml1.IsShutdown, Equals, true)
 	c.Check(ml2.IsShutdown, Equals, true)
+}
+
+func (s *GomolSuite) TestShutdownLoggersFail(c *C) {
+	b := newBase()
+
+	ml1 := NewMemLoggerWithConfig(MemLoggerConfig{FailShutdown: true})
+	ml2 := NewMemLoggerWithConfig(MemLoggerConfig{FailShutdown: true})
+
+	b.AddLogger(ml1)
+	b.AddLogger(ml2)
+
+	b.InitLoggers()
+	err := b.ShutdownLoggers()
+	c.Check(err, NotNil)
+	c.Check(err.Error(), Equals, "Shutdown failed")
+
+	c.Check(ml1.IsShutdown, Equals, false)
+	c.Check(ml2.IsShutdown, Equals, false)
 }
 
 func (s *GomolSuite) TestSetAttr(c *C) {

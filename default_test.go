@@ -24,6 +24,44 @@ func (s *GomolSuite) TestDefaultShutdownLogger(c *C) {
 	c.Check(defLogger.IsShutdown, Equals, true)
 }
 
+func (s *GomolSuite) TestDefaultAddLogger(c *C) {
+	curDefault = newBase()
+	c.Check(curDefault.loggers, HasLen, 0)
+	AddLogger(NewMemLogger())
+	c.Check(curDefault.loggers, HasLen, 1)
+}
+
+func (s *GomolSuite) TestDefaultSetAttr(c *C) {
+	curDefault = newBase()
+	c.Check(curDefault.BaseAttrs, HasLen, 0)
+	SetAttr("attr", 1234)
+	c.Check(curDefault.BaseAttrs, HasLen, 1)
+	c.Check(curDefault.BaseAttrs["attr"], Equals, 1234)
+}
+
+func (s *GomolSuite) TestDefaultRemoveAttr(c *C) {
+	curDefault = newBase()
+	c.Check(curDefault.BaseAttrs, HasLen, 0)
+	SetAttr("attr", 1234)
+	c.Check(curDefault.BaseAttrs, HasLen, 1)
+	c.Check(curDefault.BaseAttrs["attr"], Equals, 1234)
+	RemoveAttr("attr")
+	c.Check(curDefault.BaseAttrs, HasLen, 0)
+}
+
+func (s *GomolSuite) TestDefaultClearAttrs(c *C) {
+	curDefault = newBase()
+	c.Check(curDefault.BaseAttrs, HasLen, 0)
+	SetAttr("attr", 1234)
+	c.Check(curDefault.BaseAttrs, HasLen, 1)
+	c.Check(curDefault.BaseAttrs["attr"], Equals, 1234)
+	SetAttr("attr2", 1234)
+	c.Check(curDefault.BaseAttrs, HasLen, 2)
+	c.Check(curDefault.BaseAttrs["attr2"], Equals, 1234)
+	ClearAttrs()
+	c.Check(curDefault.BaseAttrs, HasLen, 0)
+}
+
 func (s *GomolSuite) TestDefaultDbg(c *C) {
 	Dbg("test")
 	curDefault.queue.stopQueueWorkers()

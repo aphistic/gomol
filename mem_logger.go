@@ -1,11 +1,18 @@
 package gomol
 
 import (
+	"errors"
 	"fmt"
 )
 
+type MemLoggerConfig struct {
+	FailInit     bool
+	FailShutdown bool
+}
+
 type MemLogger struct {
-	base *Base
+	base   *Base
+	config MemLoggerConfig
 
 	Messages []*MemMessage
 
@@ -21,6 +28,14 @@ type MemMessage struct {
 
 func NewMemLogger() *MemLogger {
 	l := &MemLogger{
+		config:   MemLoggerConfig{},
+		Messages: make([]*MemMessage, 0),
+	}
+	return l
+}
+func NewMemLoggerWithConfig(config MemLoggerConfig) *MemLogger {
+	l := &MemLogger{
+		config:   config,
 		Messages: make([]*MemMessage, 0),
 	}
 	return l
@@ -40,10 +55,16 @@ func (l *MemLogger) SetBase(base *Base) {
 }
 
 func (l *MemLogger) InitLogger() error {
+	if l.config.FailInit {
+		return errors.New("Init failed")
+	}
 	l.IsInitialized = true
 	return nil
 }
 func (l *MemLogger) ShutdownLogger() error {
+	if l.config.FailShutdown {
+		return errors.New("Shutdown failed")
+	}
 	l.IsShutdown = true
 	return nil
 }
