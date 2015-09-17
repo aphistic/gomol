@@ -3,22 +3,13 @@ package gomol
 var curDefault *Base
 
 func init() {
-	SetDefault(nil)
-}
-
-func SetDefault(newDefault *Base) {
-	if newDefault == nil {
-		curDefault = newBase()
-	} else {
-		curDefault = newDefault
-	}
+	curDefault = newBase()
 }
 
 func AddLogger(logger Logger) {
 	curDefault.AddLogger(logger)
 }
 func InitLoggers() error {
-	startQueueWorkers()
 	return curDefault.InitLoggers()
 }
 
@@ -32,7 +23,6 @@ func ShutdownLoggers() error {
 	if err != nil {
 		return err
 	}
-	FlushMessages()
 	return nil
 }
 

@@ -11,19 +11,27 @@ type GomolSuite struct{}
 
 var _ = Suite(&GomolSuite{})
 
+var testBase *Base
+
 func (s *GomolSuite) SetUpTest(c *C) {
-	startQueueWorkers()
-	b := newBase()
-	b.AddLogger(NewMemLogger())
-	SetDefault(b)
+	testBase = newBase()
+	testBase.AddLogger(NewMemLogger())
+	testBase.InitLoggers()
+
+	curDefault = newBase()
+	curDefault.AddLogger(NewMemLogger())
+	curDefault.InitLoggers()
 }
 
 func (s *GomolSuite) TearDownTest(c *C) {
-	FlushMessages()
+	curDefault.ShutdownLoggers()
+
+	testBase.ShutdownLoggers()
 }
 
 func (s *GomolSuite) TestAddLogger(c *C) {
 	b := newBase()
+	b.InitLoggers()
 	c.Check(b.loggers, HasLen, 0)
 
 	ml := NewMemLogger()
@@ -58,6 +66,7 @@ func (s *GomolSuite) TestShutdownLoggers(c *C) {
 	b.AddLogger(ml1)
 	b.AddLogger(ml2)
 
+	b.InitLoggers()
 	b.ShutdownLoggers()
 
 	c.Check(ml1.IsShutdown, Equals, true)
@@ -108,8 +117,9 @@ func (s *GomolSuite) TestBaseDbg(c *C) {
 	b.AddLogger(l1)
 	b.AddLogger(l2)
 
+	b.InitLoggers()
 	b.Dbg("test")
-	FlushMessages()
+	b.ShutdownLoggers()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test")
@@ -131,8 +141,9 @@ func (s *GomolSuite) TestBaseDbgf(c *C) {
 	b.AddLogger(l1)
 	b.AddLogger(l2)
 
+	b.InitLoggers()
 	b.Dbgf("test %v", 1234)
-	FlushMessages()
+	b.ShutdownLoggers()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -155,6 +166,7 @@ func (s *GomolSuite) TestBaseDbgm(c *C) {
 	b.AddLogger(l1)
 	b.AddLogger(l2)
 
+	b.InitLoggers()
 	b.Dbgm(
 		map[string]interface{}{
 			"attr2": 4321,
@@ -162,7 +174,7 @@ func (s *GomolSuite) TestBaseDbgm(c *C) {
 		},
 		"test %v",
 		1234)
-	FlushMessages()
+	b.ShutdownLoggers()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -190,8 +202,9 @@ func (s *GomolSuite) TestBaseInfo(c *C) {
 	b.AddLogger(l1)
 	b.AddLogger(l2)
 
+	b.InitLoggers()
 	b.Info("test")
-	FlushMessages()
+	b.ShutdownLoggers()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test")
@@ -213,8 +226,9 @@ func (s *GomolSuite) TestBaseInfof(c *C) {
 	b.AddLogger(l1)
 	b.AddLogger(l2)
 
+	b.InitLoggers()
 	b.Infof("test %v", 1234)
-	FlushMessages()
+	b.ShutdownLoggers()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -237,6 +251,7 @@ func (s *GomolSuite) TestBaseInfom(c *C) {
 	b.AddLogger(l1)
 	b.AddLogger(l2)
 
+	b.InitLoggers()
 	b.Infom(
 		map[string]interface{}{
 			"attr2": 4321,
@@ -244,7 +259,7 @@ func (s *GomolSuite) TestBaseInfom(c *C) {
 		},
 		"test %v",
 		1234)
-	FlushMessages()
+	b.ShutdownLoggers()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -272,8 +287,9 @@ func (s *GomolSuite) TestBaseWarn(c *C) {
 	b.AddLogger(l1)
 	b.AddLogger(l2)
 
+	b.InitLoggers()
 	b.Warn("test")
-	FlushMessages()
+	b.ShutdownLoggers()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test")
@@ -295,8 +311,9 @@ func (s *GomolSuite) TestBaseWarnf(c *C) {
 	b.AddLogger(l1)
 	b.AddLogger(l2)
 
+	b.InitLoggers()
 	b.Warnf("test %v", 1234)
-	FlushMessages()
+	b.ShutdownLoggers()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -319,6 +336,7 @@ func (s *GomolSuite) TestBaseWarnm(c *C) {
 	b.AddLogger(l1)
 	b.AddLogger(l2)
 
+	b.InitLoggers()
 	b.Warnm(
 		map[string]interface{}{
 			"attr2": 4321,
@@ -326,7 +344,7 @@ func (s *GomolSuite) TestBaseWarnm(c *C) {
 		},
 		"test %v",
 		1234)
-	FlushMessages()
+	b.ShutdownLoggers()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -354,8 +372,9 @@ func (s *GomolSuite) TestBaseErr(c *C) {
 	b.AddLogger(l1)
 	b.AddLogger(l2)
 
+	b.InitLoggers()
 	b.Err("test")
-	FlushMessages()
+	b.ShutdownLoggers()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test")
@@ -377,8 +396,9 @@ func (s *GomolSuite) TestBaseErrf(c *C) {
 	b.AddLogger(l1)
 	b.AddLogger(l2)
 
+	b.InitLoggers()
 	b.Errf("test %v", 1234)
-	FlushMessages()
+	b.ShutdownLoggers()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -401,6 +421,7 @@ func (s *GomolSuite) TestBaseErrm(c *C) {
 	b.AddLogger(l1)
 	b.AddLogger(l2)
 
+	b.InitLoggers()
 	b.Errm(
 		map[string]interface{}{
 			"attr2": 4321,
@@ -408,7 +429,7 @@ func (s *GomolSuite) TestBaseErrm(c *C) {
 		},
 		"test %v",
 		1234)
-	FlushMessages()
+	b.ShutdownLoggers()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -436,8 +457,9 @@ func (s *GomolSuite) TestBaseFatal(c *C) {
 	b.AddLogger(l1)
 	b.AddLogger(l2)
 
+	b.InitLoggers()
 	b.Fatal("test")
-	FlushMessages()
+	b.ShutdownLoggers()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test")
@@ -459,8 +481,9 @@ func (s *GomolSuite) TestBaseFatalf(c *C) {
 	b.AddLogger(l1)
 	b.AddLogger(l2)
 
+	b.InitLoggers()
 	b.Fatalf("test %v", 1234)
-	FlushMessages()
+	b.ShutdownLoggers()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -483,6 +506,7 @@ func (s *GomolSuite) TestBaseFatalm(c *C) {
 	b.AddLogger(l1)
 	b.AddLogger(l2)
 
+	b.InitLoggers()
 	b.Fatalm(
 		map[string]interface{}{
 			"attr2": 4321,
@@ -490,7 +514,7 @@ func (s *GomolSuite) TestBaseFatalm(c *C) {
 		},
 		"test %v",
 		1234)
-	FlushMessages()
+	b.ShutdownLoggers()
 
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
@@ -519,6 +543,7 @@ func (s *GomolSuite) TestBaseOrdering(c *C) {
 	b.AddLogger(l1)
 	b.AddLogger(l2)
 
+	b.InitLoggers()
 	b.Fatalm(
 		map[string]interface{}{
 			"attr2": 4321,
@@ -533,7 +558,7 @@ func (s *GomolSuite) TestBaseOrdering(c *C) {
 		},
 		"test %v",
 		4321)
-	FlushMessages()
+	b.ShutdownLoggers()
 
 	c.Assert(l1.Messages, HasLen, 2)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")

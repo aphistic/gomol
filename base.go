@@ -10,15 +10,14 @@ const (
 )
 
 type Base struct {
+	queue     *queue
 	loggers   []Logger
 	BaseAttrs map[string]interface{}
-
-	senderQueue chan *message
-	senderExit  chan int
 }
 
 func newBase() *Base {
 	b := &Base{
+		queue:     newQueue(),
 		loggers:   make([]Logger, 0),
 		BaseAttrs: make(map[string]interface{}, 0),
 	}
@@ -37,9 +36,14 @@ func (b *Base) InitLoggers() error {
 			return err
 		}
 	}
+
+	b.queue.startQueueWorkers()
+
 	return nil
 }
 func (b *Base) ShutdownLoggers() error {
+	b.queue.stopQueueWorkers()
+
 	for _, logger := range b.loggers {
 		err := logger.ShutdownLogger()
 		if err != nil {
@@ -61,80 +65,65 @@ func (b *Base) RemoveAttr(key string) {
 
 func (b *Base) Dbg(msg string) error {
 	nm := newMessage(b, levelDbg, nil, msg)
-	queueMessage(nm)
-	return nil
+	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Dbgf(msg string, a ...interface{}) error {
 	nm := newMessage(b, levelDbg, nil, msg, a...)
-	queueMessage(nm)
-	return nil
+	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
 	nm := newMessage(b, levelDbg, m, msg, a...)
-	queueMessage(nm)
-	return nil
+	return b.queue.QueueMessage(nm)
 }
 
 func (b *Base) Info(msg string) error {
 	nm := newMessage(b, levelInfo, nil, msg)
-	queueMessage(nm)
-	return nil
+	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Infof(msg string, a ...interface{}) error {
 	nm := newMessage(b, levelInfo, nil, msg, a...)
-	queueMessage(nm)
-	return nil
+	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Infom(m map[string]interface{}, msg string, a ...interface{}) error {
 	nm := newMessage(b, levelInfo, m, msg, a...)
-	queueMessage(nm)
-	return nil
+	return b.queue.QueueMessage(nm)
 }
 
 func (b *Base) Warn(msg string) error {
 	nm := newMessage(b, levelWarn, nil, msg)
-	queueMessage(nm)
-	return nil
+	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Warnf(msg string, a ...interface{}) error {
 	nm := newMessage(b, levelWarn, nil, msg, a...)
-	queueMessage(nm)
-	return nil
+	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Warnm(m map[string]interface{}, msg string, a ...interface{}) error {
 	nm := newMessage(b, levelWarn, m, msg, a...)
-	queueMessage(nm)
-	return nil
+	return b.queue.QueueMessage(nm)
 }
 
 func (b *Base) Err(msg string) error {
 	nm := newMessage(b, levelError, nil, msg)
-	queueMessage(nm)
-	return nil
+	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Errf(msg string, a ...interface{}) error {
 	nm := newMessage(b, levelError, nil, msg, a...)
-	queueMessage(nm)
-	return nil
+	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Errm(m map[string]interface{}, msg string, a ...interface{}) error {
 	nm := newMessage(b, levelError, m, msg, a...)
-	queueMessage(nm)
-	return nil
+	return b.queue.QueueMessage(nm)
 }
 
 func (b *Base) Fatal(msg string) error {
 	nm := newMessage(b, levelFatal, nil, msg)
-	queueMessage(nm)
-	return nil
+	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Fatalf(msg string, a ...interface{}) error {
 	nm := newMessage(b, levelFatal, nil, msg, a...)
-	queueMessage(nm)
-	return nil
+	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Fatalm(m map[string]interface{}, msg string, a ...interface{}) error {
 	nm := newMessage(b, levelFatal, m, msg, a...)
-	queueMessage(nm)
-	return nil
+	return b.queue.QueueMessage(nm)
 }

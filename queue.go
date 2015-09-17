@@ -1,53 +1,69 @@
 package gomol
 
 import (
+	"errors"
 	"sync"
 )
 
 type queue struct {
-	running     bool
-	queueCtl    chan int
-	senderCtl   chan int
-	workersDone sync.WaitGroup
+	running      bool
+	queueCtl     chan int
+	senderCtl    chan int
+	workersStart sync.WaitGroup
+	workersDone  sync.WaitGroup
 
 	queueChan chan *message
 
 	queue        []*message
 	msgAddedChan chan int
-	queueMut     sync.RWMutex
-}
-
-var curQueue *queue
-
-func init() {
-	startQueueWorkers()
+	queueMut     sync.Mutex
 }
 
 func newQueue() *queue {
 	return &queue{
 		running:      false,
-		queueChan:    make(chan *message, 1000),
-		queueCtl:     make(chan int),
-		senderCtl:    make(chan int),
+		queueChan:    make(chan *message, 500),
+		queueCtl:     make(chan int, 1),
+		senderCtl:    make(chan int, 1),
 		queue:        make([]*message, 0),
 		msgAddedChan: make(chan int, 1),
 	}
 }
 
-func startQueueWorkers() {
-	if curQueue != nil && curQueue.running {
+func (queue *queue) startQueueWorkers() {
+	if queue.running {
 		return
 	}
-	curQueue = newQueue()
-	curQueue.running = true
-	go curQueue.queueWorker()
-	go curQueue.senderWorker()
+	queue.running = true
+	queue.workersStart.Add(2)
+	go queue.queueWorker()
+	go queue.senderWorker()
+	queue.workersStart.Wait()
+}
+
+func (queue *queue) stopQueueWorkers() {
+	if queue.running {
+		queue.queueCtl <- 1
+
+		queue.workersDone.Wait()
+		queue.running = false
+	}
 }
 
 func (queue *queue) queueWorker() {
 	queue.workersDone.Add(1)
+	queue.workersStart.Done()
 	exiting := false
 	for {
+		if exiting {
+			queue.queueMut.Lock()
+			if len(queue.queueChan) == 0 {
+				queue.queueMut.Unlock()
+				break
+			}
+			queue.queueMut.Unlock()
+		}
+
 		select {
 		case msg := <-queue.queueChan:
 			queue.queueMut.Lock()
@@ -60,20 +76,23 @@ func (queue *queue) queueWorker() {
 		case <-queue.queueCtl:
 			exiting = true
 		}
-
-		if exiting && len(queue.queueChan) == 0 {
-			break
-		}
 	}
 	queue.workersDone.Done()
+	queue.senderCtl <- 1
 }
 
 func (queue *queue) senderWorker() {
 	queue.workersDone.Add(1)
+	queue.workersStart.Done()
 	exiting := false
 	for {
-		if exiting && len(queue.queue) == 0 {
-			break
+		if exiting {
+			queue.queueMut.Lock()
+			if len(queue.queue) == 0 {
+				queue.queueMut.Unlock()
+				break
+			}
+			queue.queueMut.Unlock()
 		}
 
 		select {
@@ -108,17 +127,19 @@ func (queue *queue) senderWorker() {
 	queue.workersDone.Done()
 }
 
-func (queue *queue) QueueMessage(msg *message) {
+func (queue *queue) QueueMessage(msg *message) error {
+	if !queue.running {
+		return errors.New("The logging system is not running, has InitLoggers() been executed?")
+	}
 	queue.queueChan <- msg
+	return nil
 }
 
 func (queue *queue) NextMessage() *message {
 	var msg *message
 	queue.queueMut.Lock()
 	if len(queue.queue) > 0 {
-		q := queue.queue
-		msg, q = q[0], q[1:]
-		queue.queue = q
+		msg, queue.queue = queue.queue[0], queue.queue[1:]
 	} else {
 		msg = nil
 	}
@@ -128,28 +149,7 @@ func (queue *queue) NextMessage() *message {
 }
 
 func (queue *queue) Length() int {
-	queue.queueMut.RLock()
-	defer queue.queueMut.RUnlock()
+	queue.queueMut.Lock()
+	defer queue.queueMut.Unlock()
 	return len(queue.queue) + len(queue.queueChan)
-}
-
-func queueLen() int {
-	return curQueue.Length()
-}
-
-func queueMessage(msg *message) {
-	curQueue.QueueMessage(msg)
-}
-
-/*
-Blocks until all messages in the queue have been processed, then returns.
-*/
-func FlushMessages() {
-	if curQueue.running {
-		curQueue.queueCtl <- 1
-		curQueue.senderCtl <- 1
-
-		curQueue.workersDone.Wait()
-		curQueue.running = false
-	}
 }
