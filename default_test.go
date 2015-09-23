@@ -8,9 +8,9 @@ func (s *GomolSuite) TestDefaultInitLogger(c *C) {
 	curDefault = newBase()
 	curDefault.AddLogger(NewMemLogger())
 	defLogger := curDefault.loggers[0].(*MemLogger)
-	c.Check(defLogger.IsInitialized, Equals, false)
+	c.Check(defLogger.IsInitialized(), Equals, false)
 	InitLoggers()
-	c.Check(defLogger.IsInitialized, Equals, true)
+	c.Check(defLogger.IsInitialized(), Equals, true)
 	curDefault.ShutdownLoggers()
 }
 
@@ -19,9 +19,9 @@ func (s *GomolSuite) TestDefaultShutdownLogger(c *C) {
 	curDefault.AddLogger(NewMemLogger())
 	curDefault.InitLoggers()
 	defLogger := curDefault.loggers[0].(*MemLogger)
-	c.Check(defLogger.IsShutdown, Equals, false)
+	c.Check(defLogger.isShutdown, Equals, false)
 	ShutdownLoggers()
-	c.Check(defLogger.IsShutdown, Equals, true)
+	c.Check(defLogger.isShutdown, Equals, true)
 }
 
 func (s *GomolSuite) TestDefaultAddLogger(c *C) {

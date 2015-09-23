@@ -16,8 +16,8 @@ type MemLogger struct {
 
 	Messages []*MemMessage
 
-	IsInitialized bool
-	IsShutdown    bool
+	isInitialized bool
+	isShutdown    bool
 }
 
 type MemMessage struct {
@@ -58,14 +58,19 @@ func (l *MemLogger) InitLogger() error {
 	if l.config.FailInit {
 		return errors.New("Init failed")
 	}
-	l.IsInitialized = true
+	l.isInitialized = true
+	l.isShutdown = false
 	return nil
+}
+func (l *MemLogger) IsInitialized() bool {
+	return l.isInitialized
 }
 func (l *MemLogger) ShutdownLogger() error {
 	if l.config.FailShutdown {
 		return errors.New("Shutdown failed")
 	}
-	l.IsShutdown = true
+	l.isInitialized = false
+	l.isShutdown = true
 	return nil
 }
 

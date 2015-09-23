@@ -10,9 +10,10 @@ const (
 )
 
 type Base struct {
-	queue     *queue
-	loggers   []Logger
-	BaseAttrs map[string]interface{}
+	isInitialized bool
+	queue         *queue
+	loggers       []Logger
+	BaseAttrs     map[string]interface{}
 }
 
 func newBase() *Base {
@@ -24,9 +25,21 @@ func newBase() *Base {
 	return b
 }
 
-func (b *Base) AddLogger(logger Logger) {
+func (b *Base) AddLogger(logger Logger) error {
+	if b.isInitialized && !logger.IsInitialized() {
+		err := logger.InitLogger()
+		if err != nil {
+			return err
+		}
+	} else if !b.isInitialized && logger.IsInitialized() {
+		err := logger.ShutdownLogger()
+		if err != nil {
+			return err
+		}
+	}
 	b.loggers = append(b.loggers, logger)
 	logger.SetBase(b)
+	return nil
 }
 
 func (b *Base) InitLoggers() error {
@@ -38,6 +51,7 @@ func (b *Base) InitLoggers() error {
 	}
 
 	b.queue.startQueueWorkers()
+	b.isInitialized = true
 
 	return nil
 }
@@ -50,6 +64,9 @@ func (b *Base) ShutdownLoggers() error {
 			return err
 		}
 	}
+
+	b.isInitialized = false
+
 	return nil
 }
 

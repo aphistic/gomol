@@ -5,6 +5,7 @@ type Logger interface {
 
 	InitLogger() error
 	ShutdownLogger() error
+	IsInitialized() bool
 
 	Dbg(string) error
 	Dbgf(string, ...interface{}) error

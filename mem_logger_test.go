@@ -6,32 +6,32 @@ import (
 
 func (s *GomolSuite) TestInitLogger(c *C) {
 	ml := NewMemLogger()
-	c.Check(ml.IsInitialized, Equals, false)
+	c.Check(ml.IsInitialized(), Equals, false)
 	ml.InitLogger()
-	c.Check(ml.IsInitialized, Equals, true)
+	c.Check(ml.IsInitialized(), Equals, true)
 }
 
 func (s *GomolSuite) TestInitLoggerFail(c *C) {
 	ml := NewMemLoggerWithConfig(MemLoggerConfig{FailInit: true})
-	c.Check(ml.IsInitialized, Equals, false)
+	c.Check(ml.IsInitialized(), Equals, false)
 	err := ml.InitLogger()
-	c.Check(ml.IsInitialized, Equals, false)
+	c.Check(ml.IsInitialized(), Equals, false)
 	c.Check(err, NotNil)
 	c.Check(err.Error(), Equals, "Init failed")
 }
 
 func (s *GomolSuite) TestShutdownLogger(c *C) {
 	ml := NewMemLogger()
-	c.Check(ml.IsShutdown, Equals, false)
+	c.Check(ml.isShutdown, Equals, false)
 	ml.ShutdownLogger()
-	c.Check(ml.IsShutdown, Equals, true)
+	c.Check(ml.isShutdown, Equals, true)
 }
 
 func (s *GomolSuite) TestShutdownLoggerFail(c *C) {
 	ml := NewMemLoggerWithConfig(MemLoggerConfig{FailShutdown: true})
-	c.Check(ml.IsShutdown, Equals, false)
+	c.Check(ml.isShutdown, Equals, false)
 	err := ml.ShutdownLogger()
-	c.Check(ml.IsShutdown, Equals, false)
+	c.Check(ml.isShutdown, Equals, false)
 	c.Check(err, NotNil)
 	c.Check(err.Error(), Equals, "Shutdown failed")
 }

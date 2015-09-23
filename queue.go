@@ -36,8 +36,8 @@ func (queue *queue) startQueueWorkers() error {
 	}
 	queue.running = true
 	queue.workersStart.Add(2)
-	go queue.queueWorker()
-	go queue.senderWorker()
+	go queue.queueWorker(false)
+	go queue.senderWorker(false)
 	queue.workersStart.Wait()
 
 	return nil
@@ -56,10 +56,9 @@ func (queue *queue) stopQueueWorkers() error {
 	return errors.New("Workers are not running")
 }
 
-func (queue *queue) queueWorker() {
+func (queue *queue) queueWorker(exiting bool) {
 	queue.workersDone.Add(1)
 	queue.workersStart.Done()
-	exiting := false
 	for {
 		if exiting {
 			queue.queueMut.Lock()
@@ -87,18 +86,20 @@ func (queue *queue) queueWorker() {
 	queue.senderCtl <- 1
 }
 
-func (queue *queue) senderWorker() {
+func (queue *queue) senderWorker(exiting bool) {
 	queue.workersDone.Add(1)
 	queue.workersStart.Done()
-	exiting := false
 	for {
 		if exiting {
 			queue.queueMut.Lock()
+			done := false
 			if len(queue.queue) == 0 {
-				queue.queueMut.Unlock()
-				break
+				done = true
 			}
 			queue.queueMut.Unlock()
+			if done {
+				break
+			}
 		}
 
 		select {
