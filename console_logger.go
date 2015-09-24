@@ -6,8 +6,9 @@ import (
 )
 
 type ConsoleLogger struct {
-	base     *Base
-	Colorize bool
+	base          *Base
+	isInitialized bool
+	Colorize      bool
 }
 
 func NewConsoleLogger() *ConsoleLogger {
@@ -68,10 +69,15 @@ func (l *ConsoleLogger) SetBase(base *Base) {
 }
 
 func (l *ConsoleLogger) InitLogger() error {
+	l.isInitialized = true
 	return nil
+}
+func (l *ConsoleLogger) IsInitialized() bool {
+	return l.isInitialized
 }
 
 func (l *ConsoleLogger) ShutdownLogger() error {
+	l.isInitialized = false
 	return nil
 }
 
