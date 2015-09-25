@@ -31,6 +31,22 @@ func (s *GomolSuite) TestDefaultAddLogger(c *C) {
 	c.Check(curDefault.loggers, HasLen, 1)
 }
 
+func (s *GomolSuite) TestDefaultSetLogLevel(c *C) {
+	curDefault = newBase()
+	InitLoggers()
+	ml := NewMemLogger()
+	AddLogger(ml)
+
+	SetLogLevel(LEVEL_WARNING)
+	Dbg("test")
+	Info("test")
+	Warn("test")
+	Err("test")
+	Fatal("test")
+	ShutdownLoggers()
+	c.Check(ml.Messages, HasLen, 3)
+}
+
 func (s *GomolSuite) TestDefaultSetAttr(c *C) {
 	curDefault = newBase()
 	c.Check(curDefault.BaseAttrs, HasLen, 0)

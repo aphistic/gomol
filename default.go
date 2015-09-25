@@ -6,6 +6,10 @@ func init() {
 	curDefault = newBase()
 }
 
+func SetLogLevel(level LogLevel) {
+	curDefault.SetLogLevel(level)
+}
+
 func AddLogger(logger Logger) {
 	curDefault.AddLogger(logger)
 }
