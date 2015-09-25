@@ -29,6 +29,49 @@ func (s *GomolSuite) TearDownTest(c *C) {
 	testBase.ShutdownLoggers()
 }
 
+func (s *GomolSuite) TestShouldLog(c *C) {
+	b := newBase()
+	b.SetLogLevel(LEVEL_INFO)
+	c.Check(b.shouldLog(LEVEL_UNKNOWN), Equals, false)
+	c.Check(b.shouldLog(LEVEL_DEBUG), Equals, false)
+	c.Check(b.shouldLog(LEVEL_INFO), Equals, true)
+	c.Check(b.shouldLog(LEVEL_WARNING), Equals, true)
+	c.Check(b.shouldLog(LEVEL_ERROR), Equals, true)
+	c.Check(b.shouldLog(LEVEL_FATAL), Equals, true)
+
+	b.SetLogLevel(LEVEL_FATAL)
+	c.Check(b.shouldLog(LEVEL_UNKNOWN), Equals, false)
+	c.Check(b.shouldLog(LEVEL_DEBUG), Equals, false)
+	c.Check(b.shouldLog(LEVEL_INFO), Equals, false)
+	c.Check(b.shouldLog(LEVEL_WARNING), Equals, false)
+	c.Check(b.shouldLog(LEVEL_ERROR), Equals, false)
+	c.Check(b.shouldLog(LEVEL_FATAL), Equals, true)
+
+	b.SetLogLevel(LEVEL_NONE)
+	c.Check(b.shouldLog(LEVEL_UNKNOWN), Equals, false)
+	c.Check(b.shouldLog(LEVEL_DEBUG), Equals, false)
+	c.Check(b.shouldLog(LEVEL_INFO), Equals, false)
+	c.Check(b.shouldLog(LEVEL_WARNING), Equals, false)
+	c.Check(b.shouldLog(LEVEL_ERROR), Equals, false)
+	c.Check(b.shouldLog(LEVEL_FATAL), Equals, false)
+}
+
+func (s *GomolSuite) TestSetLogLevel(c *C) {
+	b := newBase()
+	b.InitLoggers()
+	ml := NewMemLogger()
+	b.AddLogger(ml)
+
+	b.SetLogLevel(LEVEL_WARNING)
+	b.Dbg("test")
+	b.Info("test")
+	b.Warn("test")
+	b.Err("test")
+	b.Fatal("test")
+	b.ShutdownLoggers()
+	c.Check(ml.Messages, HasLen, 3)
+}
+
 func (s *GomolSuite) TestAddLogger(c *C) {
 	b := newBase()
 	b.InitLoggers()

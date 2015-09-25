@@ -2,17 +2,19 @@ package gomol
 
 import (
 	"fmt"
+	"math"
 )
 
 type LogLevel int
 
 const (
+	LEVEL_UNKNOWN LogLevel = math.MaxInt64
 	LEVEL_DEBUG   LogLevel = 7
 	LEVEL_INFO    LogLevel = 6
 	LEVEL_WARNING LogLevel = 4
 	LEVEL_ERROR   LogLevel = 3
 	LEVEL_FATAL   LogLevel = 2
-	LEVEL_UNKNOWN LogLevel = -1
+	LEVEL_NONE    LogLevel = math.MinInt64
 )
 
 type message struct {
