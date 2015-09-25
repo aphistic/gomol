@@ -218,12 +218,12 @@ func (s *GomolSuite) TestBaseDbg(c *C) {
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test")
 	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, levelDbg)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_DEBUG)
 
 	c.Assert(l2.Messages, HasLen, 1)
 	c.Check(l2.Messages[0].Message, Equals, "test")
 	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, levelDbg)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_DEBUG)
 }
 
 func (s *GomolSuite) TestBaseDbgf(c *C) {
@@ -242,12 +242,12 @@ func (s *GomolSuite) TestBaseDbgf(c *C) {
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
 	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, levelDbg)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_DEBUG)
 
 	c.Assert(l2.Messages, HasLen, 1)
 	c.Check(l2.Messages[0].Message, Equals, "test 1234")
 	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, levelDbg)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_DEBUG)
 }
 
 func (s *GomolSuite) TestBaseDbgm(c *C) {
@@ -276,7 +276,7 @@ func (s *GomolSuite) TestBaseDbgm(c *C) {
 	c.Check(l1.Messages[0].Attrs["attr1"], Equals, 1234)
 	c.Check(l1.Messages[0].Attrs["attr2"], Equals, 4321)
 	c.Check(l1.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l1.Messages[0].Level, Equals, levelDbg)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_DEBUG)
 
 	c.Assert(l2.Messages, HasLen, 1)
 	c.Check(l2.Messages[0].Message, Equals, "test 1234")
@@ -284,7 +284,7 @@ func (s *GomolSuite) TestBaseDbgm(c *C) {
 	c.Check(l2.Messages[0].Attrs["attr1"], Equals, 1234)
 	c.Check(l2.Messages[0].Attrs["attr2"], Equals, 4321)
 	c.Check(l2.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l2.Messages[0].Level, Equals, levelDbg)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_DEBUG)
 }
 
 func (s *GomolSuite) TestBaseInfo(c *C) {
@@ -303,12 +303,12 @@ func (s *GomolSuite) TestBaseInfo(c *C) {
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test")
 	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, levelInfo)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_INFO)
 
 	c.Assert(l2.Messages, HasLen, 1)
 	c.Check(l2.Messages[0].Message, Equals, "test")
 	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, levelInfo)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_INFO)
 }
 
 func (s *GomolSuite) TestBaseInfof(c *C) {
@@ -327,12 +327,12 @@ func (s *GomolSuite) TestBaseInfof(c *C) {
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
 	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, levelInfo)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_INFO)
 
 	c.Assert(l2.Messages, HasLen, 1)
 	c.Check(l2.Messages[0].Message, Equals, "test 1234")
 	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, levelInfo)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_INFO)
 }
 
 func (s *GomolSuite) TestBaseInfom(c *C) {
@@ -361,7 +361,7 @@ func (s *GomolSuite) TestBaseInfom(c *C) {
 	c.Check(l1.Messages[0].Attrs["attr1"], Equals, 1234)
 	c.Check(l1.Messages[0].Attrs["attr2"], Equals, 4321)
 	c.Check(l1.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l1.Messages[0].Level, Equals, levelInfo)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_INFO)
 
 	c.Assert(l2.Messages, HasLen, 1)
 	c.Check(l2.Messages[0].Message, Equals, "test 1234")
@@ -369,7 +369,7 @@ func (s *GomolSuite) TestBaseInfom(c *C) {
 	c.Check(l2.Messages[0].Attrs["attr1"], Equals, 1234)
 	c.Check(l2.Messages[0].Attrs["attr2"], Equals, 4321)
 	c.Check(l2.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l2.Messages[0].Level, Equals, levelInfo)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_INFO)
 }
 
 func (s *GomolSuite) TestBaseWarn(c *C) {
@@ -388,12 +388,12 @@ func (s *GomolSuite) TestBaseWarn(c *C) {
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test")
 	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, levelWarn)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_WARNING)
 
 	c.Assert(l2.Messages, HasLen, 1)
 	c.Check(l2.Messages[0].Message, Equals, "test")
 	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, levelWarn)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_WARNING)
 }
 
 func (s *GomolSuite) TestBaseWarnf(c *C) {
@@ -412,12 +412,12 @@ func (s *GomolSuite) TestBaseWarnf(c *C) {
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
 	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, levelWarn)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_WARNING)
 
 	c.Assert(l2.Messages, HasLen, 1)
 	c.Check(l2.Messages[0].Message, Equals, "test 1234")
 	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, levelWarn)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_WARNING)
 }
 
 func (s *GomolSuite) TestBaseWarnm(c *C) {
@@ -446,7 +446,7 @@ func (s *GomolSuite) TestBaseWarnm(c *C) {
 	c.Check(l1.Messages[0].Attrs["attr1"], Equals, 1234)
 	c.Check(l1.Messages[0].Attrs["attr2"], Equals, 4321)
 	c.Check(l1.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l1.Messages[0].Level, Equals, levelWarn)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_WARNING)
 
 	c.Assert(l2.Messages, HasLen, 1)
 	c.Check(l2.Messages[0].Message, Equals, "test 1234")
@@ -454,7 +454,7 @@ func (s *GomolSuite) TestBaseWarnm(c *C) {
 	c.Check(l2.Messages[0].Attrs["attr1"], Equals, 1234)
 	c.Check(l2.Messages[0].Attrs["attr2"], Equals, 4321)
 	c.Check(l2.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l2.Messages[0].Level, Equals, levelWarn)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_WARNING)
 }
 
 func (s *GomolSuite) TestBaseErr(c *C) {
@@ -473,12 +473,12 @@ func (s *GomolSuite) TestBaseErr(c *C) {
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test")
 	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, levelError)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_ERROR)
 
 	c.Assert(l2.Messages, HasLen, 1)
 	c.Check(l2.Messages[0].Message, Equals, "test")
 	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, levelError)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_ERROR)
 }
 
 func (s *GomolSuite) TestBaseErrf(c *C) {
@@ -497,12 +497,12 @@ func (s *GomolSuite) TestBaseErrf(c *C) {
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
 	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, levelError)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_ERROR)
 
 	c.Assert(l2.Messages, HasLen, 1)
 	c.Check(l2.Messages[0].Message, Equals, "test 1234")
 	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, levelError)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_ERROR)
 }
 
 func (s *GomolSuite) TestBaseErrm(c *C) {
@@ -531,7 +531,7 @@ func (s *GomolSuite) TestBaseErrm(c *C) {
 	c.Check(l1.Messages[0].Attrs["attr1"], Equals, 1234)
 	c.Check(l1.Messages[0].Attrs["attr2"], Equals, 4321)
 	c.Check(l1.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l1.Messages[0].Level, Equals, levelError)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_ERROR)
 
 	c.Assert(l2.Messages, HasLen, 1)
 	c.Check(l2.Messages[0].Message, Equals, "test 1234")
@@ -539,7 +539,7 @@ func (s *GomolSuite) TestBaseErrm(c *C) {
 	c.Check(l2.Messages[0].Attrs["attr1"], Equals, 1234)
 	c.Check(l2.Messages[0].Attrs["attr2"], Equals, 4321)
 	c.Check(l2.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l2.Messages[0].Level, Equals, levelError)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_ERROR)
 }
 
 func (s *GomolSuite) TestBaseFatal(c *C) {
@@ -558,12 +558,12 @@ func (s *GomolSuite) TestBaseFatal(c *C) {
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test")
 	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, levelFatal)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_FATAL)
 
 	c.Assert(l2.Messages, HasLen, 1)
 	c.Check(l2.Messages[0].Message, Equals, "test")
 	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, levelFatal)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_FATAL)
 }
 
 func (s *GomolSuite) TestBaseFatalf(c *C) {
@@ -582,12 +582,12 @@ func (s *GomolSuite) TestBaseFatalf(c *C) {
 	c.Assert(l1.Messages, HasLen, 1)
 	c.Check(l1.Messages[0].Message, Equals, "test 1234")
 	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, levelFatal)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_FATAL)
 
 	c.Assert(l2.Messages, HasLen, 1)
 	c.Check(l2.Messages[0].Message, Equals, "test 1234")
 	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, levelFatal)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_FATAL)
 }
 
 func (s *GomolSuite) TestBaseFatalm(c *C) {
@@ -616,7 +616,7 @@ func (s *GomolSuite) TestBaseFatalm(c *C) {
 	c.Check(l1.Messages[0].Attrs["attr1"], Equals, 1234)
 	c.Check(l1.Messages[0].Attrs["attr2"], Equals, 4321)
 	c.Check(l1.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l1.Messages[0].Level, Equals, levelFatal)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_FATAL)
 
 	c.Assert(l2.Messages, HasLen, 1)
 	c.Check(l2.Messages[0].Message, Equals, "test 1234")
@@ -624,7 +624,7 @@ func (s *GomolSuite) TestBaseFatalm(c *C) {
 	c.Check(l2.Messages[0].Attrs["attr1"], Equals, 1234)
 	c.Check(l2.Messages[0].Attrs["attr2"], Equals, 4321)
 	c.Check(l2.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l2.Messages[0].Level, Equals, levelFatal)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_FATAL)
 }
 
 func (s *GomolSuite) TestBaseOrdering(c *C) {
@@ -660,13 +660,13 @@ func (s *GomolSuite) TestBaseOrdering(c *C) {
 	c.Check(l1.Messages[0].Attrs["attr1"], Equals, 1234)
 	c.Check(l1.Messages[0].Attrs["attr2"], Equals, 4321)
 	c.Check(l1.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l1.Messages[0].Level, Equals, levelFatal)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_FATAL)
 	c.Check(l1.Messages[1].Message, Equals, "test 4321")
 	c.Assert(l1.Messages[1].Attrs, HasLen, 3)
 	c.Check(l1.Messages[1].Attrs["attr1"], Equals, 1234)
 	c.Check(l1.Messages[1].Attrs["attr4"], Equals, 4321)
 	c.Check(l1.Messages[1].Attrs["attr5"], Equals, "val3")
-	c.Check(l1.Messages[1].Level, Equals, levelFatal)
+	c.Check(l1.Messages[1].Level, Equals, LEVEL_FATAL)
 
 	c.Assert(l2.Messages, HasLen, 2)
 	c.Check(l2.Messages[0].Message, Equals, "test 1234")
@@ -674,11 +674,11 @@ func (s *GomolSuite) TestBaseOrdering(c *C) {
 	c.Check(l2.Messages[0].Attrs["attr1"], Equals, 1234)
 	c.Check(l2.Messages[0].Attrs["attr2"], Equals, 4321)
 	c.Check(l2.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l2.Messages[0].Level, Equals, levelFatal)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_FATAL)
 	c.Check(l2.Messages[1].Message, Equals, "test 4321")
 	c.Assert(l2.Messages[1].Attrs, HasLen, 3)
 	c.Check(l2.Messages[1].Attrs["attr1"], Equals, 1234)
 	c.Check(l2.Messages[1].Attrs["attr4"], Equals, 4321)
 	c.Check(l2.Messages[1].Attrs["attr5"], Equals, "val3")
-	c.Check(l2.Messages[1].Level, Equals, levelFatal)
+	c.Check(l2.Messages[1].Level, Equals, LEVEL_FATAL)
 }

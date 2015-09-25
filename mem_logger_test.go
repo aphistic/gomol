@@ -49,7 +49,7 @@ func (s *GomolSuite) TestMemDbg(c *C) {
 	ml := NewMemLogger()
 	ml.Dbg("test")
 	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, levelDbg)
+	c.Check(ml.Messages[0].Level, Equals, LEVEL_DEBUG)
 	c.Check(ml.Messages[0].Message, Equals, "test")
 	c.Check(ml.Messages[0].Attrs, HasLen, 0)
 }
@@ -58,7 +58,7 @@ func (s *GomolSuite) TestMemDbgf(c *C) {
 	ml := NewMemLogger()
 	ml.Dbgf("test %v", 1234)
 	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, levelDbg)
+	c.Check(ml.Messages[0].Level, Equals, LEVEL_DEBUG)
 	c.Check(ml.Messages[0].Message, Equals, "test 1234")
 	c.Check(ml.Messages[0].Attrs, HasLen, 0)
 }
@@ -71,7 +71,7 @@ func (s *GomolSuite) TestMemDbgm(c *C) {
 		},
 		"test %v", 1234)
 	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, levelDbg)
+	c.Check(ml.Messages[0].Level, Equals, LEVEL_DEBUG)
 	c.Check(ml.Messages[0].Message, Equals, "test 1234")
 	c.Assert(ml.Messages[0].Attrs, HasLen, 1)
 	c.Check(ml.Messages[0].Attrs["attr1"], Equals, 4321)
@@ -81,7 +81,7 @@ func (s *GomolSuite) TestMemInfo(c *C) {
 	ml := NewMemLogger()
 	ml.Info("test")
 	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, levelInfo)
+	c.Check(ml.Messages[0].Level, Equals, LEVEL_INFO)
 	c.Check(ml.Messages[0].Message, Equals, "test")
 	c.Check(ml.Messages[0].Attrs, HasLen, 0)
 }
@@ -90,7 +90,7 @@ func (s *GomolSuite) TestMemInfof(c *C) {
 	ml := NewMemLogger()
 	ml.Infof("test %v", 1234)
 	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, levelInfo)
+	c.Check(ml.Messages[0].Level, Equals, LEVEL_INFO)
 	c.Check(ml.Messages[0].Message, Equals, "test 1234")
 	c.Check(ml.Messages[0].Attrs, HasLen, 0)
 }
@@ -103,7 +103,7 @@ func (s *GomolSuite) TestMemInfom(c *C) {
 		},
 		"test %v", 1234)
 	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, levelInfo)
+	c.Check(ml.Messages[0].Level, Equals, LEVEL_INFO)
 	c.Check(ml.Messages[0].Message, Equals, "test 1234")
 	c.Assert(ml.Messages[0].Attrs, HasLen, 1)
 	c.Check(ml.Messages[0].Attrs["attr1"], Equals, 4321)
@@ -113,7 +113,7 @@ func (s *GomolSuite) TestMemWarn(c *C) {
 	ml := NewMemLogger()
 	ml.Warn("test")
 	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, levelWarn)
+	c.Check(ml.Messages[0].Level, Equals, LEVEL_WARNING)
 	c.Check(ml.Messages[0].Message, Equals, "test")
 	c.Check(ml.Messages[0].Attrs, HasLen, 0)
 }
@@ -122,7 +122,7 @@ func (s *GomolSuite) TestMemWarnf(c *C) {
 	ml := NewMemLogger()
 	ml.Warnf("test %v", 1234)
 	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, levelWarn)
+	c.Check(ml.Messages[0].Level, Equals, LEVEL_WARNING)
 	c.Check(ml.Messages[0].Message, Equals, "test 1234")
 	c.Check(ml.Messages[0].Attrs, HasLen, 0)
 }
@@ -135,7 +135,7 @@ func (s *GomolSuite) TestMemWarnm(c *C) {
 		},
 		"test %v", 1234)
 	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, levelWarn)
+	c.Check(ml.Messages[0].Level, Equals, LEVEL_WARNING)
 	c.Check(ml.Messages[0].Message, Equals, "test 1234")
 	c.Assert(ml.Messages[0].Attrs, HasLen, 1)
 	c.Check(ml.Messages[0].Attrs["attr1"], Equals, 4321)
@@ -145,7 +145,7 @@ func (s *GomolSuite) TestMemErr(c *C) {
 	ml := NewMemLogger()
 	ml.Err("test")
 	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, levelError)
+	c.Check(ml.Messages[0].Level, Equals, LEVEL_ERROR)
 	c.Check(ml.Messages[0].Message, Equals, "test")
 	c.Check(ml.Messages[0].Attrs, HasLen, 0)
 }
@@ -154,7 +154,7 @@ func (s *GomolSuite) TestMemErrf(c *C) {
 	ml := NewMemLogger()
 	ml.Errf("test %v", 1234)
 	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, levelError)
+	c.Check(ml.Messages[0].Level, Equals, LEVEL_ERROR)
 	c.Check(ml.Messages[0].Message, Equals, "test 1234")
 	c.Check(ml.Messages[0].Attrs, HasLen, 0)
 }
@@ -167,7 +167,7 @@ func (s *GomolSuite) TestMemErrm(c *C) {
 		},
 		"test %v", 1234)
 	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, levelError)
+	c.Check(ml.Messages[0].Level, Equals, LEVEL_ERROR)
 	c.Check(ml.Messages[0].Message, Equals, "test 1234")
 	c.Assert(ml.Messages[0].Attrs, HasLen, 1)
 	c.Check(ml.Messages[0].Attrs["attr1"], Equals, 4321)
@@ -177,7 +177,7 @@ func (s *GomolSuite) TestMemFatal(c *C) {
 	ml := NewMemLogger()
 	ml.Fatal("test")
 	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, levelFatal)
+	c.Check(ml.Messages[0].Level, Equals, LEVEL_FATAL)
 	c.Check(ml.Messages[0].Message, Equals, "test")
 	c.Check(ml.Messages[0].Attrs, HasLen, 0)
 }
@@ -186,7 +186,7 @@ func (s *GomolSuite) TestMemFatalf(c *C) {
 	ml := NewMemLogger()
 	ml.Fatalf("test %v", 1234)
 	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, levelFatal)
+	c.Check(ml.Messages[0].Level, Equals, LEVEL_FATAL)
 	c.Check(ml.Messages[0].Message, Equals, "test 1234")
 	c.Check(ml.Messages[0].Attrs, HasLen, 0)
 }
@@ -199,7 +199,7 @@ func (s *GomolSuite) TestMemFatalm(c *C) {
 		},
 		"test %v", 1234)
 	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, levelFatal)
+	c.Check(ml.Messages[0].Level, Equals, LEVEL_FATAL)
 	c.Check(ml.Messages[0].Message, Equals, "test 1234")
 	c.Assert(ml.Messages[0].Attrs, HasLen, 1)
 	c.Check(ml.Messages[0].Attrs["attr1"], Equals, 4321)
@@ -219,7 +219,7 @@ func (s *GomolSuite) TestMemBaseAttrs(c *C) {
 		},
 		"test %v", 1234)
 	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, levelDbg)
+	c.Check(ml.Messages[0].Level, Equals, LEVEL_DEBUG)
 	c.Check(ml.Messages[0].Message, Equals, "test 1234")
 	c.Assert(ml.Messages[0].Attrs, HasLen, 3)
 	c.Check(ml.Messages[0].Attrs["attr1"], Equals, 4321)

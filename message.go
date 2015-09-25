@@ -4,15 +4,26 @@ import (
 	"fmt"
 )
 
+type LogLevel int
+
+const (
+	LEVEL_DEBUG   LogLevel = 7
+	LEVEL_INFO    LogLevel = 6
+	LEVEL_WARNING LogLevel = 4
+	LEVEL_ERROR   LogLevel = 3
+	LEVEL_FATAL   LogLevel = 2
+	LEVEL_UNKNOWN LogLevel = -1
+)
+
 type message struct {
 	Base  *Base
-	Level int
+	Level LogLevel
 	Attrs map[string]interface{}
 	Msg   string
 }
 
 func newMessage(base *Base,
-	level int,
+	level LogLevel,
 	msgAttrs map[string]interface{},
 	format string, va ...interface{}) *message {
 

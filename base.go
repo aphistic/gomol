@@ -1,14 +1,5 @@
 package gomol
 
-const (
-	levelDbg     = 7
-	levelInfo    = 6
-	levelWarn    = 4
-	levelError   = 3
-	levelFatal   = 2
-	levelUnknown = -1
-)
-
 type Base struct {
 	isInitialized bool
 	queue         *queue
@@ -81,66 +72,66 @@ func (b *Base) RemoveAttr(key string) {
 }
 
 func (b *Base) Dbg(msg string) error {
-	nm := newMessage(b, levelDbg, nil, msg)
+	nm := newMessage(b, LEVEL_DEBUG, nil, msg)
 	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Dbgf(msg string, a ...interface{}) error {
-	nm := newMessage(b, levelDbg, nil, msg, a...)
+	nm := newMessage(b, LEVEL_DEBUG, nil, msg, a...)
 	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
-	nm := newMessage(b, levelDbg, m, msg, a...)
+	nm := newMessage(b, LEVEL_DEBUG, m, msg, a...)
 	return b.queue.QueueMessage(nm)
 }
 
 func (b *Base) Info(msg string) error {
-	nm := newMessage(b, levelInfo, nil, msg)
+	nm := newMessage(b, LEVEL_INFO, nil, msg)
 	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Infof(msg string, a ...interface{}) error {
-	nm := newMessage(b, levelInfo, nil, msg, a...)
+	nm := newMessage(b, LEVEL_INFO, nil, msg, a...)
 	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Infom(m map[string]interface{}, msg string, a ...interface{}) error {
-	nm := newMessage(b, levelInfo, m, msg, a...)
+	nm := newMessage(b, LEVEL_INFO, m, msg, a...)
 	return b.queue.QueueMessage(nm)
 }
 
 func (b *Base) Warn(msg string) error {
-	nm := newMessage(b, levelWarn, nil, msg)
+	nm := newMessage(b, LEVEL_WARNING, nil, msg)
 	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Warnf(msg string, a ...interface{}) error {
-	nm := newMessage(b, levelWarn, nil, msg, a...)
+	nm := newMessage(b, LEVEL_WARNING, nil, msg, a...)
 	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Warnm(m map[string]interface{}, msg string, a ...interface{}) error {
-	nm := newMessage(b, levelWarn, m, msg, a...)
+	nm := newMessage(b, LEVEL_WARNING, m, msg, a...)
 	return b.queue.QueueMessage(nm)
 }
 
 func (b *Base) Err(msg string) error {
-	nm := newMessage(b, levelError, nil, msg)
+	nm := newMessage(b, LEVEL_ERROR, nil, msg)
 	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Errf(msg string, a ...interface{}) error {
-	nm := newMessage(b, levelError, nil, msg, a...)
+	nm := newMessage(b, LEVEL_ERROR, nil, msg, a...)
 	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Errm(m map[string]interface{}, msg string, a ...interface{}) error {
-	nm := newMessage(b, levelError, m, msg, a...)
+	nm := newMessage(b, LEVEL_ERROR, m, msg, a...)
 	return b.queue.QueueMessage(nm)
 }
 
 func (b *Base) Fatal(msg string) error {
-	nm := newMessage(b, levelFatal, nil, msg)
+	nm := newMessage(b, LEVEL_FATAL, nil, msg)
 	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Fatalf(msg string, a ...interface{}) error {
-	nm := newMessage(b, levelFatal, nil, msg, a...)
+	nm := newMessage(b, LEVEL_FATAL, nil, msg, a...)
 	return b.queue.QueueMessage(nm)
 }
 func (b *Base) Fatalm(m map[string]interface{}, msg string, a ...interface{}) error {
-	nm := newMessage(b, levelFatal, m, msg, a...)
+	nm := newMessage(b, LEVEL_FATAL, m, msg, a...)
 	return b.queue.QueueMessage(nm)
 }

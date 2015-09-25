@@ -5,9 +5,9 @@ import (
 )
 
 func (s *GomolSuite) TestNewMessageAttrsNil(c *C) {
-	m := newMessage(curDefault, levelDbg, nil, "test")
+	m := newMessage(curDefault, LEVEL_DEBUG, nil, "test")
 	c.Check(m.Base, DeepEquals, curDefault)
-	c.Check(m.Level, Equals, levelDbg)
+	c.Check(m.Level, Equals, LEVEL_DEBUG)
 	c.Check(m.Attrs, NotNil)
 	c.Check(m.Attrs, HasLen, 0)
 	c.Check(m.Msg, Equals, "test")
@@ -19,9 +19,9 @@ func (s *GomolSuite) TestNewMessageMsgAttrsNil(c *C) {
 		"otherAttr": 4321,
 	}
 
-	m := newMessage(curDefault, levelDbg, ma, "test")
+	m := newMessage(curDefault, LEVEL_DEBUG, ma, "test")
 	c.Check(m.Base, DeepEquals, curDefault)
-	c.Check(m.Level, Equals, levelDbg)
+	c.Check(m.Level, Equals, LEVEL_DEBUG)
 	c.Check(m.Attrs, NotNil)
 	c.Check(m.Attrs, HasLen, 2)
 	c.Check(m.Attrs["msgAttr"], Equals, "strVal")
@@ -30,9 +30,9 @@ func (s *GomolSuite) TestNewMessageMsgAttrsNil(c *C) {
 }
 
 func (s *GomolSuite) TestNewMessageFormat(c *C) {
-	m := newMessage(curDefault, levelDbg, nil, "test %v %v", "str", 1234)
+	m := newMessage(curDefault, LEVEL_DEBUG, nil, "test %v %v", "str", 1234)
 	c.Check(m.Base, DeepEquals, curDefault)
-	c.Check(m.Level, Equals, levelDbg)
+	c.Check(m.Level, Equals, LEVEL_DEBUG)
 	c.Check(m.Attrs, NotNil)
 	c.Check(m.Attrs, HasLen, 0)
 	c.Check(m.Msg, Equals, "test str 1234")
@@ -44,9 +44,9 @@ func (s *GomolSuite) TestNewMessageFormatWithAttrs(c *C) {
 		"otherAttr": 4321,
 	}
 
-	m := newMessage(curDefault, levelDbg, ma, "test %v %v", "str", 1234)
+	m := newMessage(curDefault, LEVEL_DEBUG, ma, "test %v %v", "str", 1234)
 	c.Check(m.Base, DeepEquals, curDefault)
-	c.Check(m.Level, Equals, levelDbg)
+	c.Check(m.Level, Equals, LEVEL_DEBUG)
 	c.Check(m.Attrs, NotNil)
 	c.Check(m.Attrs, HasLen, 2)
 	c.Check(m.Attrs["msgAttr"], Equals, "strVal")
