@@ -42,7 +42,8 @@ import (
 )
 
 func main() {
-	gomol.AddLogger(gomol.NewConsoleLogger())
+	consoleCfg := gomol.NewConsoleLoggerConfig()
+	gomol.AddLogger(gomol.NewConsoleLogger(consoleCfg))
 	gomol.AddLogger(gomol.NewLogglyLogger("1234"))
 	gomol.AddLogger(gomol.NewGelfLogger("localhost", 12201))
 

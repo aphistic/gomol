@@ -6,9 +6,10 @@ import (
 )
 
 type GelfLogger struct {
-	base   *Base
-	client *golf.Client
-	logger *golf.Logger
+	base          *Base
+	client        *golf.Client
+	logger        *golf.Logger
+	isInitialized bool
 
 	Hostname string
 	Port     int
@@ -44,6 +45,10 @@ func (l *GelfLogger) SetBase(base *Base) {
 	l.base = base
 }
 
+func (l *GelfLogger) IsInitialized() bool {
+	return l.isInitialized
+}
+
 func (l *GelfLogger) InitLogger() error {
 	c, err := golf.NewClient()
 	if err != nil {
@@ -60,12 +65,19 @@ func (l *GelfLogger) InitLogger() error {
 
 	l.client = c
 	l.logger = nl
+	l.isInitialized = true
 
 	return nil
 }
 
 func (l *GelfLogger) ShutdownLogger() error {
-	return l.client.Close()
+	err := l.client.Close()
+	if err != nil {
+		return err
+	}
+
+	l.isInitialized = false
+	return nil
 }
 
 func (l *GelfLogger) Dbg(msg string) error {

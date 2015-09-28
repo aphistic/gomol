@@ -12,8 +12,9 @@ func init() {
 }
 
 type LogglyLogger struct {
-	base  *Base
-	Token string
+	base          *Base
+	isInitialized bool
+	Token         string
 }
 
 func NewLogglyLogger(token string) *LogglyLogger {
@@ -64,7 +65,12 @@ func (l *LogglyLogger) SetBase(base *Base) {
 	l.base = base
 }
 
+func (l *LogglyLogger) IsInitialized() bool {
+	return l.isInitialized
+}
+
 func (l *LogglyLogger) InitLogger() error {
+	l.isInitialized = true
 	return nil
 }
 
@@ -78,6 +84,8 @@ func (l *LogglyLogger) ShutdownLogger() error {
 
 		delete(logglyClients, l.Token)
 	}
+
+	l.isInitialized = false
 
 	return nil
 }
