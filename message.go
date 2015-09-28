@@ -1,7 +1,6 @@
 package gomol
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -18,10 +17,11 @@ const (
 )
 
 type message struct {
-	Base  *Base
-	Level LogLevel
-	Attrs map[string]interface{}
-	Msg   string
+	Base      *Base
+	Level     LogLevel
+	Attrs     map[string]interface{}
+	MsgFormat string
+	MsgParams []interface{}
 }
 
 func newMessage(base *Base,
@@ -30,10 +30,11 @@ func newMessage(base *Base,
 	format string, va ...interface{}) *message {
 
 	nm := &message{
-		Base:  base,
-		Level: level,
-		Attrs: make(map[string]interface{}, len(msgAttrs)),
-		Msg:   fmt.Sprintf(format, va...),
+		Base:      base,
+		Level:     level,
+		Attrs:     make(map[string]interface{}, len(msgAttrs)),
+		MsgFormat: format,
+		MsgParams: va,
 	}
 
 	for msgKey, msgVal := range msgAttrs {

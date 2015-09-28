@@ -10,7 +10,8 @@ func (s *GomolSuite) TestNewMessageAttrsNil(c *C) {
 	c.Check(m.Level, Equals, LEVEL_DEBUG)
 	c.Check(m.Attrs, NotNil)
 	c.Check(m.Attrs, HasLen, 0)
-	c.Check(m.Msg, Equals, "test")
+	c.Check(m.MsgFormat, Equals, "test")
+	c.Check(m.MsgParams, IsNil)
 }
 
 func (s *GomolSuite) TestNewMessageMsgAttrsNil(c *C) {
@@ -26,7 +27,8 @@ func (s *GomolSuite) TestNewMessageMsgAttrsNil(c *C) {
 	c.Check(m.Attrs, HasLen, 2)
 	c.Check(m.Attrs["msgAttr"], Equals, "strVal")
 	c.Check(m.Attrs["otherAttr"], Equals, 4321)
-	c.Check(m.Msg, Equals, "test")
+	c.Check(m.MsgFormat, Equals, "test")
+	c.Check(m.MsgParams, IsNil)
 }
 
 func (s *GomolSuite) TestNewMessageFormat(c *C) {
@@ -35,7 +37,11 @@ func (s *GomolSuite) TestNewMessageFormat(c *C) {
 	c.Check(m.Level, Equals, LEVEL_DEBUG)
 	c.Check(m.Attrs, NotNil)
 	c.Check(m.Attrs, HasLen, 0)
-	c.Check(m.Msg, Equals, "test str 1234")
+	c.Check(m.MsgFormat, Equals, "test %v %v")
+	c.Check(m.MsgParams, NotNil)
+	c.Check(m.MsgParams, HasLen, 2)
+	c.Check(m.MsgParams[0], Equals, "str")
+	c.Check(m.MsgParams[1], Equals, 1234)
 }
 
 func (s *GomolSuite) TestNewMessageFormatWithAttrs(c *C) {
@@ -51,7 +57,11 @@ func (s *GomolSuite) TestNewMessageFormatWithAttrs(c *C) {
 	c.Check(m.Attrs, HasLen, 2)
 	c.Check(m.Attrs["msgAttr"], Equals, "strVal")
 	c.Check(m.Attrs["otherAttr"], Equals, 4321)
-	c.Check(m.Msg, Equals, "test str 1234")
+	c.Check(m.MsgFormat, Equals, "test %v %v")
+	c.Check(m.MsgParams, NotNil)
+	c.Check(m.MsgParams, HasLen, 2)
+	c.Check(m.MsgParams[0], Equals, "str")
+	c.Check(m.MsgParams[1], Equals, 1234)
 }
 
 func (s *GomolSuite) TestMergeAttrsNil(c *C) {

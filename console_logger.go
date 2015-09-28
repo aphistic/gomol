@@ -5,15 +5,39 @@ import (
 	"github.com/mgutz/ansi"
 )
 
-type ConsoleLogger struct {
-	base          *Base
-	isInitialized bool
-	Colorize      bool
+type ConsoleLoggerConfig struct {
+	Colorize bool
 }
 
-func NewConsoleLogger() *ConsoleLogger {
-	l := &ConsoleLogger{
+type ConsoleLogger struct {
+	base   *Base
+	writer consoleWriter
+
+	isInitialized bool
+	config        *ConsoleLoggerConfig
+}
+type consoleWriter interface {
+	Print(msg string)
+}
+
+// TTY writer for logging to the actual console
+type ttyWriter struct {
+}
+
+func (w *ttyWriter) Print(msg string) {
+	fmt.Print(msg)
+}
+
+func NewConsoleLoggerConfig() *ConsoleLoggerConfig {
+	return &ConsoleLoggerConfig{
 		Colorize: true,
+	}
+}
+
+func NewConsoleLogger(config *ConsoleLoggerConfig) *ConsoleLogger {
+	l := &ConsoleLogger{
+		writer: &ttyWriter{},
+		config: config,
 	}
 	return l
 }
@@ -27,6 +51,10 @@ var printwarn = ansi.ColorFunc("yellow")
 var printerr = ansi.ColorFunc("red")
 var printfatal = ansi.ColorFunc("red+b")
 
+func (l *ConsoleLogger) setWriter(w consoleWriter) {
+	l.writer = w
+}
+
 func (l *ConsoleLogger) logf(level LogLevel, msg string, a ...interface{}) {
 	printlog := printclean
 	prefix := ""
@@ -34,34 +62,34 @@ func (l *ConsoleLogger) logf(level LogLevel, msg string, a ...interface{}) {
 	switch {
 	case level == LEVEL_DEBUG:
 		prefix = "[DEBUG]"
-		if l.Colorize {
+		if l.config.Colorize {
 			printlog = printdbg
 		}
 	case level == LEVEL_INFO:
 		prefix = "[INFO]"
-		if l.Colorize {
+		if l.config.Colorize {
 			printlog = printinfo
 		}
 	case level == LEVEL_WARNING:
 		prefix = "[WARN]"
-		if l.Colorize {
+		if l.config.Colorize {
 			printlog = printwarn
 		}
 	case level == LEVEL_ERROR:
 		prefix = "[ERROR]"
-		if l.Colorize {
+		if l.config.Colorize {
 			printlog = printerr
 		}
 	case level == LEVEL_FATAL:
 		prefix = "[FATAL]"
-		if l.Colorize {
+		if l.config.Colorize {
 			printlog = printfatal
 		}
 	}
 
 	formatted := fmt.Sprintf(prefix+" "+msg+"\n", a...)
 	out := printlog(formatted)
-	fmt.Print(out)
+	l.writer.Print(out)
 }
 
 func (l *ConsoleLogger) SetBase(base *Base) {

@@ -118,15 +118,15 @@ func (queue *queue) senderWorker(exiting bool) {
 			for _, l := range msg.Base.loggers {
 				switch msg.Level {
 				case LEVEL_DEBUG:
-					l.Dbgm(msg.Attrs, msg.Msg)
+					l.Dbgm(msg.Attrs, msg.MsgFormat, msg.MsgParams...)
 				case LEVEL_INFO:
-					l.Infom(msg.Attrs, msg.Msg)
+					l.Infom(msg.Attrs, msg.MsgFormat, msg.MsgParams...)
 				case LEVEL_WARNING:
-					l.Warnm(msg.Attrs, msg.Msg)
+					l.Warnm(msg.Attrs, msg.MsgFormat, msg.MsgParams...)
 				case LEVEL_ERROR:
-					l.Errm(msg.Attrs, msg.Msg)
+					l.Errm(msg.Attrs, msg.MsgFormat, msg.MsgParams...)
 				case LEVEL_FATAL:
-					l.Fatalm(msg.Attrs, msg.Msg)
+					l.Fatalm(msg.Attrs, msg.MsgFormat, msg.MsgParams...)
 				}
 			}
 		}

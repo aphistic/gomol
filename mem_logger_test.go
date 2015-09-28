@@ -4,14 +4,14 @@ import (
 	. "gopkg.in/check.v1"
 )
 
-func (s *GomolSuite) TestInitLogger(c *C) {
+func (s *GomolSuite) TestMemInitLogger(c *C) {
 	ml := NewMemLogger()
 	c.Check(ml.IsInitialized(), Equals, false)
 	ml.InitLogger()
 	c.Check(ml.IsInitialized(), Equals, true)
 }
 
-func (s *GomolSuite) TestInitLoggerFail(c *C) {
+func (s *GomolSuite) TestMemInitLoggerFail(c *C) {
 	ml := NewMemLoggerWithConfig(MemLoggerConfig{FailInit: true})
 	c.Check(ml.IsInitialized(), Equals, false)
 	err := ml.InitLogger()
@@ -20,14 +20,14 @@ func (s *GomolSuite) TestInitLoggerFail(c *C) {
 	c.Check(err.Error(), Equals, "Init failed")
 }
 
-func (s *GomolSuite) TestShutdownLogger(c *C) {
+func (s *GomolSuite) TestMemShutdownLogger(c *C) {
 	ml := NewMemLogger()
 	c.Check(ml.isShutdown, Equals, false)
 	ml.ShutdownLogger()
 	c.Check(ml.isShutdown, Equals, true)
 }
 
-func (s *GomolSuite) TestShutdownLoggerFail(c *C) {
+func (s *GomolSuite) TestMemShutdownLoggerFail(c *C) {
 	ml := NewMemLoggerWithConfig(MemLoggerConfig{FailShutdown: true})
 	c.Check(ml.isShutdown, Equals, false)
 	err := ml.ShutdownLogger()
@@ -36,7 +36,7 @@ func (s *GomolSuite) TestShutdownLoggerFail(c *C) {
 	c.Check(err.Error(), Equals, "Shutdown failed")
 }
 
-func (s *GomolSuite) TestClearMessages(c *C) {
+func (s *GomolSuite) TestMemClearMessages(c *C) {
 	ml := NewMemLogger()
 	c.Check(ml.Messages, HasLen, 0)
 	ml.Dbg("test")
