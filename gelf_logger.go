@@ -5,25 +5,46 @@ import (
 	"github.com/aphistic/golf"
 )
 
-type GelfLogger struct {
-	base          *Base
-	client        *golf.Client
-	logger        *golf.Logger
-	isInitialized bool
-
+type GelfLoggerConfig struct {
 	Hostname string
 	Port     int
 }
 
-func NewGelfLogger(hostname string, port int) *GelfLogger {
+func NewGelfLoggerConfig() *GelfLoggerConfig {
+	return &GelfLoggerConfig{
+		Hostname: "",
+		Port:     -1,
+	}
+}
+
+type gelfClient interface {
+	Close() error
+}
+
+type gelfClientLogger interface {
+	Dbgm(map[string]interface{}, string, ...interface{}) error
+	Infom(map[string]interface{}, string, ...interface{}) error
+	Warnm(map[string]interface{}, string, ...interface{}) error
+	Errm(map[string]interface{}, string, ...interface{}) error
+	Emergm(map[string]interface{}, string, ...interface{}) error
+}
+
+type GelfLogger struct {
+	base          *Base
+	client        gelfClient
+	logger        gelfClientLogger
+	isInitialized bool
+	config        *GelfLoggerConfig
+}
+
+func NewGelfLogger(config *GelfLoggerConfig) *GelfLogger {
 	l := &GelfLogger{
-		Hostname: hostname,
-		Port:     port,
+		config: config,
 	}
 	return l
 }
 
-func (l *GelfLogger) getLogger() *golf.Logger {
+func (l *GelfLogger) getLogger() gelfClientLogger {
 	return l.logger
 }
 
@@ -54,7 +75,7 @@ func (l *GelfLogger) InitLogger() error {
 	if err != nil {
 		return err
 	}
-	err = c.Dial(fmt.Sprintf("udp://%v:%v", l.Hostname, l.Port))
+	err = c.Dial(fmt.Sprintf("udp://%v:%v", l.config.Hostname, l.config.Port))
 	if err != nil {
 		return err
 	}

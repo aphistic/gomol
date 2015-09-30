@@ -5,8 +5,12 @@ import (
 )
 
 func (s *GomolSuite) TestGelfNew(c *C) {
-	l := NewGelfLogger("host", 1234)
+	cfg := NewGelfLoggerConfig()
+	cfg.Hostname = "host"
+	cfg.Port = 1234
+
+	l := NewGelfLogger(cfg)
 	c.Check(l, NotNil)
-	c.Check(l.Hostname, Equals, "host")
-	c.Check(l.Port, Equals, 1234)
+	c.Check(l.config.Hostname, Equals, "host")
+	c.Check(l.config.Port, Equals, 1234)
 }
