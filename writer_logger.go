@@ -3,7 +3,6 @@ package gomol
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"io"
 	"sync"
 )
@@ -28,6 +27,7 @@ type WriterLogger struct {
 	writeLock     sync.Mutex
 	buffer        []*message
 	bufWriter     *bufio.Writer
+	tpl           *Template
 	isInitialized bool
 }
 
@@ -45,11 +45,26 @@ func NewWriterLogger(w io.Writer, cfg *WriterLoggerConfig) (*WriterLogger, error
 		buffer:    make([]*message, 0),
 		bufWriter: bufio.NewWriter(w),
 	}
+	tpl, err := NewTemplate("[{{ucase .Level}}] {{.Message}}")
+	if err != nil {
+		return nil, err
+	}
+	l.SetTemplate(tpl)
+
 	return l, nil
 }
 
 func (l *WriterLogger) SetBase(base *Base) {
 	l.base = base
+}
+
+func (l *WriterLogger) SetTemplate(tpl *Template) error {
+	if tpl == nil {
+		return errors.New("A template must be provided")
+	}
+	l.tpl = tpl
+
+	return nil
 }
 
 func (l *WriterLogger) InitLogger() error {
@@ -85,24 +100,12 @@ func (l *WriterLogger) flushMessages() error {
 	}()
 
 	for _, sendMsg := range sendMsgs {
-		msgLevel := "UNKNOWN"
-		switch sendMsg.Level {
-		case LEVEL_DEBUG:
-			msgLevel = "DEBUG"
-		case LEVEL_INFO:
-			msgLevel = "INFO"
-		case LEVEL_WARNING:
-			msgLevel = "WARN"
-		case LEVEL_ERROR:
-			msgLevel = "ERROR"
-		case LEVEL_FATAL:
-			msgLevel = "FATAL"
+		out, err := l.tpl.executeInternalMsg(sendMsg)
+		if err != nil {
+			// Need to make a channel or something to send logging
+			// errors back to
 		}
-
-		msgLine := fmt.Sprintf("[%v] %v\n",
-			msgLevel,
-			fmt.Sprintf(sendMsg.MsgFormat, sendMsg.MsgParams...))
-		l.bufWriter.WriteString(msgLine)
+		l.bufWriter.WriteString(out + "\n")
 	}
 	l.bufWriter.Flush()
 

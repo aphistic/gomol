@@ -8,6 +8,20 @@ import (
 	"strings"
 )
 
+func (s *GomolSuite) TestWriterSetTemplate(c *C) {
+	var b bytes.Buffer
+	wl, err := NewWriterLogger(&b, nil)
+	c.Check(wl.tpl, NotNil)
+
+	err = wl.SetTemplate(nil)
+	c.Check(err, NotNil)
+
+	tpl, err := NewTemplate("")
+	c.Assert(err, IsNil)
+	err = wl.SetTemplate(tpl)
+	c.Check(err, IsNil)
+}
+
 func (s *GomolSuite) TestWriterInitLoggerNoWriter(c *C) {
 	wl, err := NewWriterLogger(nil, nil)
 	c.Assert(err, NotNil)
