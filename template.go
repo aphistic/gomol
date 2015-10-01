@@ -11,12 +11,6 @@ type Template struct {
 	tpl *template.Template
 }
 
-type TemplateMsg struct {
-	Level   string
-	Message string
-	Attrs   map[string]interface{}
-}
-
 func getFuncMap() template.FuncMap {
 	return template.FuncMap{
 		"title": strings.Title,
@@ -57,34 +51,50 @@ func (t *Template) Execute(msg *TemplateMsg) (string, error) {
 	return buf.String(), nil
 }
 
+type TemplateMsg struct {
+	level   string
+	message string
+	attrs   map[string]interface{}
+}
+
 func newTemplateMsg(msg *message) (*TemplateMsg, error) {
 	tplMsg := &TemplateMsg{
-		Attrs: make(map[string]interface{}, 0),
+		attrs: make(map[string]interface{}, 0),
 	}
-	tplMsg.Message = fmt.Sprintf(msg.MsgFormat, msg.MsgParams...)
+	tplMsg.message = fmt.Sprintf(msg.MsgFormat, msg.MsgParams...)
 	switch msg.Level {
 	case LEVEL_NONE:
-		tplMsg.Level = "none"
+		tplMsg.level = "none"
 	case LEVEL_DEBUG:
-		tplMsg.Level = "debug"
+		tplMsg.level = "debug"
 	case LEVEL_INFO:
-		tplMsg.Level = "info"
+		tplMsg.level = "info"
 	case LEVEL_WARNING:
-		tplMsg.Level = "warn"
+		tplMsg.level = "warn"
 	case LEVEL_ERROR:
-		tplMsg.Level = "error"
+		tplMsg.level = "error"
 	case LEVEL_FATAL:
-		tplMsg.Level = "fatal"
+		tplMsg.level = "fatal"
 	default:
-		tplMsg.Level = "unknown"
+		tplMsg.level = "unknown"
 	}
 	if msg.Base != nil {
 		for key, val := range msg.Base.BaseAttrs {
-			tplMsg.Attrs[key] = val
+			tplMsg.attrs[key] = val
 		}
 	}
 	for key, val := range msg.Attrs {
-		tplMsg.Attrs[key] = val
+		tplMsg.attrs[key] = val
 	}
 	return tplMsg, nil
+}
+
+func (tm *TemplateMsg) Level() string {
+	return tm.level
+}
+func (tm *TemplateMsg) Message() string {
+	return tm.message
+}
+func (tm *TemplateMsg) Attrs() map[string]interface{} {
+	return tm.attrs
 }
