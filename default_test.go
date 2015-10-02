@@ -31,6 +31,56 @@ func (s *GomolSuite) TestDefaultAddLogger(c *C) {
 	c.Check(curDefault.loggers, HasLen, 1)
 }
 
+func (s *GomolSuite) TestDefaultRemoveLogger(c *C) {
+	curDefault = newBase()
+
+	ml1 := NewMemLogger()
+	ml2 := NewMemLogger()
+	ml3 := NewMemLogger()
+	AddLogger(ml1)
+	AddLogger(ml2)
+	AddLogger(ml3)
+
+	InitLoggers()
+
+	c.Check(ml1.IsInitialized(), Equals, true)
+	c.Check(ml2.IsInitialized(), Equals, true)
+	c.Check(ml3.IsInitialized(), Equals, true)
+	c.Check(curDefault.loggers, HasLen, 3)
+
+	err := RemoveLogger(ml2)
+	c.Assert(err, IsNil)
+	c.Check(ml1.IsInitialized(), Equals, true)
+	c.Check(ml2.IsInitialized(), Equals, false)
+	c.Check(ml3.IsInitialized(), Equals, true)
+	c.Check(curDefault.loggers, HasLen, 2)
+}
+
+func (s *GomolSuite) TestDefaultClearLoggers(c *C) {
+	curDefault = newBase()
+
+	ml1 := NewMemLogger()
+	ml2 := NewMemLogger()
+	ml3 := NewMemLogger()
+	AddLogger(ml1)
+	AddLogger(ml2)
+	AddLogger(ml3)
+
+	InitLoggers()
+
+	c.Check(ml1.IsInitialized(), Equals, true)
+	c.Check(ml2.IsInitialized(), Equals, true)
+	c.Check(ml3.IsInitialized(), Equals, true)
+	c.Check(curDefault.loggers, HasLen, 3)
+
+	err := ClearLoggers()
+	c.Assert(err, IsNil)
+	c.Check(ml1.IsInitialized(), Equals, false)
+	c.Check(ml2.IsInitialized(), Equals, false)
+	c.Check(ml3.IsInitialized(), Equals, false)
+	c.Check(curDefault.loggers, HasLen, 0)
+}
+
 func (s *GomolSuite) TestDefaultSetLogLevel(c *C) {
 	curDefault = newBase()
 	InitLoggers()

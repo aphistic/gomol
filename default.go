@@ -13,6 +13,15 @@ func SetLogLevel(level LogLevel) {
 func AddLogger(logger Logger) {
 	curDefault.AddLogger(logger)
 }
+
+func RemoveLogger(logger Logger) error {
+	return curDefault.RemoveLogger(logger)
+}
+
+func ClearLoggers() error {
+	return curDefault.ClearLoggers()
+}
+
 func InitLoggers() error {
 	return curDefault.InitLoggers()
 }

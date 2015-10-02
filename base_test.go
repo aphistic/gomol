@@ -142,6 +142,56 @@ func (s *GomolSuite) TestAddLoggerAfterShutdownFail(c *C) {
 	c.Check(b.loggers, HasLen, 0)
 }
 
+func (s *GomolSuite) TestBaseRemoveLogger(c *C) {
+	b := newBase()
+
+	ml1 := NewMemLogger()
+	ml2 := NewMemLogger()
+	ml3 := NewMemLogger()
+	b.AddLogger(ml1)
+	b.AddLogger(ml2)
+	b.AddLogger(ml3)
+
+	b.InitLoggers()
+
+	c.Check(ml1.IsInitialized(), Equals, true)
+	c.Check(ml2.IsInitialized(), Equals, true)
+	c.Check(ml3.IsInitialized(), Equals, true)
+	c.Check(b.loggers, HasLen, 3)
+
+	err := b.RemoveLogger(ml2)
+	c.Assert(err, IsNil)
+	c.Check(ml1.IsInitialized(), Equals, true)
+	c.Check(ml2.IsInitialized(), Equals, false)
+	c.Check(ml3.IsInitialized(), Equals, true)
+	c.Check(b.loggers, HasLen, 2)
+}
+
+func (s *GomolSuite) TestBaseClearLoggers(c *C) {
+	b := newBase()
+
+	ml1 := NewMemLogger()
+	ml2 := NewMemLogger()
+	ml3 := NewMemLogger()
+	b.AddLogger(ml1)
+	b.AddLogger(ml2)
+	b.AddLogger(ml3)
+
+	b.InitLoggers()
+
+	c.Check(ml1.IsInitialized(), Equals, true)
+	c.Check(ml2.IsInitialized(), Equals, true)
+	c.Check(ml3.IsInitialized(), Equals, true)
+	c.Check(b.loggers, HasLen, 3)
+
+	err := b.ClearLoggers()
+	c.Assert(err, IsNil)
+	c.Check(ml1.IsInitialized(), Equals, false)
+	c.Check(ml2.IsInitialized(), Equals, false)
+	c.Check(ml3.IsInitialized(), Equals, false)
+	c.Check(b.loggers, HasLen, 0)
+}
+
 func (s *GomolSuite) TestInitLoggers(c *C) {
 	b := newBase()
 

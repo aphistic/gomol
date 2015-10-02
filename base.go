@@ -50,6 +50,18 @@ func (b *Base) AddLogger(logger Logger) error {
 	return nil
 }
 
+func (b *Base) ClearLoggers() error {
+	for _, logger := range b.loggers {
+		err := logger.ShutdownLogger()
+		if err != nil {
+			return err
+		}
+	}
+	b.loggers = make([]Logger, 0)
+
+	return nil
+}
+
 func (b *Base) InitLoggers() error {
 	for _, logger := range b.loggers {
 		err := logger.InitLogger()
@@ -61,6 +73,21 @@ func (b *Base) InitLoggers() error {
 	b.queue.startQueueWorkers()
 	b.isInitialized = true
 
+	return nil
+}
+func (b *Base) RemoveLogger(logger Logger) error {
+	for idx, rLogger := range b.loggers {
+		if rLogger == logger {
+			err := rLogger.ShutdownLogger()
+			if err != nil {
+				return err
+			}
+			b.loggers[idx] = b.loggers[len(b.loggers)-1]
+			b.loggers[len(b.loggers)-1] = nil
+			b.loggers = b.loggers[:len(b.loggers)-1]
+			return nil
+		}
+	}
 	return nil
 }
 func (b *Base) ShutdownLoggers() error {
