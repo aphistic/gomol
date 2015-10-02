@@ -17,6 +17,10 @@ const (
 	LEVEL_NONE    LogLevel = math.MinInt64
 )
 
+func (ll LogLevel) String() string {
+	return getLevelName(ll)
+}
+
 func getLevelName(level LogLevel) string {
 	switch level {
 	case LEVEL_NONE:

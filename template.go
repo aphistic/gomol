@@ -2,6 +2,7 @@ package gomol
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/mgutz/ansi"
 	"strings"
@@ -37,6 +38,13 @@ func tplColorNone() string {
 func tplColorReset() string {
 	return colorReset
 }
+func tplJson(data interface{}) (string, error) {
+	json, err := json.Marshal(data)
+	if err != nil {
+		return "", err
+	}
+	return string(json), nil
+}
 
 type Template struct {
 	tpls map[LogLevel]*template.Template
@@ -47,6 +55,7 @@ func getFuncMap(level LogLevel) template.FuncMap {
 		"title": strings.Title,
 		"lcase": strings.ToLower,
 		"ucase": strings.ToUpper,
+		"json":  tplJson,
 	}
 	fMap["reset"] = tplColorReset
 	switch level {
@@ -98,55 +107,43 @@ func (t *Template) executeInternalMsg(msg *message, colorize bool) (string, erro
 }
 
 func (t *Template) Execute(msg *TemplateMsg, colorize bool) (string, error) {
-	tplLevel := msg.level
+	tplLevel := msg.Level
 	if !colorize {
 		tplLevel = LEVEL_NONE
 	}
 	var buf bytes.Buffer
 	err := t.tpls[tplLevel].Execute(&buf, msg)
 	if err != nil {
-		return "", nil
+		fmt.Printf("err: %v", err)
+		return "", err
 	}
 
 	return buf.String(), nil
 }
 
 type TemplateMsg struct {
-	timestamp time.Time
-	level     LogLevel
-	levelStr  string
-	message   string
-	attrs     map[string]interface{}
+	Timestamp time.Time              `json:"timestamp"`
+	Level     LogLevel               `json:"level"`
+	LevelName string                 `json:"level_name"`
+	Message   string                 `json:"message"`
+	Attrs     map[string]interface{} `json:"attrs"`
 }
 
 func newTemplateMsg(msg *message) (*TemplateMsg, error) {
 	tplMsg := &TemplateMsg{
-		attrs: make(map[string]interface{}, 0),
+		Attrs: make(map[string]interface{}, 0),
 	}
-	tplMsg.timestamp = msg.Timestamp
-	tplMsg.message = fmt.Sprintf(msg.MsgFormat, msg.MsgParams...)
-	tplMsg.level = msg.Level
-	tplMsg.levelStr = getLevelName(msg.Level)
+	tplMsg.Timestamp = msg.Timestamp
+	tplMsg.Message = fmt.Sprintf(msg.MsgFormat, msg.MsgParams...)
+	tplMsg.Level = msg.Level
+	tplMsg.LevelName = getLevelName(msg.Level)
 	if msg.Base != nil {
 		for key, val := range msg.Base.BaseAttrs {
-			tplMsg.attrs[key] = val
+			tplMsg.Attrs[key] = val
 		}
 	}
 	for key, val := range msg.Attrs {
-		tplMsg.attrs[key] = val
+		tplMsg.Attrs[key] = val
 	}
 	return tplMsg, nil
-}
-
-func (tm *TemplateMsg) Timestamp() time.Time {
-	return tm.timestamp
-}
-func (tm *TemplateMsg) Level() string {
-	return tm.levelStr
-}
-func (tm *TemplateMsg) Message() string {
-	return tm.message
-}
-func (tm *TemplateMsg) Attrs() map[string]interface{} {
-	return tm.attrs
 }

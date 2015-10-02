@@ -70,7 +70,8 @@ func (s *GomolSuite) TestWriterWithConfig(c *C) {
 func (s *GomolSuite) TestWriterMultipleMessages(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
-	wl, _ := NewWriterLogger(&b, cfg)
+	wl, err := NewWriterLogger(&b, cfg)
+	c.Assert(err, IsNil)
 	wl.Dbgf("dbg 1234")
 	wl.Warnf("warn 4321")
 
@@ -83,7 +84,8 @@ func (s *GomolSuite) TestWriterFlushOnBufferSize(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
 	cfg.BufferSize = 2
-	wl, _ := NewWriterLogger(&b, cfg)
+	wl, err := NewWriterLogger(&b, cfg)
+	c.Assert(err, IsNil)
 
 	c.Check(wl.buffer, HasLen, 0)
 
@@ -123,7 +125,8 @@ func (s *GomolSuite) TestWriterToFile(c *C) {
 func (s *GomolSuite) TestWriterDbg(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
-	wl, _ := NewWriterLogger(&b, cfg)
+	wl, err := NewWriterLogger(&b, cfg)
+	c.Assert(err, IsNil)
 	wl.Dbg("test")
 
 	wl.flushMessages()
@@ -134,7 +137,8 @@ func (s *GomolSuite) TestWriterDbg(c *C) {
 func (s *GomolSuite) TestWriterDbgf(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
-	wl, _ := NewWriterLogger(&b, cfg)
+	wl, err := NewWriterLogger(&b, cfg)
+	c.Assert(err, IsNil)
 	wl.Dbgf("test %v", 1234)
 
 	wl.flushMessages()
@@ -145,7 +149,8 @@ func (s *GomolSuite) TestWriterDbgf(c *C) {
 func (s *GomolSuite) TestWriterDbgm(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
-	wl, _ := NewWriterLogger(&b, cfg)
+	wl, err := NewWriterLogger(&b, cfg)
+	c.Assert(err, IsNil)
 	wl.Dbgm(
 		map[string]interface{}{
 			"attr1": 4321,
@@ -160,7 +165,8 @@ func (s *GomolSuite) TestWriterDbgm(c *C) {
 func (s *GomolSuite) TestWriterInfo(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
-	wl, _ := NewWriterLogger(&b, cfg)
+	wl, err := NewWriterLogger(&b, cfg)
+	c.Assert(err, IsNil)
 	wl.Info("test")
 
 	wl.flushMessages()
@@ -171,7 +177,8 @@ func (s *GomolSuite) TestWriterInfo(c *C) {
 func (s *GomolSuite) TestWriterInfof(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
-	wl, _ := NewWriterLogger(&b, cfg)
+	wl, err := NewWriterLogger(&b, cfg)
+	c.Assert(err, IsNil)
 	wl.Infof("test %v", 1234)
 
 	wl.flushMessages()
@@ -182,7 +189,8 @@ func (s *GomolSuite) TestWriterInfof(c *C) {
 func (s *GomolSuite) TestWriterInfom(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
-	wl, _ := NewWriterLogger(&b, cfg)
+	wl, err := NewWriterLogger(&b, cfg)
+	c.Assert(err, IsNil)
 	wl.Infom(
 		map[string]interface{}{
 			"attr1": 4321,
@@ -197,7 +205,8 @@ func (s *GomolSuite) TestWriterInfom(c *C) {
 func (s *GomolSuite) TestWriterWarn(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
-	wl, _ := NewWriterLogger(&b, cfg)
+	wl, err := NewWriterLogger(&b, cfg)
+	c.Assert(err, IsNil)
 	wl.Warn("test")
 
 	wl.flushMessages()
@@ -208,7 +217,8 @@ func (s *GomolSuite) TestWriterWarn(c *C) {
 func (s *GomolSuite) TestWriterWarnf(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
-	wl, _ := NewWriterLogger(&b, cfg)
+	wl, err := NewWriterLogger(&b, cfg)
+	c.Assert(err, IsNil)
 	wl.Warnf("test %v", 1234)
 
 	wl.flushMessages()
@@ -219,7 +229,8 @@ func (s *GomolSuite) TestWriterWarnf(c *C) {
 func (s *GomolSuite) TestWriterWarnm(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
-	wl, _ := NewWriterLogger(&b, cfg)
+	wl, err := NewWriterLogger(&b, cfg)
+	c.Assert(err, IsNil)
 	wl.Warnm(
 		map[string]interface{}{
 			"attr1": 4321,
@@ -234,7 +245,8 @@ func (s *GomolSuite) TestWriterWarnm(c *C) {
 func (s *GomolSuite) TestWriterErr(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
-	wl, _ := NewWriterLogger(&b, cfg)
+	wl, err := NewWriterLogger(&b, cfg)
+	c.Assert(err, IsNil)
 	wl.Err("test")
 
 	wl.flushMessages()
@@ -245,7 +257,8 @@ func (s *GomolSuite) TestWriterErr(c *C) {
 func (s *GomolSuite) TestWriterErrf(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
-	wl, _ := NewWriterLogger(&b, cfg)
+	wl, err := NewWriterLogger(&b, cfg)
+	c.Assert(err, IsNil)
 	wl.Errf("test %v", 1234)
 
 	wl.flushMessages()
@@ -256,7 +269,8 @@ func (s *GomolSuite) TestWriterErrf(c *C) {
 func (s *GomolSuite) TestWriterErrm(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
-	wl, _ := NewWriterLogger(&b, cfg)
+	wl, err := NewWriterLogger(&b, cfg)
+	c.Assert(err, IsNil)
 	wl.Errm(
 		map[string]interface{}{
 			"attr1": 4321,
@@ -271,7 +285,8 @@ func (s *GomolSuite) TestWriterErrm(c *C) {
 func (s *GomolSuite) TestWriterFatal(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
-	wl, _ := NewWriterLogger(&b, cfg)
+	wl, err := NewWriterLogger(&b, cfg)
+	c.Assert(err, IsNil)
 	wl.Fatal("test")
 
 	wl.flushMessages()
@@ -282,10 +297,12 @@ func (s *GomolSuite) TestWriterFatal(c *C) {
 func (s *GomolSuite) TestWriterFatalf(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
-	wl, _ := NewWriterLogger(&b, cfg)
+	wl, err := NewWriterLogger(&b, cfg)
+	c.Assert(err, IsNil)
 	wl.Fatalf("test %v", 1234)
 
 	wl.flushMessages()
+	c.Assert(err, IsNil)
 
 	c.Check(b.String(), Equals, "[FATAL] test 1234\n")
 }
@@ -293,7 +310,8 @@ func (s *GomolSuite) TestWriterFatalf(c *C) {
 func (s *GomolSuite) TestWriterFatalm(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
-	wl, _ := NewWriterLogger(&b, cfg)
+	wl, err := NewWriterLogger(&b, cfg)
+	c.Assert(err, IsNil)
 	wl.Fatalm(
 		map[string]interface{}{
 			"attr1": 4321,

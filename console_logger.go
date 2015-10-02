@@ -40,7 +40,7 @@ func NewConsoleLogger(config *ConsoleLoggerConfig) (*ConsoleLogger, error) {
 		writer: &ttyWriter{},
 		config: config,
 	}
-	tpl, err := NewTemplate("[{{color}}{{ucase .Level}}{{reset}}] {{.Message}}")
+	tpl, err := NewTemplate("[{{color}}{{ucase .LevelName}}{{reset}}] {{.Message}}")
 	if err != nil {
 		return nil, err
 	}
