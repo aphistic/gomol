@@ -6,6 +6,7 @@ import (
 	"github.com/mgutz/ansi"
 	"strings"
 	"text/template"
+	"time"
 )
 
 var colorDbg = ansi.ColorCode("cyan")
@@ -111,16 +112,18 @@ func (t *Template) Execute(msg *TemplateMsg, colorize bool) (string, error) {
 }
 
 type TemplateMsg struct {
-	level    LogLevel
-	levelStr string
-	message  string
-	attrs    map[string]interface{}
+	timestamp time.Time
+	level     LogLevel
+	levelStr  string
+	message   string
+	attrs     map[string]interface{}
 }
 
 func newTemplateMsg(msg *message) (*TemplateMsg, error) {
 	tplMsg := &TemplateMsg{
 		attrs: make(map[string]interface{}, 0),
 	}
+	tplMsg.timestamp = msg.Timestamp
 	tplMsg.message = fmt.Sprintf(msg.MsgFormat, msg.MsgParams...)
 	tplMsg.level = msg.Level
 	tplMsg.levelStr = getLevelName(msg.Level)
@@ -135,6 +138,9 @@ func newTemplateMsg(msg *message) (*TemplateMsg, error) {
 	return tplMsg, nil
 }
 
+func (tm *TemplateMsg) Timestamp() time.Time {
+	return tm.timestamp
+}
 func (tm *TemplateMsg) Level() string {
 	return tm.levelStr
 }

@@ -2,6 +2,7 @@ package gomol
 
 import (
 	"math"
+	"time"
 )
 
 type LogLevel int
@@ -38,6 +39,7 @@ func getLevelName(level LogLevel) string {
 type message struct {
 	Base      *Base
 	Level     LogLevel
+	Timestamp time.Time
 	Attrs     map[string]interface{}
 	MsgFormat string
 	MsgParams []interface{}
@@ -51,6 +53,7 @@ func newMessage(base *Base,
 	nm := &message{
 		Base:      base,
 		Level:     level,
+		Timestamp: clock.Now(),
 		Attrs:     make(map[string]interface{}, len(msgAttrs)),
 		MsgFormat: format,
 		MsgParams: va,
