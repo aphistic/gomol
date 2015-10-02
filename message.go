@@ -16,6 +16,25 @@ const (
 	LEVEL_NONE    LogLevel = math.MinInt64
 )
 
+func getLevelName(level LogLevel) string {
+	switch level {
+	case LEVEL_NONE:
+		return "none"
+	case LEVEL_DEBUG:
+		return "debug"
+	case LEVEL_INFO:
+		return "info"
+	case LEVEL_WARNING:
+		return "warn"
+	case LEVEL_ERROR:
+		return "error"
+	case LEVEL_FATAL:
+		return "fatal"
+	default:
+		return "unknown"
+	}
+}
+
 type message struct {
 	Base      *Base
 	Level     LogLevel

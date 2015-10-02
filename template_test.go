@@ -9,7 +9,7 @@ func (s *GomolSuite) TestTplFuncsCase(c *C) {
 	tpl, err := NewTemplate("{{ucase .Level}} {{lcase .Message}} {{title .Level}}")
 	c.Assert(err, IsNil)
 
-	out, err := tpl.executeInternalMsg(msg)
+	out, err := tpl.executeInternalMsg(msg, false)
 	c.Assert(err, IsNil)
 
 	c.Check(out, Equals, "ERROR upper Error")
@@ -55,7 +55,7 @@ func (s *GomolSuite) TestTplMsgAttrs(c *C) {
 	tpl, err := NewTemplate("{{range $key, $val := .Attrs}}{{$key}}=={{$val}}\n{{end}}")
 	c.Assert(err, IsNil)
 
-	out, err := tpl.executeInternalMsg(msg)
+	out, err := tpl.executeInternalMsg(msg, false)
 	c.Assert(err, IsNil)
 
 	c.Check(out, Equals, "baseAttr==1234\nmsgAttr==4321\noverrideAttr==test\n")

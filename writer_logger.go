@@ -100,7 +100,10 @@ func (l *WriterLogger) flushMessages() error {
 	}()
 
 	for _, sendMsg := range sendMsgs {
-		out, err := l.tpl.executeInternalMsg(sendMsg)
+		// Use colors for this because if they use colors in their
+		// non-default template there's probably a reason.  This won't
+		// affect any templates that don't include colors
+		out, err := l.tpl.executeInternalMsg(sendMsg, true)
 		if err != nil {
 			// Need to make a channel or something to send logging
 			// errors back to

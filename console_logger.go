@@ -10,9 +10,9 @@ type ConsoleLoggerConfig struct {
 }
 
 type ConsoleLogger struct {
-	base   *Base
-	writer consoleWriter
-
+	base          *Base
+	writer        consoleWriter
+	tpl           *Template
 	isInitialized bool
 	config        *ConsoleLoggerConfig
 }
@@ -34,12 +34,17 @@ func NewConsoleLoggerConfig() *ConsoleLoggerConfig {
 	}
 }
 
-func NewConsoleLogger(config *ConsoleLoggerConfig) *ConsoleLogger {
+func NewConsoleLogger(config *ConsoleLoggerConfig) (*ConsoleLogger, error) {
 	l := &ConsoleLogger{
 		writer: &ttyWriter{},
 		config: config,
 	}
-	return l
+	tpl, err := NewTemplate("[{{color}}{{ucase .Level}}{{reset}}] {{.Message}}")
+	if err != nil {
+		return nil, err
+	}
+	l.tpl = tpl
+	return l, nil
 }
 
 var printclean = func(msg string) string {
@@ -55,41 +60,14 @@ func (l *ConsoleLogger) setWriter(w consoleWriter) {
 	l.writer = w
 }
 
-func (l *ConsoleLogger) logf(level LogLevel, msg string, a ...interface{}) {
-	printlog := printclean
-	prefix := ""
-
-	switch {
-	case level == LEVEL_DEBUG:
-		prefix = "[DEBUG]"
-		if l.config.Colorize {
-			printlog = printdbg
-		}
-	case level == LEVEL_INFO:
-		prefix = "[INFO]"
-		if l.config.Colorize {
-			printlog = printinfo
-		}
-	case level == LEVEL_WARNING:
-		prefix = "[WARN]"
-		if l.config.Colorize {
-			printlog = printwarn
-		}
-	case level == LEVEL_ERROR:
-		prefix = "[ERROR]"
-		if l.config.Colorize {
-			printlog = printerr
-		}
-	case level == LEVEL_FATAL:
-		prefix = "[FATAL]"
-		if l.config.Colorize {
-			printlog = printfatal
-		}
+func (l *ConsoleLogger) logf(level LogLevel, attrs map[string]interface{}, format string, a ...interface{}) error {
+	msg := newMessage(l.base, level, attrs, format, a...)
+	out, err := l.tpl.executeInternalMsg(msg, l.config.Colorize)
+	if err != nil {
+		return err
 	}
-
-	formatted := fmt.Sprintf(prefix+" "+msg+"\n", a...)
-	out := printlog(formatted)
-	l.writer.Print(out)
+	l.writer.Print(out + "\n")
+	return nil
 }
 
 func (l *ConsoleLogger) SetBase(base *Base) {
@@ -110,66 +88,66 @@ func (l *ConsoleLogger) ShutdownLogger() error {
 }
 
 func (l *ConsoleLogger) Dbg(msg string) error {
-	l.logf(LEVEL_DEBUG, msg)
+	l.logf(LEVEL_DEBUG, nil, msg)
 	return nil
 }
 func (l *ConsoleLogger) Dbgf(msg string, a ...interface{}) error {
-	l.logf(LEVEL_DEBUG, msg, a...)
+	l.logf(LEVEL_DEBUG, nil, msg, a...)
 	return nil
 }
 func (l *ConsoleLogger) Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
-	l.logf(LEVEL_DEBUG, msg, a...)
+	l.logf(LEVEL_DEBUG, m, msg, a...)
 	return nil
 }
 
 func (l *ConsoleLogger) Info(msg string) error {
-	l.logf(LEVEL_INFO, msg)
+	l.logf(LEVEL_INFO, nil, msg)
 	return nil
 }
 func (l *ConsoleLogger) Infof(msg string, a ...interface{}) error {
-	l.logf(LEVEL_INFO, msg, a...)
+	l.logf(LEVEL_INFO, nil, msg, a...)
 	return nil
 }
 func (l *ConsoleLogger) Infom(m map[string]interface{}, msg string, a ...interface{}) error {
-	l.logf(LEVEL_INFO, msg, a...)
+	l.logf(LEVEL_INFO, m, msg, a...)
 	return nil
 }
 
 func (l *ConsoleLogger) Warn(msg string) error {
-	l.logf(LEVEL_WARNING, msg)
+	l.logf(LEVEL_WARNING, nil, msg)
 	return nil
 }
 func (l *ConsoleLogger) Warnf(msg string, a ...interface{}) error {
-	l.logf(LEVEL_WARNING, msg, a...)
+	l.logf(LEVEL_WARNING, nil, msg, a...)
 	return nil
 }
 func (l *ConsoleLogger) Warnm(m map[string]interface{}, msg string, a ...interface{}) error {
-	l.logf(LEVEL_WARNING, msg, a...)
+	l.logf(LEVEL_WARNING, m, msg, a...)
 	return nil
 }
 
 func (l *ConsoleLogger) Err(msg string) error {
-	l.logf(LEVEL_ERROR, msg)
+	l.logf(LEVEL_ERROR, nil, msg)
 	return nil
 }
 func (l *ConsoleLogger) Errf(msg string, a ...interface{}) error {
-	l.logf(LEVEL_ERROR, msg, a...)
+	l.logf(LEVEL_ERROR, nil, msg, a...)
 	return nil
 }
 func (l *ConsoleLogger) Errm(m map[string]interface{}, msg string, a ...interface{}) error {
-	l.logf(LEVEL_ERROR, msg, a...)
+	l.logf(LEVEL_ERROR, m, msg, a...)
 	return nil
 }
 
 func (l *ConsoleLogger) Fatal(msg string) error {
-	l.logf(LEVEL_FATAL, msg)
+	l.logf(LEVEL_FATAL, nil, msg)
 	return nil
 }
 func (l *ConsoleLogger) Fatalf(msg string, a ...interface{}) error {
-	l.logf(LEVEL_FATAL, msg, a...)
+	l.logf(LEVEL_FATAL, nil, msg, a...)
 	return nil
 }
 func (l *ConsoleLogger) Fatalm(m map[string]interface{}, msg string, a ...interface{}) error {
-	l.logf(LEVEL_FATAL, msg, a...)
+	l.logf(LEVEL_FATAL, m, msg, a...)
 	return nil
 }

@@ -38,7 +38,8 @@ func (s *GomolSuite) TestIssue5StringFormatting(c *C) {
 
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
-	l := NewConsoleLogger(cfg)
+	l, err := NewConsoleLogger(cfg)
+	c.Assert(err, IsNil)
 	w := newTestConsoleWriter()
 	l.setWriter(w)
 	b.AddLogger(l)
@@ -54,24 +55,35 @@ func (s *GomolSuite) TestIssue5StringFormatting(c *C) {
 // General tests
 
 func (s *GomolSuite) TestConsoleInitLogger(c *C) {
-	cl := NewConsoleLogger(nil)
+	cl, err := NewConsoleLogger(nil)
+	c.Assert(err, IsNil)
 	c.Check(cl.IsInitialized(), Equals, false)
 	cl.InitLogger()
 	c.Check(cl.IsInitialized(), Equals, true)
 }
 
 func (s *GomolSuite) TestConsoleShutdownLogger(c *C) {
-	cl := NewConsoleLogger(nil)
+	cl, _ := NewConsoleLogger(nil)
 	cl.InitLogger()
 	c.Check(cl.IsInitialized(), Equals, true)
 	cl.ShutdownLogger()
 	c.Check(cl.IsInitialized(), Equals, false)
 }
 
+func (s *GomolSuite) TestConsoleColorDbg(c *C) {
+	cfg := NewConsoleLoggerConfig()
+	cl, _ := NewConsoleLogger(cfg)
+	w := newTestConsoleWriter()
+	cl.setWriter(w)
+	cl.Dbg("test")
+	c.Assert(w.Output, HasLen, 1)
+	c.Check(w.Output[0], Equals, "[\x1b[36mDEBUG\x1b[39m] test\n")
+}
+
 func (s *GomolSuite) TestConsoleDbg(c *C) {
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
-	cl := NewConsoleLogger(cfg)
+	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
 	cl.Dbg("test")
@@ -82,7 +94,7 @@ func (s *GomolSuite) TestConsoleDbg(c *C) {
 func (s *GomolSuite) TestConsoleDbgf(c *C) {
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
-	cl := NewConsoleLogger(cfg)
+	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
 	cl.Dbgf("test %v", 1234)
@@ -93,7 +105,7 @@ func (s *GomolSuite) TestConsoleDbgf(c *C) {
 func (s *GomolSuite) TestConsoleDbgm(c *C) {
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
-	cl := NewConsoleLogger(cfg)
+	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
 	cl.Dbgm(
@@ -105,10 +117,20 @@ func (s *GomolSuite) TestConsoleDbgm(c *C) {
 	c.Check(w.Output[0], Equals, "[DEBUG] test 1234\n")
 }
 
+func (s *GomolSuite) TestConsoleColorInfo(c *C) {
+	cfg := NewConsoleLoggerConfig()
+	cl, _ := NewConsoleLogger(cfg)
+	w := newTestConsoleWriter()
+	cl.setWriter(w)
+	cl.Info("test")
+	c.Assert(w.Output, HasLen, 1)
+	c.Check(w.Output[0], Equals, "[\x1b[32mINFO\x1b[39m] test\n")
+}
+
 func (s *GomolSuite) TestConsoleInfo(c *C) {
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
-	cl := NewConsoleLogger(cfg)
+	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
 	cl.Info("test")
@@ -119,7 +141,7 @@ func (s *GomolSuite) TestConsoleInfo(c *C) {
 func (s *GomolSuite) TestConsoleInfof(c *C) {
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
-	cl := NewConsoleLogger(cfg)
+	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
 	cl.Infof("test %v", 1234)
@@ -130,7 +152,7 @@ func (s *GomolSuite) TestConsoleInfof(c *C) {
 func (s *GomolSuite) TestConsoleInfom(c *C) {
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
-	cl := NewConsoleLogger(cfg)
+	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
 	cl.Infom(
@@ -142,10 +164,20 @@ func (s *GomolSuite) TestConsoleInfom(c *C) {
 	c.Check(w.Output[0], Equals, "[INFO] test 1234\n")
 }
 
+func (s *GomolSuite) TestConsoleColorWarn(c *C) {
+	cfg := NewConsoleLoggerConfig()
+	cl, _ := NewConsoleLogger(cfg)
+	w := newTestConsoleWriter()
+	cl.setWriter(w)
+	cl.Warn("test")
+	c.Assert(w.Output, HasLen, 1)
+	c.Check(w.Output[0], Equals, "[\x1b[33mWARN\x1b[39m] test\n")
+}
+
 func (s *GomolSuite) TestConsoleWarn(c *C) {
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
-	cl := NewConsoleLogger(cfg)
+	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
 	cl.Warn("test")
@@ -156,7 +188,7 @@ func (s *GomolSuite) TestConsoleWarn(c *C) {
 func (s *GomolSuite) TestConsoleWarnf(c *C) {
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
-	cl := NewConsoleLogger(cfg)
+	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
 	cl.Warnf("test %v", 1234)
@@ -167,7 +199,7 @@ func (s *GomolSuite) TestConsoleWarnf(c *C) {
 func (s *GomolSuite) TestConsoleWarnm(c *C) {
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
-	cl := NewConsoleLogger(cfg)
+	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
 	cl.Warnm(
@@ -179,10 +211,20 @@ func (s *GomolSuite) TestConsoleWarnm(c *C) {
 	c.Check(w.Output[0], Equals, "[WARN] test 1234\n")
 }
 
+func (s *GomolSuite) TestConsoleColorErr(c *C) {
+	cfg := NewConsoleLoggerConfig()
+	cl, _ := NewConsoleLogger(cfg)
+	w := newTestConsoleWriter()
+	cl.setWriter(w)
+	cl.Err("test")
+	c.Assert(w.Output, HasLen, 1)
+	c.Check(w.Output[0], Equals, "[\x1b[31mERROR\x1b[39m] test\n")
+}
+
 func (s *GomolSuite) TestConsoleErr(c *C) {
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
-	cl := NewConsoleLogger(cfg)
+	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
 	cl.Err("test")
@@ -193,7 +235,7 @@ func (s *GomolSuite) TestConsoleErr(c *C) {
 func (s *GomolSuite) TestConsoleErrf(c *C) {
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
-	cl := NewConsoleLogger(cfg)
+	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
 	cl.Errf("test %v", 1234)
@@ -204,7 +246,7 @@ func (s *GomolSuite) TestConsoleErrf(c *C) {
 func (s *GomolSuite) TestConsoleErrm(c *C) {
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
-	cl := NewConsoleLogger(cfg)
+	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
 	cl.Errm(
@@ -216,10 +258,20 @@ func (s *GomolSuite) TestConsoleErrm(c *C) {
 	c.Check(w.Output[0], Equals, "[ERROR] test 1234\n")
 }
 
+func (s *GomolSuite) TestConsoleColorFatal(c *C) {
+	cfg := NewConsoleLoggerConfig()
+	cl, _ := NewConsoleLogger(cfg)
+	w := newTestConsoleWriter()
+	cl.setWriter(w)
+	cl.Fatal("test")
+	c.Assert(w.Output, HasLen, 1)
+	c.Check(w.Output[0], Equals, "[\x1b[1;31mFATAL\x1b[39m] test\n")
+}
+
 func (s *GomolSuite) TestConsoleFatal(c *C) {
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
-	cl := NewConsoleLogger(cfg)
+	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
 	cl.Fatal("test")
@@ -230,7 +282,7 @@ func (s *GomolSuite) TestConsoleFatal(c *C) {
 func (s *GomolSuite) TestConsoleFatalf(c *C) {
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
-	cl := NewConsoleLogger(cfg)
+	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
 	cl.Fatalf("test %v", 1234)
@@ -241,7 +293,7 @@ func (s *GomolSuite) TestConsoleFatalf(c *C) {
 func (s *GomolSuite) TestConsoleFatalm(c *C) {
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
-	cl := NewConsoleLogger(cfg)
+	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
 	cl.Fatalm(
@@ -260,7 +312,7 @@ func (s *GomolSuite) TestConsoleBaseAttrs(c *C) {
 
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
-	cl := NewConsoleLogger(cfg)
+	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
 	b.AddLogger(cl)

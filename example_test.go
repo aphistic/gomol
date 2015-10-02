@@ -7,7 +7,8 @@ import (
 // Code for the README example to make sure it still builds!
 func ExampleCode() {
 	consoleCfg := gomol.NewConsoleLoggerConfig()
-	gomol.AddLogger(gomol.NewConsoleLogger(consoleCfg))
+	consoleLogger, _ := gomol.NewConsoleLogger(consoleCfg)
+	gomol.AddLogger(consoleLogger)
 	gomol.AddLogger(gomol.NewLogglyLogger("1234"))
 	gelfCfg := gomol.NewGelfLoggerConfig()
 	gelfCfg.Hostname = "localhost"

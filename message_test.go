@@ -4,6 +4,16 @@ import (
 	. "gopkg.in/check.v1"
 )
 
+func (s *GomolSuite) TestLevelGetName(c *C) {
+	c.Check(getLevelName(LEVEL_DEBUG), Equals, "debug")
+	c.Check(getLevelName(LEVEL_INFO), Equals, "info")
+	c.Check(getLevelName(LEVEL_WARNING), Equals, "warn")
+	c.Check(getLevelName(LEVEL_ERROR), Equals, "error")
+	c.Check(getLevelName(LEVEL_FATAL), Equals, "fatal")
+	c.Check(getLevelName(LEVEL_NONE), Equals, "none")
+	c.Check(getLevelName(LEVEL_UNKNOWN), Equals, "unknown")
+}
+
 func (s *GomolSuite) TestNewMessageAttrsNil(c *C) {
 	m := newMessage(curDefault, LEVEL_DEBUG, nil, "test")
 	c.Check(m.Base, DeepEquals, curDefault)
