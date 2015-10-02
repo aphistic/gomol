@@ -54,6 +54,19 @@ func (s *GomolSuite) TestIssue5StringFormatting(c *C) {
 
 // General tests
 
+func (s *GomolSuite) TestConsoleSetTemplate(c *C) {
+	cl, err := NewConsoleLogger(nil)
+	c.Check(cl.tpl, NotNil)
+
+	err = cl.SetTemplate(nil)
+	c.Check(err, NotNil)
+
+	tpl, err := NewTemplate("")
+	c.Assert(err, IsNil)
+	err = cl.SetTemplate(tpl)
+	c.Check(err, IsNil)
+}
+
 func (s *GomolSuite) TestConsoleInitLogger(c *C) {
 	cl, err := NewConsoleLogger(nil)
 	c.Assert(err, IsNil)

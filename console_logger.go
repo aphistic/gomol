@@ -1,6 +1,7 @@
 package gomol
 
 import (
+	"errors"
 	"fmt"
 	"github.com/mgutz/ansi"
 )
@@ -72,6 +73,15 @@ func (l *ConsoleLogger) logf(level LogLevel, attrs map[string]interface{}, forma
 
 func (l *ConsoleLogger) SetBase(base *Base) {
 	l.base = base
+}
+
+func (l *ConsoleLogger) SetTemplate(tpl *Template) error {
+	if tpl == nil {
+		return errors.New("A template must be provided")
+	}
+	l.tpl = tpl
+
+	return nil
 }
 
 func (l *ConsoleLogger) InitLogger() error {
