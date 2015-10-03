@@ -105,7 +105,7 @@ func (s *GomolSuite) TestTplJson(c *C) {
 	err = json.Unmarshal([]byte(out), dataOut)
 	c.Assert(err, IsNil)
 
-	c.Check(dataOut.Timestamp, DeepEquals, msg.Timestamp)
+	c.Check(dataOut.Timestamp.UnixNano(), Equals, msg.Timestamp.UnixNano())
 	c.Check(dataOut.Level, Equals, tplMsg.Level)
 	c.Check(dataOut.LevelName, Equals, tplMsg.LevelName)
 	c.Check(dataOut.Message, Equals, tplMsg.Message)
