@@ -100,7 +100,6 @@ func (s *GomolSuite) TestTplJson(c *C) {
 	// Unmarshal from json and check that because on Travis the timezone is different
 	// and I don't want to create a new version of time.Time to marshal the value
 	// differently
-	c.Check(out, Equals, "{\"timestamp\":\"2001-09-08T20:46:40.0000001-05:00\",\"level\":3,\"level_name\":\"error\",\"message\":\"message\",\"attrs\":{\"attr1\":\"val1\",\"attr2\":1234}}")
 	dataOut := &TemplateMsg{}
 	err = json.Unmarshal([]byte(out), dataOut)
 	c.Assert(err, IsNil)
