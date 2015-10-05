@@ -22,6 +22,10 @@ func ClearLoggers() error {
 	return curDefault.ClearLoggers()
 }
 
+func IsInitialized() bool {
+	return curDefault.IsInitialized()
+}
+
 func InitLoggers() error {
 	return curDefault.InitLoggers()
 }

@@ -82,7 +82,7 @@ func (s *GomolSuite) TestAddLogger(c *C) {
 	c.Check(ml.base, IsNil)
 
 	b.AddLogger(ml)
-	c.Check(b.isInitialized, Equals, true)
+	c.Check(b.IsInitialized(), Equals, true)
 	c.Assert(b.loggers, HasLen, 1)
 	c.Check(b.loggers[0].IsInitialized(), Equals, true)
 	c.Check(ml.base, Equals, b)
@@ -194,6 +194,7 @@ func (s *GomolSuite) TestBaseClearLoggers(c *C) {
 
 func (s *GomolSuite) TestInitLoggers(c *C) {
 	b := newBase()
+	c.Check(b.IsInitialized(), Equals, false)
 
 	ml1 := NewMemLogger()
 	ml2 := NewMemLogger()
@@ -203,7 +204,7 @@ func (s *GomolSuite) TestInitLoggers(c *C) {
 
 	b.InitLoggers()
 
-	c.Check(b.isInitialized, Equals, true)
+	c.Check(b.IsInitialized(), Equals, true)
 	c.Check(ml1.IsInitialized(), Equals, true)
 	c.Check(ml2.IsInitialized(), Equals, true)
 }
@@ -221,7 +222,7 @@ func (s *GomolSuite) TestInitLoggersFail(c *C) {
 	c.Check(err, NotNil)
 	c.Check(err.Error(), Equals, "Init failed")
 
-	c.Check(b.isInitialized, Equals, false)
+	c.Check(b.IsInitialized(), Equals, false)
 	c.Check(ml1.IsInitialized(), Equals, false)
 	c.Check(ml2.IsInitialized(), Equals, false)
 }

@@ -34,12 +34,12 @@ func (b *Base) shouldLog(level LogLevel) bool {
 }
 
 func (b *Base) AddLogger(logger Logger) error {
-	if b.isInitialized && !logger.IsInitialized() {
+	if b.IsInitialized() && !logger.IsInitialized() {
 		err := logger.InitLogger()
 		if err != nil {
 			return err
 		}
-	} else if !b.isInitialized && logger.IsInitialized() {
+	} else if !b.IsInitialized() && logger.IsInitialized() {
 		err := logger.ShutdownLogger()
 		if err != nil {
 			return err
@@ -60,6 +60,10 @@ func (b *Base) ClearLoggers() error {
 	b.loggers = make([]Logger, 0)
 
 	return nil
+}
+
+func (b *Base) IsInitialized() bool {
+	return b.isInitialized
 }
 
 func (b *Base) InitLoggers() error {

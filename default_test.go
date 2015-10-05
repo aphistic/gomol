@@ -6,22 +6,27 @@ import (
 
 func (s *GomolSuite) TestDefaultInitLogger(c *C) {
 	curDefault = newBase()
-	curDefault.AddLogger(NewMemLogger())
+	c.Check(IsInitialized(), Equals, false)
+	AddLogger(NewMemLogger())
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Check(defLogger.IsInitialized(), Equals, false)
 	InitLoggers()
+	c.Check(IsInitialized(), Equals, true)
 	c.Check(defLogger.IsInitialized(), Equals, true)
-	curDefault.ShutdownLoggers()
+	ShutdownLoggers()
 }
 
 func (s *GomolSuite) TestDefaultShutdownLogger(c *C) {
 	curDefault = newBase()
-	curDefault.AddLogger(NewMemLogger())
-	curDefault.InitLoggers()
+	c.Check(IsInitialized(), Equals, false)
+	AddLogger(NewMemLogger())
+	InitLoggers()
+	c.Check(IsInitialized(), Equals, true)
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Check(defLogger.isShutdown, Equals, false)
 	ShutdownLoggers()
 	c.Check(defLogger.isShutdown, Equals, true)
+	c.Check(IsInitialized(), Equals, false)
 }
 
 func (s *GomolSuite) TestDefaultAddLogger(c *C) {
