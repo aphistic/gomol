@@ -6,6 +6,17 @@ import (
 	"time"
 )
 
+func (s *GomolSuite) TestTplColors(c *C) {
+	msg := newMessage(nil, LEVEL_FATAL, nil, "colors!")
+	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
+	c.Assert(err, IsNil)
+
+	out, err := tpl.executeInternalMsg(msg, true)
+	c.Assert(err, IsNil)
+
+	c.Check(out, Equals, "\x1b[1;31mhascolor\x1b[0m colors!")
+}
+
 func (s *GomolSuite) TestTplFuncsCase(c *C) {
 	msg := newMessage(nil, LEVEL_ERROR, nil, "UPPER")
 	tpl, err := NewTemplate("{{ucase .LevelName}} {{lcase .Message}} {{title .LevelName}}")

@@ -90,7 +90,7 @@ func (s *GomolSuite) TestConsoleColorDbg(c *C) {
 	cl.setWriter(w)
 	cl.Dbg("test")
 	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[\x1b[36mDEBUG\x1b[39m] test\n")
+	c.Check(w.Output[0], Equals, "[\x1b[36mDEBUG\x1b[0m] test\n")
 }
 
 func (s *GomolSuite) TestConsoleDbg(c *C) {
@@ -137,7 +137,7 @@ func (s *GomolSuite) TestConsoleColorInfo(c *C) {
 	cl.setWriter(w)
 	cl.Info("test")
 	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[\x1b[32mINFO\x1b[39m] test\n")
+	c.Check(w.Output[0], Equals, "[\x1b[32mINFO\x1b[0m] test\n")
 }
 
 func (s *GomolSuite) TestConsoleInfo(c *C) {
@@ -184,7 +184,7 @@ func (s *GomolSuite) TestConsoleColorWarn(c *C) {
 	cl.setWriter(w)
 	cl.Warn("test")
 	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[\x1b[33mWARN\x1b[39m] test\n")
+	c.Check(w.Output[0], Equals, "[\x1b[33mWARN\x1b[0m] test\n")
 }
 
 func (s *GomolSuite) TestConsoleWarn(c *C) {
@@ -231,7 +231,7 @@ func (s *GomolSuite) TestConsoleColorErr(c *C) {
 	cl.setWriter(w)
 	cl.Err("test")
 	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[\x1b[31mERROR\x1b[39m] test\n")
+	c.Check(w.Output[0], Equals, "[\x1b[31mERROR\x1b[0m] test\n")
 }
 
 func (s *GomolSuite) TestConsoleErr(c *C) {
@@ -278,7 +278,7 @@ func (s *GomolSuite) TestConsoleColorFatal(c *C) {
 	cl.setWriter(w)
 	cl.Fatal("test")
 	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[\x1b[1;31mFATAL\x1b[39m] test\n")
+	c.Check(w.Output[0], Equals, "[\x1b[1;31mFATAL\x1b[0m] test\n")
 }
 
 func (s *GomolSuite) TestConsoleFatal(c *C) {

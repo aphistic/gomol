@@ -15,7 +15,7 @@ var colorInfo = ansi.ColorCode("green")
 var colorWarn = ansi.ColorCode("yellow")
 var colorErr = ansi.ColorCode("red")
 var colorFatal = ansi.ColorCode("red+b")
-var colorReset = ansi.ColorCode("default")
+var colorReset = ansi.ColorCode("reset")
 
 func tplColorDebug() string {
 	return colorDbg
