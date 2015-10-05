@@ -1,6 +1,7 @@
 package gomol
 
 import (
+	"encoding/json"
 	. "gopkg.in/check.v1"
 	"time"
 )
@@ -90,10 +91,26 @@ func (s *GomolSuite) TestTplJson(c *C) {
 	tpl, err := NewTemplate("{{ json . }}")
 	c.Assert(err, IsNil)
 
-	out, err := tpl.executeInternalMsg(msg, false)
+	tplMsg, err := newTemplateMsg(msg)
 	c.Assert(err, IsNil)
 
-	c.Check(out, Equals, "{\"timestamp\":\"2001-09-08T20:46:40.0000001-05:00\",\"level\":3,\"level_name\":\"error\",\"message\":\"message\",\"attrs\":{\"attr1\":\"val1\",\"attr2\":1234}}")
+	out, err := tpl.Execute(tplMsg, false)
+	c.Assert(err, IsNil)
+
+	// Unmarshal from json and check that because on Travis the timezone is different
+	// and I don't want to create a new version of time.Time to marshal the value
+	// differently
+	dataOut := &TemplateMsg{}
+	err = json.Unmarshal([]byte(out), dataOut)
+	c.Assert(err, IsNil)
+
+	c.Check(dataOut.Timestamp.UnixNano(), Equals, msg.Timestamp.UnixNano())
+	c.Check(dataOut.Level, Equals, tplMsg.Level)
+	c.Check(dataOut.LevelName, Equals, tplMsg.LevelName)
+	c.Check(dataOut.Message, Equals, tplMsg.Message)
+	c.Check(dataOut.Attrs, HasLen, 2)
+	c.Check(dataOut.Attrs["attr1"], Equals, "val1")
+	c.Check(dataOut.Attrs["attr2"], Equals, float64(1234))
 
 	tpl, err = NewTemplate("{{ json .Attrs }}")
 	c.Assert(err, IsNil)
