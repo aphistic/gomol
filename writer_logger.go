@@ -3,7 +3,6 @@ package gomol
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"io"
 	"sync"
 )
@@ -100,10 +99,6 @@ func (l *WriterLogger) flushMessages() error {
 		return retBuf
 	}()
 
-	if len(sendMsgs) == 0 {
-		fmt.Print("No messages\n")
-	}
-
 	for _, sendMsg := range sendMsgs {
 		// Use colors for this because if they use colors in their
 		// non-default template there's probably a reason.  This won't
@@ -112,7 +107,6 @@ func (l *WriterLogger) flushMessages() error {
 		if err != nil {
 			// Need to make a channel or something to send logging
 			// errors back to
-			fmt.Printf("error logging: %v\n", err)
 		}
 		l.bufWriter.WriteString(out + "\n")
 	}
