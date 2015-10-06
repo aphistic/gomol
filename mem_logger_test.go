@@ -4,40 +4,52 @@ import (
 	. "gopkg.in/check.v1"
 )
 
+func newDefaultMemLogger() *MemLogger {
+	cfg := NewMemLoggerConfig()
+	l, _ := NewMemLogger(cfg)
+	return l
+}
+
 func (s *GomolSuite) TestMemInitLogger(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	c.Check(ml.IsInitialized(), Equals, false)
 	ml.InitLogger()
 	c.Check(ml.IsInitialized(), Equals, true)
 }
 
 func (s *GomolSuite) TestMemInitLoggerFail(c *C) {
-	ml := NewMemLoggerWithConfig(MemLoggerConfig{FailInit: true})
+	mlCfg := NewMemLoggerConfig()
+	mlCfg.FailInit = true
+	ml, err := NewMemLogger(mlCfg)
+	c.Check(err, IsNil)
 	c.Check(ml.IsInitialized(), Equals, false)
-	err := ml.InitLogger()
+	err = ml.InitLogger()
 	c.Check(ml.IsInitialized(), Equals, false)
 	c.Check(err, NotNil)
 	c.Check(err.Error(), Equals, "Init failed")
 }
 
 func (s *GomolSuite) TestMemShutdownLogger(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	c.Check(ml.isShutdown, Equals, false)
 	ml.ShutdownLogger()
 	c.Check(ml.isShutdown, Equals, true)
 }
 
 func (s *GomolSuite) TestMemShutdownLoggerFail(c *C) {
-	ml := NewMemLoggerWithConfig(MemLoggerConfig{FailShutdown: true})
+	mlCfg := NewMemLoggerConfig()
+	mlCfg.FailShutdown = true
+	ml, err := NewMemLogger(mlCfg)
+	c.Check(err, IsNil)
 	c.Check(ml.isShutdown, Equals, false)
-	err := ml.ShutdownLogger()
+	err = ml.ShutdownLogger()
 	c.Check(ml.isShutdown, Equals, false)
 	c.Check(err, NotNil)
 	c.Check(err.Error(), Equals, "Shutdown failed")
 }
 
 func (s *GomolSuite) TestMemClearMessages(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	c.Check(ml.Messages, HasLen, 0)
 	ml.Dbg("test")
 	c.Check(ml.Messages, HasLen, 1)
@@ -46,7 +58,7 @@ func (s *GomolSuite) TestMemClearMessages(c *C) {
 }
 
 func (s *GomolSuite) TestMemDbg(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	ml.Dbg("test")
 	c.Assert(ml.Messages, HasLen, 1)
 	c.Check(ml.Messages[0].Level, Equals, LEVEL_DEBUG)
@@ -55,7 +67,7 @@ func (s *GomolSuite) TestMemDbg(c *C) {
 }
 
 func (s *GomolSuite) TestMemDbgf(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	ml.Dbgf("test %v", 1234)
 	c.Assert(ml.Messages, HasLen, 1)
 	c.Check(ml.Messages[0].Level, Equals, LEVEL_DEBUG)
@@ -64,7 +76,7 @@ func (s *GomolSuite) TestMemDbgf(c *C) {
 }
 
 func (s *GomolSuite) TestMemDbgm(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	ml.Dbgm(
 		map[string]interface{}{
 			"attr1": 4321,
@@ -78,7 +90,7 @@ func (s *GomolSuite) TestMemDbgm(c *C) {
 }
 
 func (s *GomolSuite) TestMemInfo(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	ml.Info("test")
 	c.Assert(ml.Messages, HasLen, 1)
 	c.Check(ml.Messages[0].Level, Equals, LEVEL_INFO)
@@ -87,7 +99,7 @@ func (s *GomolSuite) TestMemInfo(c *C) {
 }
 
 func (s *GomolSuite) TestMemInfof(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	ml.Infof("test %v", 1234)
 	c.Assert(ml.Messages, HasLen, 1)
 	c.Check(ml.Messages[0].Level, Equals, LEVEL_INFO)
@@ -96,7 +108,7 @@ func (s *GomolSuite) TestMemInfof(c *C) {
 }
 
 func (s *GomolSuite) TestMemInfom(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	ml.Infom(
 		map[string]interface{}{
 			"attr1": 4321,
@@ -110,7 +122,7 @@ func (s *GomolSuite) TestMemInfom(c *C) {
 }
 
 func (s *GomolSuite) TestMemWarn(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	ml.Warn("test")
 	c.Assert(ml.Messages, HasLen, 1)
 	c.Check(ml.Messages[0].Level, Equals, LEVEL_WARNING)
@@ -119,7 +131,7 @@ func (s *GomolSuite) TestMemWarn(c *C) {
 }
 
 func (s *GomolSuite) TestMemWarnf(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	ml.Warnf("test %v", 1234)
 	c.Assert(ml.Messages, HasLen, 1)
 	c.Check(ml.Messages[0].Level, Equals, LEVEL_WARNING)
@@ -128,7 +140,7 @@ func (s *GomolSuite) TestMemWarnf(c *C) {
 }
 
 func (s *GomolSuite) TestMemWarnm(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	ml.Warnm(
 		map[string]interface{}{
 			"attr1": 4321,
@@ -142,7 +154,7 @@ func (s *GomolSuite) TestMemWarnm(c *C) {
 }
 
 func (s *GomolSuite) TestMemErr(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	ml.Err("test")
 	c.Assert(ml.Messages, HasLen, 1)
 	c.Check(ml.Messages[0].Level, Equals, LEVEL_ERROR)
@@ -151,7 +163,7 @@ func (s *GomolSuite) TestMemErr(c *C) {
 }
 
 func (s *GomolSuite) TestMemErrf(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	ml.Errf("test %v", 1234)
 	c.Assert(ml.Messages, HasLen, 1)
 	c.Check(ml.Messages[0].Level, Equals, LEVEL_ERROR)
@@ -160,7 +172,7 @@ func (s *GomolSuite) TestMemErrf(c *C) {
 }
 
 func (s *GomolSuite) TestMemErrm(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	ml.Errm(
 		map[string]interface{}{
 			"attr1": 4321,
@@ -174,7 +186,7 @@ func (s *GomolSuite) TestMemErrm(c *C) {
 }
 
 func (s *GomolSuite) TestMemFatal(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	ml.Fatal("test")
 	c.Assert(ml.Messages, HasLen, 1)
 	c.Check(ml.Messages[0].Level, Equals, LEVEL_FATAL)
@@ -183,7 +195,7 @@ func (s *GomolSuite) TestMemFatal(c *C) {
 }
 
 func (s *GomolSuite) TestMemFatalf(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	ml.Fatalf("test %v", 1234)
 	c.Assert(ml.Messages, HasLen, 1)
 	c.Check(ml.Messages[0].Level, Equals, LEVEL_FATAL)
@@ -192,7 +204,7 @@ func (s *GomolSuite) TestMemFatalf(c *C) {
 }
 
 func (s *GomolSuite) TestMemFatalm(c *C) {
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	ml.Fatalm(
 		map[string]interface{}{
 			"attr1": 4321,
@@ -210,7 +222,7 @@ func (s *GomolSuite) TestMemBaseAttrs(c *C) {
 	b.SetAttr("attr1", 7890)
 	b.SetAttr("attr2", "val2")
 
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	ml.Dbgm(
 		map[string]interface{}{

@@ -15,11 +15,11 @@ var testBase *Base
 
 func (s *GomolSuite) SetUpTest(c *C) {
 	testBase = newBase()
-	testBase.AddLogger(NewMemLogger())
+	testBase.AddLogger(newDefaultMemLogger())
 	testBase.InitLoggers()
 
 	curDefault = newBase()
-	curDefault.AddLogger(NewMemLogger())
+	curDefault.AddLogger(newDefaultMemLogger())
 	curDefault.InitLoggers()
 }
 
@@ -59,7 +59,7 @@ func (s *GomolSuite) TestShouldLog(c *C) {
 func (s *GomolSuite) TestSetLogLevel(c *C) {
 	b := newBase()
 	b.InitLoggers()
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 
 	b.SetLogLevel(LEVEL_WARNING)
@@ -77,7 +77,7 @@ func (s *GomolSuite) TestAddLogger(c *C) {
 	b.InitLoggers()
 	c.Check(b.loggers, HasLen, 0)
 
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	c.Check(ml.IsInitialized(), Equals, false)
 	c.Check(ml.base, IsNil)
 
@@ -92,7 +92,7 @@ func (s *GomolSuite) TestAddLoggerAfterInit(c *C) {
 	b := newBase()
 	b.InitLoggers()
 
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	c.Check(ml.IsInitialized(), Equals, false)
 
 	ret := b.AddLogger(ml)
@@ -103,7 +103,7 @@ func (s *GomolSuite) TestAddLoggerAfterInit(c *C) {
 func (s *GomolSuite) TestAddLoggerAfterShutdown(c *C) {
 	b := newBase()
 
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	c.Check(ml.IsInitialized(), Equals, false)
 	ml.InitLogger()
 	c.Check(ml.IsInitialized(), Equals, true)
@@ -117,7 +117,10 @@ func (s *GomolSuite) TestAddLoggerAfterInitFail(c *C) {
 	b := newBase()
 	b.InitLoggers()
 
-	ml := NewMemLoggerWithConfig(MemLoggerConfig{FailInit: true})
+	mlCfg := NewMemLoggerConfig()
+	mlCfg.FailInit = true
+	ml, err := NewMemLogger(mlCfg)
+	c.Check(err, IsNil)
 	c.Check(ml.IsInitialized(), Equals, false)
 
 	ret := b.AddLogger(ml)
@@ -130,7 +133,10 @@ func (s *GomolSuite) TestAddLoggerAfterInitFail(c *C) {
 func (s *GomolSuite) TestAddLoggerAfterShutdownFail(c *C) {
 	b := newBase()
 
-	ml := NewMemLoggerWithConfig(MemLoggerConfig{FailShutdown: true})
+	mlCfg := NewMemLoggerConfig()
+	mlCfg.FailShutdown = true
+	ml, err := NewMemLogger(mlCfg)
+	c.Check(err, IsNil)
 	c.Check(ml.IsInitialized(), Equals, false)
 	ml.InitLogger()
 	c.Check(ml.IsInitialized(), Equals, true)
@@ -145,9 +151,9 @@ func (s *GomolSuite) TestAddLoggerAfterShutdownFail(c *C) {
 func (s *GomolSuite) TestBaseRemoveLogger(c *C) {
 	b := newBase()
 
-	ml1 := NewMemLogger()
-	ml2 := NewMemLogger()
-	ml3 := NewMemLogger()
+	ml1 := newDefaultMemLogger()
+	ml2 := newDefaultMemLogger()
+	ml3 := newDefaultMemLogger()
 	b.AddLogger(ml1)
 	b.AddLogger(ml2)
 	b.AddLogger(ml3)
@@ -170,9 +176,9 @@ func (s *GomolSuite) TestBaseRemoveLogger(c *C) {
 func (s *GomolSuite) TestBaseClearLoggers(c *C) {
 	b := newBase()
 
-	ml1 := NewMemLogger()
-	ml2 := NewMemLogger()
-	ml3 := NewMemLogger()
+	ml1 := newDefaultMemLogger()
+	ml2 := newDefaultMemLogger()
+	ml3 := newDefaultMemLogger()
 	b.AddLogger(ml1)
 	b.AddLogger(ml2)
 	b.AddLogger(ml3)
@@ -196,8 +202,8 @@ func (s *GomolSuite) TestInitLoggers(c *C) {
 	b := newBase()
 	c.Check(b.IsInitialized(), Equals, false)
 
-	ml1 := NewMemLogger()
-	ml2 := NewMemLogger()
+	ml1 := newDefaultMemLogger()
+	ml2 := newDefaultMemLogger()
 
 	b.AddLogger(ml1)
 	b.AddLogger(ml2)
@@ -212,13 +218,17 @@ func (s *GomolSuite) TestInitLoggers(c *C) {
 func (s *GomolSuite) TestInitLoggersFail(c *C) {
 	b := newBase()
 
-	ml1 := NewMemLoggerWithConfig(MemLoggerConfig{FailInit: true})
-	ml2 := NewMemLoggerWithConfig(MemLoggerConfig{FailInit: true})
+	mlCfg := NewMemLoggerConfig()
+	mlCfg.FailInit = true
+	ml1, err := NewMemLogger(mlCfg)
+	c.Check(err, IsNil)
+	ml2, err := NewMemLogger(mlCfg)
+	c.Check(err, IsNil)
 
 	b.AddLogger(ml1)
 	b.AddLogger(ml2)
 
-	err := b.InitLoggers()
+	err = b.InitLoggers()
 	c.Check(err, NotNil)
 	c.Check(err.Error(), Equals, "Init failed")
 
@@ -230,8 +240,8 @@ func (s *GomolSuite) TestInitLoggersFail(c *C) {
 func (s *GomolSuite) TestShutdownLoggers(c *C) {
 	b := newBase()
 
-	ml1 := NewMemLogger()
-	ml2 := NewMemLogger()
+	ml1 := newDefaultMemLogger()
+	ml2 := newDefaultMemLogger()
 
 	b.AddLogger(ml1)
 	b.AddLogger(ml2)
@@ -246,14 +256,18 @@ func (s *GomolSuite) TestShutdownLoggers(c *C) {
 func (s *GomolSuite) TestShutdownLoggersFail(c *C) {
 	b := newBase()
 
-	ml1 := NewMemLoggerWithConfig(MemLoggerConfig{FailShutdown: true})
-	ml2 := NewMemLoggerWithConfig(MemLoggerConfig{FailShutdown: true})
+	mlCfg := NewMemLoggerConfig()
+	mlCfg.FailShutdown = true
+	ml1, err := NewMemLogger(mlCfg)
+	c.Check(err, IsNil)
+	ml2, err := NewMemLogger(mlCfg)
+	c.Check(err, IsNil)
 
 	b.AddLogger(ml1)
 	b.AddLogger(ml2)
 
 	b.InitLoggers()
-	err := b.ShutdownLoggers()
+	err = b.ShutdownLoggers()
 	c.Check(err, NotNil)
 	c.Check(err.Error(), Equals, "Shutdown failed")
 
@@ -299,8 +313,8 @@ func (s *GomolSuite) TestClearAttrs(c *C) {
 func (s *GomolSuite) TestBaseDbg(c *C) {
 	b := newBase()
 
-	l1 := NewMemLogger()
-	l2 := NewMemLogger()
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
 
 	b.AddLogger(l1)
 	b.AddLogger(l2)
@@ -323,8 +337,8 @@ func (s *GomolSuite) TestBaseDbg(c *C) {
 func (s *GomolSuite) TestBaseDbgf(c *C) {
 	b := newBase()
 
-	l1 := NewMemLogger()
-	l2 := NewMemLogger()
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
 
 	b.AddLogger(l1)
 	b.AddLogger(l2)
@@ -348,8 +362,8 @@ func (s *GomolSuite) TestBaseDbgm(c *C) {
 	b := newBase()
 	b.SetAttr("attr1", 1234)
 
-	l1 := NewMemLogger()
-	l2 := NewMemLogger()
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
 
 	b.AddLogger(l1)
 	b.AddLogger(l2)
@@ -384,8 +398,8 @@ func (s *GomolSuite) TestBaseDbgm(c *C) {
 func (s *GomolSuite) TestBaseInfo(c *C) {
 	b := newBase()
 
-	l1 := NewMemLogger()
-	l2 := NewMemLogger()
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
 
 	b.AddLogger(l1)
 	b.AddLogger(l2)
@@ -408,8 +422,8 @@ func (s *GomolSuite) TestBaseInfo(c *C) {
 func (s *GomolSuite) TestBaseInfof(c *C) {
 	b := newBase()
 
-	l1 := NewMemLogger()
-	l2 := NewMemLogger()
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
 
 	b.AddLogger(l1)
 	b.AddLogger(l2)
@@ -433,8 +447,8 @@ func (s *GomolSuite) TestBaseInfom(c *C) {
 	b := newBase()
 	b.SetAttr("attr1", 1234)
 
-	l1 := NewMemLogger()
-	l2 := NewMemLogger()
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
 
 	b.AddLogger(l1)
 	b.AddLogger(l2)
@@ -469,8 +483,8 @@ func (s *GomolSuite) TestBaseInfom(c *C) {
 func (s *GomolSuite) TestBaseWarn(c *C) {
 	b := newBase()
 
-	l1 := NewMemLogger()
-	l2 := NewMemLogger()
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
 
 	b.AddLogger(l1)
 	b.AddLogger(l2)
@@ -493,8 +507,8 @@ func (s *GomolSuite) TestBaseWarn(c *C) {
 func (s *GomolSuite) TestBaseWarnf(c *C) {
 	b := newBase()
 
-	l1 := NewMemLogger()
-	l2 := NewMemLogger()
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
 
 	b.AddLogger(l1)
 	b.AddLogger(l2)
@@ -518,8 +532,8 @@ func (s *GomolSuite) TestBaseWarnm(c *C) {
 	b := newBase()
 	b.SetAttr("attr1", 1234)
 
-	l1 := NewMemLogger()
-	l2 := NewMemLogger()
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
 
 	b.AddLogger(l1)
 	b.AddLogger(l2)
@@ -554,8 +568,8 @@ func (s *GomolSuite) TestBaseWarnm(c *C) {
 func (s *GomolSuite) TestBaseErr(c *C) {
 	b := newBase()
 
-	l1 := NewMemLogger()
-	l2 := NewMemLogger()
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
 
 	b.AddLogger(l1)
 	b.AddLogger(l2)
@@ -578,8 +592,8 @@ func (s *GomolSuite) TestBaseErr(c *C) {
 func (s *GomolSuite) TestBaseErrf(c *C) {
 	b := newBase()
 
-	l1 := NewMemLogger()
-	l2 := NewMemLogger()
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
 
 	b.AddLogger(l1)
 	b.AddLogger(l2)
@@ -603,8 +617,8 @@ func (s *GomolSuite) TestBaseErrm(c *C) {
 	b := newBase()
 	b.SetAttr("attr1", 1234)
 
-	l1 := NewMemLogger()
-	l2 := NewMemLogger()
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
 
 	b.AddLogger(l1)
 	b.AddLogger(l2)
@@ -639,8 +653,8 @@ func (s *GomolSuite) TestBaseErrm(c *C) {
 func (s *GomolSuite) TestBaseFatal(c *C) {
 	b := newBase()
 
-	l1 := NewMemLogger()
-	l2 := NewMemLogger()
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
 
 	b.AddLogger(l1)
 	b.AddLogger(l2)
@@ -663,8 +677,8 @@ func (s *GomolSuite) TestBaseFatal(c *C) {
 func (s *GomolSuite) TestBaseFatalf(c *C) {
 	b := newBase()
 
-	l1 := NewMemLogger()
-	l2 := NewMemLogger()
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
 
 	b.AddLogger(l1)
 	b.AddLogger(l2)
@@ -688,8 +702,8 @@ func (s *GomolSuite) TestBaseFatalm(c *C) {
 	b := newBase()
 	b.SetAttr("attr1", 1234)
 
-	l1 := NewMemLogger()
-	l2 := NewMemLogger()
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
 
 	b.AddLogger(l1)
 	b.AddLogger(l2)
@@ -725,8 +739,8 @@ func (s *GomolSuite) TestBaseOrdering(c *C) {
 	b := newBase()
 	b.SetAttr("attr1", 1234)
 
-	l1 := NewMemLogger()
-	l2 := NewMemLogger()
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
 
 	b.AddLogger(l1)
 	b.AddLogger(l2)

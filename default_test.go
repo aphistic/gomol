@@ -7,7 +7,7 @@ import (
 func (s *GomolSuite) TestDefaultInitLogger(c *C) {
 	curDefault = newBase()
 	c.Check(IsInitialized(), Equals, false)
-	AddLogger(NewMemLogger())
+	AddLogger(newDefaultMemLogger())
 	defLogger := curDefault.loggers[0].(*MemLogger)
 	c.Check(defLogger.IsInitialized(), Equals, false)
 	InitLoggers()
@@ -19,7 +19,7 @@ func (s *GomolSuite) TestDefaultInitLogger(c *C) {
 func (s *GomolSuite) TestDefaultShutdownLogger(c *C) {
 	curDefault = newBase()
 	c.Check(IsInitialized(), Equals, false)
-	AddLogger(NewMemLogger())
+	AddLogger(newDefaultMemLogger())
 	InitLoggers()
 	c.Check(IsInitialized(), Equals, true)
 	defLogger := curDefault.loggers[0].(*MemLogger)
@@ -32,16 +32,16 @@ func (s *GomolSuite) TestDefaultShutdownLogger(c *C) {
 func (s *GomolSuite) TestDefaultAddLogger(c *C) {
 	curDefault = newBase()
 	c.Check(curDefault.loggers, HasLen, 0)
-	AddLogger(NewMemLogger())
+	AddLogger(newDefaultMemLogger())
 	c.Check(curDefault.loggers, HasLen, 1)
 }
 
 func (s *GomolSuite) TestDefaultRemoveLogger(c *C) {
 	curDefault = newBase()
 
-	ml1 := NewMemLogger()
-	ml2 := NewMemLogger()
-	ml3 := NewMemLogger()
+	ml1 := newDefaultMemLogger()
+	ml2 := newDefaultMemLogger()
+	ml3 := newDefaultMemLogger()
 	AddLogger(ml1)
 	AddLogger(ml2)
 	AddLogger(ml3)
@@ -64,9 +64,9 @@ func (s *GomolSuite) TestDefaultRemoveLogger(c *C) {
 func (s *GomolSuite) TestDefaultClearLoggers(c *C) {
 	curDefault = newBase()
 
-	ml1 := NewMemLogger()
-	ml2 := NewMemLogger()
-	ml3 := NewMemLogger()
+	ml1 := newDefaultMemLogger()
+	ml2 := newDefaultMemLogger()
+	ml3 := newDefaultMemLogger()
 	AddLogger(ml1)
 	AddLogger(ml2)
 	AddLogger(ml3)
@@ -89,7 +89,7 @@ func (s *GomolSuite) TestDefaultClearLoggers(c *C) {
 func (s *GomolSuite) TestDefaultSetLogLevel(c *C) {
 	curDefault = newBase()
 	InitLoggers()
-	ml := NewMemLogger()
+	ml := newDefaultMemLogger()
 	AddLogger(ml)
 
 	SetLogLevel(LEVEL_WARNING)

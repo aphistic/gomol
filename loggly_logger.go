@@ -11,25 +11,33 @@ func init() {
 	logglyClients = make(map[string]*loggly.Client, 0)
 }
 
+type LogglyLoggerConfig struct {
+	Token string
+}
+
+func NewLogglyLoggerConfig() *LogglyLoggerConfig {
+	return &LogglyLoggerConfig{}
+}
+
 type LogglyLogger struct {
 	base          *Base
 	isInitialized bool
-	Token         string
+	config        *LogglyLoggerConfig
 }
 
-func NewLogglyLogger(token string) *LogglyLogger {
+func NewLogglyLogger(cfg *LogglyLoggerConfig) (*LogglyLogger, error) {
 	l := &LogglyLogger{
-		Token: token,
+		config: cfg,
 	}
-	return l
+	return l, nil
 }
 
 func (l *LogglyLogger) getClient() *loggly.Client {
-	c := logglyClients[l.Token]
+	c := logglyClients[l.config.Token]
 	if c == nil {
-		c = loggly.New(l.Token)
+		c = loggly.New(l.config.Token)
 		c.Level = loggly.DEBUG
-		logglyClients[l.Token] = c
+		logglyClients[l.config.Token] = c
 	}
 	return c
 }
@@ -75,14 +83,14 @@ func (l *LogglyLogger) InitLogger() error {
 }
 
 func (l *LogglyLogger) ShutdownLogger() error {
-	c := logglyClients[l.Token]
+	c := logglyClients[l.config.Token]
 	if c != nil {
 		err := c.Flush()
 		if err != nil {
 			return err
 		}
 
-		delete(logglyClients, l.Token)
+		delete(logglyClients, l.config.Token)
 	}
 
 	l.isInitialized = false

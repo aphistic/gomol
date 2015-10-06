@@ -10,9 +10,13 @@ type MemLoggerConfig struct {
 	FailShutdown bool
 }
 
+func NewMemLoggerConfig() *MemLoggerConfig {
+	return &MemLoggerConfig{}
+}
+
 type MemLogger struct {
 	base   *Base
-	config MemLoggerConfig
+	config *MemLoggerConfig
 
 	Messages []*MemMessage
 
@@ -26,19 +30,12 @@ type MemMessage struct {
 	Attrs   map[string]interface{}
 }
 
-func NewMemLogger() *MemLogger {
-	l := &MemLogger{
-		config:   MemLoggerConfig{},
-		Messages: make([]*MemMessage, 0),
-	}
-	return l
-}
-func NewMemLoggerWithConfig(config MemLoggerConfig) *MemLogger {
+func NewMemLogger(config *MemLoggerConfig) (*MemLogger, error) {
 	l := &MemLogger{
 		config:   config,
 		Messages: make([]*MemMessage, 0),
 	}
-	return l
+	return l, nil
 }
 
 func NewMemMessage() *MemMessage {
