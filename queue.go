@@ -7,15 +7,15 @@ import (
 
 type queue struct {
 	running      bool
-	queueCtl     chan int
-	senderCtl    chan int
+	queueCtl     chan bool
+	senderCtl    chan bool
 	workersStart sync.WaitGroup
 	workersDone  sync.WaitGroup
 
 	queueChan chan *message
 
 	queue        []*message
-	msgAddedChan chan int
+	msgAddedChan chan bool
 	queueMut     sync.Mutex
 }
 
@@ -23,10 +23,10 @@ func newQueue() *queue {
 	return &queue{
 		running:      false,
 		queueChan:    make(chan *message, 500),
-		queueCtl:     make(chan int, 1),
-		senderCtl:    make(chan int, 1),
+		queueCtl:     make(chan bool, 1),
+		senderCtl:    make(chan bool, 1),
 		queue:        make([]*message, 0),
-		msgAddedChan: make(chan int, 1),
+		msgAddedChan: make(chan bool, 1),
 	}
 }
 
@@ -45,7 +45,7 @@ func (queue *queue) startQueueWorkers() error {
 
 func (queue *queue) stopQueueWorkers() error {
 	if queue.running {
-		queue.queueCtl <- 1
+		queue.queueCtl <- true
 
 		queue.workersDone.Wait()
 		queue.running = false
@@ -74,7 +74,7 @@ func (queue *queue) queueWorker(exiting bool) {
 			queue.queueMut.Lock()
 			queue.queue = append(queue.queue, msg)
 			select {
-			case queue.msgAddedChan <- 1:
+			case queue.msgAddedChan <- true:
 			default:
 			}
 			queue.queueMut.Unlock()
@@ -83,7 +83,7 @@ func (queue *queue) queueWorker(exiting bool) {
 		}
 	}
 	queue.workersDone.Done()
-	queue.senderCtl <- 1
+	queue.senderCtl <- true
 }
 
 func (queue *queue) senderWorker(exiting bool) {
