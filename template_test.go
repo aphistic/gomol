@@ -6,6 +6,46 @@ import (
 	"time"
 )
 
+func (s *GomolSuite) TestNewTemplate(c *C) {
+	tpl, err := NewTemplate("{{bad template}")
+	c.Check(tpl, IsNil)
+	c.Check(err, NotNil)
+}
+
+func (s *GomolSuite) TestExecInternalMsg(c *C) {
+	tpl, err := NewTemplate("test")
+	c.Assert(err, IsNil)
+	c.Assert(tpl, NotNil)
+
+	data, err := tpl.executeInternalMsg(nil, false)
+	c.Check(data, Equals, "")
+	c.Check(err, NotNil)
+}
+
+func (s *GomolSuite) TestNewTemplateMsgError(c *C) {
+	tplMsg, err := newTemplateMsg(nil)
+	c.Check(tplMsg, IsNil)
+	c.Check(err, NotNil)
+}
+
+func (s *GomolSuite) TestTemplateExecuteError(c *C) {
+	clock = NewTestClock(time.Unix(1000000000, 100))
+
+	msg := newMessage(nil, LEVEL_ERROR, map[string]interface{}{
+		"attr1": "val1",
+		"attr2": 1234,
+	}, "message")
+	tpl, err := NewTemplate("{{ .ThisDoesNotExist }}")
+	c.Assert(err, IsNil)
+
+	tplMsg, err := newTemplateMsg(msg)
+	c.Assert(err, IsNil)
+
+	out, err := tpl.Execute(tplMsg, false)
+	c.Check(out, Equals, "")
+	c.Check(err, NotNil)
+}
+
 func (s *GomolSuite) TestTplColors(c *C) {
 	msg := newMessage(nil, LEVEL_FATAL, nil, "colors!")
 	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
@@ -130,4 +170,15 @@ func (s *GomolSuite) TestTplJson(c *C) {
 	c.Assert(err, IsNil)
 
 	c.Check(out, Equals, "{\"attr1\":\"val1\",\"attr2\":1234}")
+}
+
+type marshalTestStruct struct{}
+
+func (s *GomolSuite) TestTplJsonError(c *C) {
+	data, err := tplJson(map[string]interface{}{
+		"attr1": s.SetUpTest,
+		"attr2": s.TearDownTest,
+	})
+	c.Check(data, Equals, "")
+	c.Check(err, NotNil)
 }

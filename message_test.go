@@ -14,6 +14,16 @@ func (s *GomolSuite) TestLevelGetName(c *C) {
 	c.Check(getLevelName(LEVEL_UNKNOWN), Equals, "unknown")
 }
 
+func (s *GomolSuite) TestLevelString(c *C) {
+	c.Check(LEVEL_DEBUG.String(), Equals, "debug")
+	c.Check(LEVEL_INFO.String(), Equals, "info")
+	c.Check(LEVEL_WARNING.String(), Equals, "warn")
+	c.Check(LEVEL_ERROR.String(), Equals, "error")
+	c.Check(LEVEL_FATAL.String(), Equals, "fatal")
+	c.Check(LEVEL_NONE.String(), Equals, "none")
+	c.Check(LEVEL_UNKNOWN.String(), Equals, "unknown")
+}
+
 func (s *GomolSuite) TestNewMessageAttrsNil(c *C) {
 	m := newMessage(curDefault, LEVEL_DEBUG, nil, "test")
 	c.Check(m.Base, DeepEquals, curDefault)

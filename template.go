@@ -3,6 +3,7 @@ package gomol
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/mgutz/ansi"
 	"strings"
@@ -114,7 +115,6 @@ func (t *Template) Execute(msg *TemplateMsg, colorize bool) (string, error) {
 	var buf bytes.Buffer
 	err := t.tpls[tplLevel].Execute(&buf, msg)
 	if err != nil {
-		fmt.Printf("err: %v", err)
 		return "", err
 	}
 
@@ -130,6 +130,10 @@ type TemplateMsg struct {
 }
 
 func newTemplateMsg(msg *message) (*TemplateMsg, error) {
+	if msg == nil {
+		return nil, errors.New("msg cannot be nil")
+	}
+
 	tplMsg := &TemplateMsg{
 		Attrs: make(map[string]interface{}, 0),
 	}
