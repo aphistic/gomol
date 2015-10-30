@@ -1,5 +1,9 @@
 package gomol
 
+import (
+	"os"
+)
+
 type Base struct {
 	isInitialized bool
 	queue         *queue
@@ -16,6 +20,21 @@ func newBase() *Base {
 		BaseAttrs: make(map[string]interface{}, 0),
 	}
 	return b
+}
+
+type appExiter interface {
+	Exit(code int)
+}
+type osExiter struct{}
+
+func (exiter *osExiter) Exit(code int) {
+	os.Exit(code)
+}
+
+var curExiter appExiter = &osExiter{}
+
+func setExiter(exiter appExiter) {
+	curExiter = exiter
 }
 
 /*
@@ -175,4 +194,20 @@ func (b *Base) Fatalf(msg string, a ...interface{}) error {
 }
 func (b *Base) Fatalm(m map[string]interface{}, msg string, a ...interface{}) error {
 	return b.log(LEVEL_FATAL, m, msg, a...)
+}
+
+func (b *Base) Die(exitCode int, msg string) {
+	b.log(LEVEL_FATAL, nil, msg)
+	b.ShutdownLoggers()
+	curExiter.Exit(exitCode)
+}
+func (b *Base) Dief(exitCode int, msg string, a ...interface{}) {
+	b.log(LEVEL_FATAL, nil, msg, a...)
+	b.ShutdownLoggers()
+	curExiter.Exit(exitCode)
+}
+func (b *Base) Diem(exitCode int, m map[string]interface{}, msg string, a ...interface{}) {
+	b.log(LEVEL_FATAL, m, msg, a...)
+	b.ShutdownLoggers()
+	curExiter.Exit(exitCode)
 }

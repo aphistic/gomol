@@ -97,3 +97,13 @@ func Fatalf(msg string, a ...interface{}) error {
 func Fatalm(m map[string]interface{}, msg string, a ...interface{}) error {
 	return curDefault.Fatalm(m, msg, a...)
 }
+
+func Die(exitCode int, msg string) {
+	curDefault.Die(exitCode, msg)
+}
+func Dief(exitCode int, msg string, a ...interface{}) {
+	curDefault.Dief(exitCode, msg, a...)
+}
+func Diem(exitCode int, m map[string]interface{}, msg string, a ...interface{}) {
+	curDefault.Diem(exitCode, m, msg, a...)
+}

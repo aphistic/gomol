@@ -13,7 +13,22 @@ var _ = Suite(&GomolSuite{})
 
 var testBase *Base
 
+type testExiter struct {
+	exited bool
+	code   int
+}
+
+func (exiter *testExiter) Exit(code int) {
+	exiter.code = code
+	exiter.exited = true
+}
+
+var curTestExiter *testExiter
+
 func (s *GomolSuite) SetUpTest(c *C) {
+	curTestExiter = &testExiter{}
+	setExiter(curTestExiter)
+
 	testBase = newBase()
 	testBase.AddLogger(newDefaultMemLogger())
 	testBase.InitLoggers()
@@ -733,6 +748,102 @@ func (s *GomolSuite) TestBaseFatalm(c *C) {
 	c.Check(l2.Messages[0].Attrs["attr2"], Equals, 4321)
 	c.Check(l2.Messages[0].Attrs["attr3"], Equals, "val3")
 	c.Check(l2.Messages[0].Level, Equals, LEVEL_FATAL)
+}
+
+func (s *GomolSuite) TestBaseDie(c *C) {
+	b := newBase()
+
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
+
+	b.AddLogger(l1)
+	b.AddLogger(l2)
+
+	b.InitLoggers()
+	b.Die(1234, "test")
+
+	c.Assert(l1.Messages, HasLen, 1)
+	c.Check(l1.Messages[0].Message, Equals, "test")
+	c.Check(l1.Messages[0].Attrs, HasLen, 0)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_FATAL)
+
+	c.Assert(l2.Messages, HasLen, 1)
+	c.Check(l2.Messages[0].Message, Equals, "test")
+	c.Check(l2.Messages[0].Attrs, HasLen, 0)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_FATAL)
+
+	c.Check(b.isInitialized, Equals, false)
+	c.Check(curTestExiter.exited, Equals, true)
+	c.Check(curTestExiter.code, Equals, 1234)
+}
+
+func (s *GomolSuite) TestBaseDief(c *C) {
+	b := newBase()
+
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
+
+	b.AddLogger(l1)
+	b.AddLogger(l2)
+
+	b.InitLoggers()
+	b.Dief(1234, "test %v", 1234)
+
+	c.Assert(l1.Messages, HasLen, 1)
+	c.Check(l1.Messages[0].Message, Equals, "test 1234")
+	c.Check(l1.Messages[0].Attrs, HasLen, 0)
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_FATAL)
+
+	c.Assert(l2.Messages, HasLen, 1)
+	c.Check(l2.Messages[0].Message, Equals, "test 1234")
+	c.Check(l2.Messages[0].Attrs, HasLen, 0)
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_FATAL)
+
+	c.Check(b.isInitialized, Equals, false)
+	c.Check(curTestExiter.exited, Equals, true)
+	c.Check(curTestExiter.code, Equals, 1234)
+}
+
+func (s *GomolSuite) TestBaseDiem(c *C) {
+	b := newBase()
+	b.SetAttr("attr1", 1234)
+
+	l1 := newDefaultMemLogger()
+	l2 := newDefaultMemLogger()
+
+	b.AddLogger(l1)
+	b.AddLogger(l2)
+
+	b.InitLoggers()
+	b.Diem(
+		1234,
+		map[string]interface{}{
+			"attr2": 4321,
+			"attr3": "val3",
+		},
+		"test %v",
+		1234)
+	b.ShutdownLoggers()
+
+	c.Assert(l1.Messages, HasLen, 1)
+	c.Check(l1.Messages[0].Message, Equals, "test 1234")
+	c.Assert(l1.Messages[0].Attrs, HasLen, 3)
+	c.Check(l1.Messages[0].Attrs["attr1"], Equals, 1234)
+	c.Check(l1.Messages[0].Attrs["attr2"], Equals, 4321)
+	c.Check(l1.Messages[0].Attrs["attr3"], Equals, "val3")
+	c.Check(l1.Messages[0].Level, Equals, LEVEL_FATAL)
+
+	c.Assert(l2.Messages, HasLen, 1)
+	c.Check(l2.Messages[0].Message, Equals, "test 1234")
+	c.Assert(l2.Messages[0].Attrs, HasLen, 3)
+	c.Check(l2.Messages[0].Attrs["attr1"], Equals, 1234)
+	c.Check(l2.Messages[0].Attrs["attr2"], Equals, 4321)
+	c.Check(l2.Messages[0].Attrs["attr3"], Equals, "val3")
+	c.Check(l2.Messages[0].Level, Equals, LEVEL_FATAL)
+
+	c.Check(b.isInitialized, Equals, false)
+	c.Check(curTestExiter.exited, Equals, true)
+	c.Check(curTestExiter.code, Equals, 1234)
 }
 
 func (s *GomolSuite) TestBaseOrdering(c *C) {

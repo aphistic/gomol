@@ -307,3 +307,51 @@ func (s *GomolSuite) TestDefaultFatalm(c *C) {
 	c.Assert(defLogger.Messages[0].Attrs, HasLen, 1)
 	c.Check(defLogger.Messages[0].Attrs["attr1"], Equals, 4321)
 }
+
+func (s *GomolSuite) TestDefaultDie(c *C) {
+	Die(1234, "test")
+	curDefault.queue.stopQueueWorkers()
+	defLogger := curDefault.loggers[0].(*MemLogger)
+	c.Assert(defLogger.Messages, HasLen, 1)
+	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_FATAL)
+	c.Check(defLogger.Messages[0].Message, Equals, "test")
+	c.Check(defLogger.Messages[0].Attrs, HasLen, 0)
+
+	c.Check(curDefault.isInitialized, Equals, false)
+	c.Check(curTestExiter.exited, Equals, true)
+	c.Check(curTestExiter.code, Equals, 1234)
+}
+
+func (s *GomolSuite) TestDefaultDief(c *C) {
+	Dief(1234, "test %v", 1234)
+	curDefault.queue.stopQueueWorkers()
+	defLogger := curDefault.loggers[0].(*MemLogger)
+	c.Assert(defLogger.Messages, HasLen, 1)
+	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_FATAL)
+	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
+	c.Check(defLogger.Messages[0].Attrs, HasLen, 0)
+
+	c.Check(curDefault.isInitialized, Equals, false)
+	c.Check(curTestExiter.exited, Equals, true)
+	c.Check(curTestExiter.code, Equals, 1234)
+}
+
+func (s *GomolSuite) TestDefaultDiem(c *C) {
+	Diem(
+		1234,
+		map[string]interface{}{
+			"attr1": 4321,
+		},
+		"test %v", 1234)
+	curDefault.queue.stopQueueWorkers()
+	defLogger := curDefault.loggers[0].(*MemLogger)
+	c.Assert(defLogger.Messages, HasLen, 1)
+	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_FATAL)
+	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
+	c.Assert(defLogger.Messages[0].Attrs, HasLen, 1)
+	c.Check(defLogger.Messages[0].Attrs["attr1"], Equals, 4321)
+
+	c.Check(curDefault.isInitialized, Equals, false)
+	c.Check(curTestExiter.exited, Equals, true)
+	c.Check(curTestExiter.code, Equals, 1234)
+}
