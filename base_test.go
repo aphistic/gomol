@@ -230,6 +230,24 @@ func (s *GomolSuite) TestInitLoggers(c *C) {
 	c.Check(ml2.IsInitialized(), Equals, true)
 }
 
+func (s *GomolSuite) TestInitLoggersTwice(c *C) {
+	b := newBase()
+	c.Check(b.IsInitialized(), Equals, false)
+
+	ml1 := newDefaultMemLogger()
+	ml2 := newDefaultMemLogger()
+
+	b.AddLogger(ml1)
+	b.AddLogger(ml2)
+
+	b.InitLoggers()
+	b.InitLoggers()
+
+	c.Check(b.IsInitialized(), Equals, true)
+	c.Check(ml1.IsInitialized(), Equals, true)
+	c.Check(ml2.IsInitialized(), Equals, true)
+}
+
 func (s *GomolSuite) TestInitLoggersFail(c *C) {
 	b := newBase()
 
@@ -288,6 +306,23 @@ func (s *GomolSuite) TestShutdownLoggersFail(c *C) {
 
 	c.Check(ml1.isShutdown, Equals, false)
 	c.Check(ml2.isShutdown, Equals, false)
+}
+
+func (s *GomolSuite) TestShutdownLoggersTwice(c *C) {
+	b := newBase()
+
+	ml1 := newDefaultMemLogger()
+	ml2 := newDefaultMemLogger()
+
+	b.AddLogger(ml1)
+	b.AddLogger(ml2)
+
+	b.InitLoggers()
+	b.ShutdownLoggers()
+	b.ShutdownLoggers()
+
+	c.Check(ml1.isShutdown, Equals, true)
+	c.Check(ml2.isShutdown, Equals, true)
 }
 
 func (s *GomolSuite) TestSetAttr(c *C) {
