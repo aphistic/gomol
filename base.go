@@ -147,12 +147,21 @@ func (b *Base) log(level LogLevel, m map[string]interface{}, msg string, a ...in
 }
 
 func (b *Base) Dbg(msg string) error {
-	return b.log(LEVEL_DEBUG, nil, msg)
+	return b.Debug(msg)
 }
 func (b *Base) Dbgf(msg string, a ...interface{}) error {
-	return b.log(LEVEL_DEBUG, nil, msg, a...)
+	return b.Debugf(msg, a...)
 }
 func (b *Base) Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
+	return b.Debugm(m, msg, a...)
+}
+func (b *Base) Debug(msg string) error {
+	return b.log(LEVEL_DEBUG, nil, msg)
+}
+func (b *Base) Debugf(msg string, a ...interface{}) error {
+	return b.log(LEVEL_DEBUG, nil, msg, a...)
+}
+func (b *Base) Debugm(m map[string]interface{}, msg string, a ...interface{}) error {
 	return b.log(LEVEL_DEBUG, m, msg, a...)
 }
 
@@ -177,12 +186,21 @@ func (b *Base) Warnm(m map[string]interface{}, msg string, a ...interface{}) err
 }
 
 func (b *Base) Err(msg string) error {
-	return b.log(LEVEL_ERROR, nil, msg)
+	return b.Error(msg)
 }
 func (b *Base) Errf(msg string, a ...interface{}) error {
-	return b.log(LEVEL_ERROR, nil, msg, a...)
+	return b.Errorf(msg, a...)
 }
 func (b *Base) Errm(m map[string]interface{}, msg string, a ...interface{}) error {
+	return b.Errorm(m, msg, a...)
+}
+func (b *Base) Error(msg string) error {
+	return b.log(LEVEL_ERROR, nil, msg)
+}
+func (b *Base) Errorf(msg string, a ...interface{}) error {
+	return b.log(LEVEL_ERROR, nil, msg, a...)
+}
+func (b *Base) Errorm(m map[string]interface{}, msg string, a ...interface{}) error {
 	return b.log(LEVEL_ERROR, m, msg, a...)
 }
 

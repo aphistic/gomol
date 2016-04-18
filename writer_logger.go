@@ -132,12 +132,21 @@ func (l *WriterLogger) logm(level LogLevel, m map[string]interface{}, format str
 }
 
 func (l *WriterLogger) Dbg(msg string) error {
-	return l.logm(LEVEL_DEBUG, nil, msg)
+	return l.Debug(msg)
 }
 func (l *WriterLogger) Dbgf(msg string, args ...interface{}) error {
-	return l.logm(LEVEL_DEBUG, nil, msg, args...)
+	return l.Debugf(msg, args...)
 }
 func (l *WriterLogger) Dbgm(m map[string]interface{}, msg string, args ...interface{}) error {
+	return l.Debugm(m, msg, args...)
+}
+func (l *WriterLogger) Debug(msg string) error {
+	return l.logm(LEVEL_DEBUG, nil, msg)
+}
+func (l *WriterLogger) Debugf(msg string, args ...interface{}) error {
+	return l.logm(LEVEL_DEBUG, nil, msg, args...)
+}
+func (l *WriterLogger) Debugm(m map[string]interface{}, msg string, args ...interface{}) error {
 	return l.logm(LEVEL_DEBUG, m, msg, args...)
 }
 
@@ -162,12 +171,21 @@ func (l *WriterLogger) Warnm(m map[string]interface{}, msg string, args ...inter
 }
 
 func (l *WriterLogger) Err(msg string) error {
-	return l.logm(LEVEL_ERROR, nil, msg)
+	return l.Error(msg)
 }
 func (l *WriterLogger) Errf(msg string, args ...interface{}) error {
-	return l.logm(LEVEL_ERROR, nil, msg, args...)
+	return l.Errorf(msg, args...)
 }
 func (l *WriterLogger) Errm(m map[string]interface{}, msg string, args ...interface{}) error {
+	return l.Errorm(m, msg, args...)
+}
+func (l *WriterLogger) Error(msg string) error {
+	return l.logm(LEVEL_ERROR, nil, msg)
+}
+func (l *WriterLogger) Errorf(msg string, args ...interface{}) error {
+	return l.logm(LEVEL_ERROR, nil, msg, args...)
+}
+func (l *WriterLogger) Errorm(m map[string]interface{}, msg string, args ...interface{}) error {
 	return l.logm(LEVEL_ERROR, m, msg, args...)
 }
 

@@ -49,13 +49,22 @@ func RemoveAttr(key string) {
 }
 
 func Dbg(msg string) error {
-	return curDefault.Dbg(msg)
+	return Debug(msg)
 }
 func Dbgf(msg string, a ...interface{}) error {
-	return curDefault.Dbgf(msg, a...)
+	return Debugf(msg, a...)
 }
 func Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
-	return curDefault.Dbgm(m, msg, a...)
+	return Debugm(m, msg, a...)
+}
+func Debug(msg string) error {
+	return curDefault.Debug(msg)
+}
+func Debugf(msg string, a ...interface{}) error {
+	return curDefault.Debugf(msg, a...)
+}
+func Debugm(m map[string]interface{}, msg string, a ...interface{}) error {
+	return curDefault.Debugm(m, msg, a...)
 }
 
 func Info(msg string) error {
@@ -79,13 +88,22 @@ func Warnm(m map[string]interface{}, msg string, a ...interface{}) error {
 }
 
 func Err(msg string) error {
-	return curDefault.Err(msg)
+	return Error(msg)
 }
 func Errf(msg string, a ...interface{}) error {
-	return curDefault.Errf(msg, a...)
+	return Errorf(msg, a...)
 }
 func Errm(m map[string]interface{}, msg string, a ...interface{}) error {
-	return curDefault.Errm(m, msg, a...)
+	return Errorm(m, msg, a...)
+}
+func Error(msg string) error {
+	return curDefault.Error(msg)
+}
+func Errorf(msg string, a ...interface{}) error {
+	return curDefault.Errorf(msg, a...)
+}
+func Errorm(m map[string]interface{}, msg string, a ...interface{}) error {
+	return curDefault.Errorm(m, msg, a...)
 }
 
 func Fatal(msg string) error {

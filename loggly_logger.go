@@ -99,16 +99,25 @@ func (l *LogglyLogger) ShutdownLogger() error {
 }
 
 func (l *LogglyLogger) Dbg(msg string) error {
+	return l.Debug(msg)
+}
+func (l *LogglyLogger) Dbgf(msg string, a ...interface{}) error {
+	return l.Debugf(msg, a...)
+}
+func (l *LogglyLogger) Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
+	return l.Debugm(m, msg, a...)
+}
+func (l *LogglyLogger) Debug(msg string) error {
 	lm := l.getMsg(nil, msg)
 	l.getClient().Debug(l.getFacility(nil), lm)
 	return nil
 }
-func (l *LogglyLogger) Dbgf(msg string, a ...interface{}) error {
+func (l *LogglyLogger) Debugf(msg string, a ...interface{}) error {
 	lm := l.getMsg(nil, msg, a...)
 	l.getClient().Debug(l.getFacility(nil), lm)
 	return nil
 }
-func (l *LogglyLogger) Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (l *LogglyLogger) Debugm(m map[string]interface{}, msg string, a ...interface{}) error {
 	lm := l.getMsg(m, msg, a...)
 	l.getClient().Debug(l.getFacility(m), lm)
 	return nil
@@ -147,16 +156,25 @@ func (l *LogglyLogger) Warnm(m map[string]interface{}, msg string, a ...interfac
 }
 
 func (l *LogglyLogger) Err(msg string) error {
+	return l.Error(msg)
+}
+func (l *LogglyLogger) Errf(msg string, a ...interface{}) error {
+	return l.Errorf(msg, a...)
+}
+func (l *LogglyLogger) Errm(m map[string]interface{}, msg string, a ...interface{}) error {
+	return l.Errorm(m, msg, a...)
+}
+func (l *LogglyLogger) Error(msg string) error {
 	lm := l.getMsg(nil, msg)
 	l.getClient().Error(l.getFacility(nil), lm)
 	return nil
 }
-func (l *LogglyLogger) Errf(msg string, a ...interface{}) error {
+func (l *LogglyLogger) Errorf(msg string, a ...interface{}) error {
 	lm := l.getMsg(nil, msg, a...)
 	l.getClient().Error(l.getFacility(nil), lm)
 	return nil
 }
-func (l *LogglyLogger) Errm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (l *LogglyLogger) Errorm(m map[string]interface{}, msg string, a ...interface{}) error {
 	lm := l.getMsg(m, msg, a...)
 	l.getClient().Error(l.getFacility(m), lm)
 	return nil

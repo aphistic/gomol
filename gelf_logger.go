@@ -102,16 +102,25 @@ func (l *GelfLogger) ShutdownLogger() error {
 }
 
 func (l *GelfLogger) Dbg(msg string) error {
+	return l.Debug(msg)
+}
+func (l *GelfLogger) Dbgf(msg string, a ...interface{}) error {
+	return l.Debugf(msg, a...)
+}
+func (l *GelfLogger) Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
+	return l.Debugm(m, msg, a...)
+}
+func (l *GelfLogger) Debug(msg string) error {
 	attrs := l.getAttrs(nil)
 	l.getLogger().Dbgm(attrs, msg)
 	return nil
 }
-func (l *GelfLogger) Dbgf(msg string, a ...interface{}) error {
+func (l *GelfLogger) Debugf(msg string, a ...interface{}) error {
 	attrs := l.getAttrs(nil)
 	l.getLogger().Dbgm(attrs, msg, a...)
 	return nil
 }
-func (l *GelfLogger) Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (l *GelfLogger) Debugm(m map[string]interface{}, msg string, a ...interface{}) error {
 	attrs := l.getAttrs(m)
 	l.getLogger().Dbgm(attrs, msg, a...)
 	return nil
@@ -150,16 +159,25 @@ func (l *GelfLogger) Warnm(m map[string]interface{}, msg string, a ...interface{
 }
 
 func (l *GelfLogger) Err(msg string) error {
+	return l.Error(msg)
+}
+func (l *GelfLogger) Errf(msg string, a ...interface{}) error {
+	return l.Errorf(msg, a...)
+}
+func (l *GelfLogger) Errm(m map[string]interface{}, msg string, a ...interface{}) error {
+	return Errorm(m, msg, a...)
+}
+func (l *GelfLogger) Error(msg string) error {
 	attrs := l.getAttrs(nil)
 	l.getLogger().Errm(attrs, msg)
 	return nil
 }
-func (l *GelfLogger) Errf(msg string, a ...interface{}) error {
+func (l *GelfLogger) Errorf(msg string, a ...interface{}) error {
 	attrs := l.getAttrs(nil)
 	l.getLogger().Errm(attrs, msg, a...)
 	return nil
 }
-func (l *GelfLogger) Errm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (l *GelfLogger) Errorm(m map[string]interface{}, msg string, a ...interface{}) error {
 	attrs := l.getAttrs(m)
 	l.getLogger().Errm(attrs, msg, a...)
 	return nil

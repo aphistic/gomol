@@ -98,14 +98,23 @@ func (l *ConsoleLogger) ShutdownLogger() error {
 }
 
 func (l *ConsoleLogger) Dbg(msg string) error {
+	return l.Debug(msg)
+}
+func (l *ConsoleLogger) Dbgf(msg string, a ...interface{}) error {
+	return l.Debugf(msg, a...)
+}
+func (l *ConsoleLogger) Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
+	return l.Debugm(m, msg, a...)
+}
+func (l *ConsoleLogger) Debug(msg string) error {
 	l.logf(LEVEL_DEBUG, nil, msg)
 	return nil
 }
-func (l *ConsoleLogger) Dbgf(msg string, a ...interface{}) error {
+func (l *ConsoleLogger) Debugf(msg string, a ...interface{}) error {
 	l.logf(LEVEL_DEBUG, nil, msg, a...)
 	return nil
 }
-func (l *ConsoleLogger) Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (l *ConsoleLogger) Debugm(m map[string]interface{}, msg string, a ...interface{}) error {
 	l.logf(LEVEL_DEBUG, m, msg, a...)
 	return nil
 }
@@ -137,14 +146,23 @@ func (l *ConsoleLogger) Warnm(m map[string]interface{}, msg string, a ...interfa
 }
 
 func (l *ConsoleLogger) Err(msg string) error {
+	return l.Error(msg)
+}
+func (l *ConsoleLogger) Errf(msg string, a ...interface{}) error {
+	return l.Errorf(msg, a...)
+}
+func (l *ConsoleLogger) Errm(m map[string]interface{}, msg string, a ...interface{}) error {
+	return l.Errorm(m, msg, a...)
+}
+func (l *ConsoleLogger) Error(msg string) error {
 	l.logf(LEVEL_ERROR, nil, msg)
 	return nil
 }
-func (l *ConsoleLogger) Errf(msg string, a ...interface{}) error {
+func (l *ConsoleLogger) Errorf(msg string, a ...interface{}) error {
 	l.logf(LEVEL_ERROR, nil, msg, a...)
 	return nil
 }
-func (l *ConsoleLogger) Errm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (l *ConsoleLogger) Errorm(m map[string]interface{}, msg string, a ...interface{}) error {
 	l.logf(LEVEL_ERROR, m, msg, a...)
 	return nil
 }

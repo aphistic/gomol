@@ -98,12 +98,21 @@ func (l *MemLogger) ClearMessages() {
 }
 
 func (l *MemLogger) Dbg(msg string) error {
-	return l.logm(LEVEL_DEBUG, nil, msg)
+	return l.Debug(msg)
 }
 func (l *MemLogger) Dbgf(msg string, args ...interface{}) error {
-	return l.logm(LEVEL_DEBUG, nil, msg, args...)
+	return l.Debugf(msg, args...)
 }
 func (l *MemLogger) Dbgm(m map[string]interface{}, msg string, args ...interface{}) error {
+	return l.Debugm(m, msg, args...)
+}
+func (l *MemLogger) Debug(msg string) error {
+	return l.logm(LEVEL_DEBUG, nil, msg)
+}
+func (l *MemLogger) Debugf(msg string, args ...interface{}) error {
+	return l.logm(LEVEL_DEBUG, nil, msg, args...)
+}
+func (l *MemLogger) Debugm(m map[string]interface{}, msg string, args ...interface{}) error {
 	return l.logm(LEVEL_DEBUG, m, msg, args...)
 }
 
@@ -128,12 +137,21 @@ func (l *MemLogger) Warnm(m map[string]interface{}, msg string, args ...interfac
 }
 
 func (l *MemLogger) Err(msg string) error {
-	return l.logm(LEVEL_ERROR, nil, msg)
+	return l.Error(msg)
 }
 func (l *MemLogger) Errf(msg string, args ...interface{}) error {
-	return l.logm(LEVEL_ERROR, nil, msg, args...)
+	return l.Errorf(msg, args...)
 }
 func (l *MemLogger) Errm(m map[string]interface{}, msg string, args ...interface{}) error {
+	return l.Errorm(m, msg, args...)
+}
+func (l *MemLogger) Error(msg string) error {
+	return l.logm(LEVEL_ERROR, nil, msg)
+}
+func (l *MemLogger) Errorf(msg string, args ...interface{}) error {
+	return l.logm(LEVEL_ERROR, nil, msg, args...)
+}
+func (l *MemLogger) Errorm(m map[string]interface{}, msg string, args ...interface{}) error {
 	return l.logm(LEVEL_ERROR, m, msg, args...)
 }
 

@@ -10,6 +10,9 @@ type Logger interface {
 	Dbg(string) error
 	Dbgf(string, ...interface{}) error
 	Dbgm(map[string]interface{}, string, ...interface{}) error
+	Debug(string) error
+	Debugf(string, ...interface{}) error
+	Debugm(map[string]interface{}, string, ...interface{}) error
 
 	Info(string) error
 	Infof(string, ...interface{}) error
@@ -22,6 +25,9 @@ type Logger interface {
 	Err(string) error
 	Errf(string, ...interface{}) error
 	Errm(map[string]interface{}, string, ...interface{}) error
+	Error(string) error
+	Errorf(string, ...interface{}) error
+	Errorm(map[string]interface{}, string, ...interface{}) error
 
 	Fatal(string) error
 	Fatalf(string, ...interface{}) error
