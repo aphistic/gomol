@@ -3,6 +3,7 @@ package gomol
 import (
 	"errors"
 	"fmt"
+
 	"github.com/mgutz/ansi"
 )
 
@@ -61,16 +62,6 @@ func (l *ConsoleLogger) setWriter(w consoleWriter) {
 	l.writer = w
 }
 
-func (l *ConsoleLogger) logf(level LogLevel, attrs map[string]interface{}, format string, a ...interface{}) error {
-	msg := newMessage(l.base, level, attrs, format, a...)
-	out, err := l.tpl.executeInternalMsg(msg, l.config.Colorize)
-	if err != nil {
-		return err
-	}
-	l.writer.Print(out + "\n")
-	return nil
-}
-
 func (l *ConsoleLogger) SetBase(base *Base) {
 	l.base = base
 }
@@ -97,85 +88,12 @@ func (l *ConsoleLogger) ShutdownLogger() error {
 	return nil
 }
 
-func (l *ConsoleLogger) Dbg(msg string) error {
-	return l.Debug(msg)
-}
-func (l *ConsoleLogger) Dbgf(msg string, a ...interface{}) error {
-	return l.Debugf(msg, a...)
-}
-func (l *ConsoleLogger) Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
-	return l.Debugm(m, msg, a...)
-}
-func (l *ConsoleLogger) Debug(msg string) error {
-	l.logf(LEVEL_DEBUG, nil, msg)
-	return nil
-}
-func (l *ConsoleLogger) Debugf(msg string, a ...interface{}) error {
-	l.logf(LEVEL_DEBUG, nil, msg, a...)
-	return nil
-}
-func (l *ConsoleLogger) Debugm(m map[string]interface{}, msg string, a ...interface{}) error {
-	l.logf(LEVEL_DEBUG, m, msg, a...)
-	return nil
-}
-
-func (l *ConsoleLogger) Info(msg string) error {
-	l.logf(LEVEL_INFO, nil, msg)
-	return nil
-}
-func (l *ConsoleLogger) Infof(msg string, a ...interface{}) error {
-	l.logf(LEVEL_INFO, nil, msg, a...)
-	return nil
-}
-func (l *ConsoleLogger) Infom(m map[string]interface{}, msg string, a ...interface{}) error {
-	l.logf(LEVEL_INFO, m, msg, a...)
-	return nil
-}
-
-func (l *ConsoleLogger) Warn(msg string) error {
-	l.logf(LEVEL_WARNING, nil, msg)
-	return nil
-}
-func (l *ConsoleLogger) Warnf(msg string, a ...interface{}) error {
-	l.logf(LEVEL_WARNING, nil, msg, a...)
-	return nil
-}
-func (l *ConsoleLogger) Warnm(m map[string]interface{}, msg string, a ...interface{}) error {
-	l.logf(LEVEL_WARNING, m, msg, a...)
-	return nil
-}
-
-func (l *ConsoleLogger) Err(msg string) error {
-	return l.Error(msg)
-}
-func (l *ConsoleLogger) Errf(msg string, a ...interface{}) error {
-	return l.Errorf(msg, a...)
-}
-func (l *ConsoleLogger) Errm(m map[string]interface{}, msg string, a ...interface{}) error {
-	return l.Errorm(m, msg, a...)
-}
-func (l *ConsoleLogger) Error(msg string) error {
-	l.logf(LEVEL_ERROR, nil, msg)
-	return nil
-}
-func (l *ConsoleLogger) Errorf(msg string, a ...interface{}) error {
-	l.logf(LEVEL_ERROR, nil, msg, a...)
-	return nil
-}
-func (l *ConsoleLogger) Errorm(m map[string]interface{}, msg string, a ...interface{}) error {
-	l.logf(LEVEL_ERROR, m, msg, a...)
-	return nil
-}
-
-func (l *ConsoleLogger) Fatal(msg string) error {
-	l.logf(LEVEL_FATAL, nil, msg)
-	return nil
-}
-func (l *ConsoleLogger) Fatalf(msg string, a ...interface{}) error {
-	l.logf(LEVEL_FATAL, nil, msg, a...)
-	return nil
-}
-func (l *ConsoleLogger) Fatalm(m map[string]interface{}, msg string, a ...interface{}) error {
-	l.logf(LEVEL_FATAL, m, msg, a...)
+func (l *ConsoleLogger) Logm(level LogLevel, attrs map[string]interface{}, msg string) error {
+	nMsg := newMessage(l.base, level, attrs, msg)
+	out, err := l.tpl.executeInternalMsg(nMsg, l.config.Colorize)
+	if err != nil {
+		return err
+	}
+	l.writer.Print(out + "\n")
 	return nil
 }

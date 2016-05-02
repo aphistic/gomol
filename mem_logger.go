@@ -1,9 +1,6 @@
 package gomol
 
-import (
-	"errors"
-	"fmt"
-)
+import "errors"
 
 type MemLoggerConfig struct {
 	FailInit     bool
@@ -71,10 +68,10 @@ func (l *MemLogger) ShutdownLogger() error {
 	return nil
 }
 
-func (l *MemLogger) logm(level LogLevel, m map[string]interface{}, msg string, args ...interface{}) error {
+func (l *MemLogger) Logm(level LogLevel, m map[string]interface{}, msg string) error {
 	nm := NewMemMessage()
 	nm.Level = level
-	nm.Message = fmt.Sprintf(msg, args...)
+	nm.Message = msg
 
 	if l.base != nil {
 		for k, v := range l.base.BaseAttrs {
@@ -95,72 +92,4 @@ func (l *MemLogger) logm(level LogLevel, m map[string]interface{}, msg string, a
 
 func (l *MemLogger) ClearMessages() {
 	l.Messages = make([]*MemMessage, 0)
-}
-
-func (l *MemLogger) Dbg(msg string) error {
-	return l.Debug(msg)
-}
-func (l *MemLogger) Dbgf(msg string, args ...interface{}) error {
-	return l.Debugf(msg, args...)
-}
-func (l *MemLogger) Dbgm(m map[string]interface{}, msg string, args ...interface{}) error {
-	return l.Debugm(m, msg, args...)
-}
-func (l *MemLogger) Debug(msg string) error {
-	return l.logm(LEVEL_DEBUG, nil, msg)
-}
-func (l *MemLogger) Debugf(msg string, args ...interface{}) error {
-	return l.logm(LEVEL_DEBUG, nil, msg, args...)
-}
-func (l *MemLogger) Debugm(m map[string]interface{}, msg string, args ...interface{}) error {
-	return l.logm(LEVEL_DEBUG, m, msg, args...)
-}
-
-func (l *MemLogger) Info(msg string) error {
-	return l.logm(LEVEL_INFO, nil, msg)
-}
-func (l *MemLogger) Infof(msg string, args ...interface{}) error {
-	return l.logm(LEVEL_INFO, nil, msg, args...)
-}
-func (l *MemLogger) Infom(m map[string]interface{}, msg string, args ...interface{}) error {
-	return l.logm(LEVEL_INFO, m, msg, args...)
-}
-
-func (l *MemLogger) Warn(msg string) error {
-	return l.logm(LEVEL_WARNING, nil, msg)
-}
-func (l *MemLogger) Warnf(msg string, args ...interface{}) error {
-	return l.logm(LEVEL_WARNING, nil, msg, args...)
-}
-func (l *MemLogger) Warnm(m map[string]interface{}, msg string, args ...interface{}) error {
-	return l.logm(LEVEL_WARNING, m, msg, args...)
-}
-
-func (l *MemLogger) Err(msg string) error {
-	return l.Error(msg)
-}
-func (l *MemLogger) Errf(msg string, args ...interface{}) error {
-	return l.Errorf(msg, args...)
-}
-func (l *MemLogger) Errm(m map[string]interface{}, msg string, args ...interface{}) error {
-	return l.Errorm(m, msg, args...)
-}
-func (l *MemLogger) Error(msg string) error {
-	return l.logm(LEVEL_ERROR, nil, msg)
-}
-func (l *MemLogger) Errorf(msg string, args ...interface{}) error {
-	return l.logm(LEVEL_ERROR, nil, msg, args...)
-}
-func (l *MemLogger) Errorm(m map[string]interface{}, msg string, args ...interface{}) error {
-	return l.logm(LEVEL_ERROR, m, msg, args...)
-}
-
-func (l *MemLogger) Fatal(msg string) error {
-	return l.logm(LEVEL_FATAL, nil, msg)
-}
-func (l *MemLogger) Fatalf(msg string, args ...interface{}) error {
-	return l.logm(LEVEL_FATAL, nil, msg, args...)
-}
-func (l *MemLogger) Fatalm(m map[string]interface{}, msg string, args ...interface{}) error {
-	return l.logm(LEVEL_FATAL, m, msg, args...)
 }

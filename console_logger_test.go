@@ -83,237 +83,28 @@ func (s *GomolSuite) TestConsoleShutdownLogger(c *C) {
 	c.Check(cl.IsInitialized(), Equals, false)
 }
 
-func (s *GomolSuite) TestConsoleColorDbg(c *C) {
+func (s *GomolSuite) TestConsoleColorLogm(c *C) {
 	cfg := NewConsoleLoggerConfig()
 	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
-	cl.Dbg("test")
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[\x1b[36mDEBUG\x1b[0m] test\n")
-}
-
-func (s *GomolSuite) TestConsoleDbg(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cfg.Colorize = false
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Dbg("test")
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[DEBUG] test\n")
-}
-
-func (s *GomolSuite) TestConsoleDbgf(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cfg.Colorize = false
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Dbgf("test %v", 1234)
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[DEBUG] test 1234\n")
-}
-
-func (s *GomolSuite) TestConsoleDbgm(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cfg.Colorize = false
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Dbgm(
-		map[string]interface{}{
-			"attr1": 4321,
-		},
-		"test %v", 1234)
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[DEBUG] test 1234\n")
-}
-
-func (s *GomolSuite) TestConsoleColorInfo(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Info("test")
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[\x1b[32mINFO\x1b[0m] test\n")
-}
-
-func (s *GomolSuite) TestConsoleInfo(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cfg.Colorize = false
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Info("test")
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[INFO] test\n")
-}
-
-func (s *GomolSuite) TestConsoleInfof(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cfg.Colorize = false
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Infof("test %v", 1234)
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[INFO] test 1234\n")
-}
-
-func (s *GomolSuite) TestConsoleInfom(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cfg.Colorize = false
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Infom(
-		map[string]interface{}{
-			"attr1": 4321,
-		},
-		"test %v", 1234)
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[INFO] test 1234\n")
-}
-
-func (s *GomolSuite) TestConsoleColorWarn(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Warn("test")
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[\x1b[33mWARN\x1b[0m] test\n")
-}
-
-func (s *GomolSuite) TestConsoleWarn(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cfg.Colorize = false
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Warn("test")
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[WARN] test\n")
-}
-
-func (s *GomolSuite) TestConsoleWarnf(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cfg.Colorize = false
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Warnf("test %v", 1234)
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[WARN] test 1234\n")
-}
-
-func (s *GomolSuite) TestConsoleWarnm(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cfg.Colorize = false
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Warnm(
-		map[string]interface{}{
-			"attr1": 4321,
-		},
-		"test %v", 1234)
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[WARN] test 1234\n")
-}
-
-func (s *GomolSuite) TestConsoleColorErr(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Err("test")
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[\x1b[31mERROR\x1b[0m] test\n")
-}
-
-func (s *GomolSuite) TestConsoleErr(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cfg.Colorize = false
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Err("test")
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[ERROR] test\n")
-}
-
-func (s *GomolSuite) TestConsoleErrf(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cfg.Colorize = false
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Errf("test %v", 1234)
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[ERROR] test 1234\n")
-}
-
-func (s *GomolSuite) TestConsoleErrm(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cfg.Colorize = false
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Errm(
-		map[string]interface{}{
-			"attr1": 4321,
-		},
-		"test %v", 1234)
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[ERROR] test 1234\n")
-}
-
-func (s *GomolSuite) TestConsoleColorFatal(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Fatal("test")
+	cl.Logm(LEVEL_FATAL, nil, "test")
 	c.Assert(w.Output, HasLen, 1)
 	c.Check(w.Output[0], Equals, "[\x1b[1;31mFATAL\x1b[0m] test\n")
 }
 
-func (s *GomolSuite) TestConsoleFatal(c *C) {
+func (s *GomolSuite) TestConsoleLogm(c *C) {
 	cfg := NewConsoleLoggerConfig()
 	cfg.Colorize = false
 	cl, _ := NewConsoleLogger(cfg)
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
-	cl.Fatal("test")
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[FATAL] test\n")
-}
-
-func (s *GomolSuite) TestConsoleFatalf(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cfg.Colorize = false
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Fatalf("test %v", 1234)
-	c.Assert(w.Output, HasLen, 1)
-	c.Check(w.Output[0], Equals, "[FATAL] test 1234\n")
-}
-
-func (s *GomolSuite) TestConsoleFatalm(c *C) {
-	cfg := NewConsoleLoggerConfig()
-	cfg.Colorize = false
-	cl, _ := NewConsoleLogger(cfg)
-	w := newTestConsoleWriter()
-	cl.setWriter(w)
-	cl.Fatalm(
+	cl.Logm(
+		LEVEL_FATAL,
 		map[string]interface{}{
 			"attr1": 4321,
 		},
-		"test %v", 1234)
+		"test 1234")
 	c.Assert(w.Output, HasLen, 1)
 	c.Check(w.Output[0], Equals, "[FATAL] test 1234\n")
 }
@@ -329,12 +120,13 @@ func (s *GomolSuite) TestConsoleBaseAttrs(c *C) {
 	w := newTestConsoleWriter()
 	cl.setWriter(w)
 	b.AddLogger(cl)
-	cl.Dbgm(
+	cl.Logm(
+		LEVEL_DEBUG,
 		map[string]interface{}{
 			"attr1": 4321,
 			"attr3": "val3",
 		},
-		"test %v", 1234)
+		"test 1234")
 	c.Assert(w.Output, HasLen, 1)
 	c.Check(w.Output[0], Equals, "[DEBUG] test 1234\n")
 }

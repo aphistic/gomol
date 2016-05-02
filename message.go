@@ -1,6 +1,7 @@
 package gomol
 
 import (
+	"fmt"
 	"math"
 	"time"
 )
@@ -45,8 +46,7 @@ type message struct {
 	Level     LogLevel
 	Timestamp time.Time
 	Attrs     map[string]interface{}
-	MsgFormat string
-	MsgParams []interface{}
+	Msg       string
 }
 
 func newMessage(base *Base,
@@ -54,13 +54,17 @@ func newMessage(base *Base,
 	msgAttrs map[string]interface{},
 	format string, va ...interface{}) *message {
 
+	msgStr := format
+	if len(va) > 0 {
+		msgStr = fmt.Sprintf(format, va...)
+	}
+
 	nm := &message{
 		Base:      base,
 		Level:     level,
 		Timestamp: clock.Now(),
 		Attrs:     make(map[string]interface{}, len(msgAttrs)),
-		MsgFormat: format,
-		MsgParams: va,
+		Msg:       msgStr,
 	}
 
 	for msgKey, msgVal := range msgAttrs {

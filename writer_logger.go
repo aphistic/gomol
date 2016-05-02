@@ -115,13 +115,13 @@ func (l *WriterLogger) flushMessages() error {
 	return nil
 }
 
-func (l *WriterLogger) logm(level LogLevel, m map[string]interface{}, format string, args ...interface{}) error {
-	msg := newMessage(l.base, level, m, format, args...)
+func (l *WriterLogger) Logm(level LogLevel, m map[string]interface{}, msg string) error {
+	newMsg := newMessage(l.base, level, m, msg)
 	func() {
 		l.writeLock.Lock()
 		defer l.writeLock.Unlock()
 
-		l.buffer = append(l.buffer, msg)
+		l.buffer = append(l.buffer, newMsg)
 	}()
 
 	if len(l.buffer) >= l.config.BufferSize {
@@ -129,72 +129,4 @@ func (l *WriterLogger) logm(level LogLevel, m map[string]interface{}, format str
 	}
 
 	return nil
-}
-
-func (l *WriterLogger) Dbg(msg string) error {
-	return l.Debug(msg)
-}
-func (l *WriterLogger) Dbgf(msg string, args ...interface{}) error {
-	return l.Debugf(msg, args...)
-}
-func (l *WriterLogger) Dbgm(m map[string]interface{}, msg string, args ...interface{}) error {
-	return l.Debugm(m, msg, args...)
-}
-func (l *WriterLogger) Debug(msg string) error {
-	return l.logm(LEVEL_DEBUG, nil, msg)
-}
-func (l *WriterLogger) Debugf(msg string, args ...interface{}) error {
-	return l.logm(LEVEL_DEBUG, nil, msg, args...)
-}
-func (l *WriterLogger) Debugm(m map[string]interface{}, msg string, args ...interface{}) error {
-	return l.logm(LEVEL_DEBUG, m, msg, args...)
-}
-
-func (l *WriterLogger) Info(msg string) error {
-	return l.logm(LEVEL_INFO, nil, msg)
-}
-func (l *WriterLogger) Infof(msg string, args ...interface{}) error {
-	return l.logm(LEVEL_INFO, nil, msg, args...)
-}
-func (l *WriterLogger) Infom(m map[string]interface{}, msg string, args ...interface{}) error {
-	return l.logm(LEVEL_INFO, m, msg, args...)
-}
-
-func (l *WriterLogger) Warn(msg string) error {
-	return l.logm(LEVEL_WARNING, nil, msg)
-}
-func (l *WriterLogger) Warnf(msg string, args ...interface{}) error {
-	return l.logm(LEVEL_WARNING, nil, msg, args...)
-}
-func (l *WriterLogger) Warnm(m map[string]interface{}, msg string, args ...interface{}) error {
-	return l.logm(LEVEL_WARNING, m, msg, args...)
-}
-
-func (l *WriterLogger) Err(msg string) error {
-	return l.Error(msg)
-}
-func (l *WriterLogger) Errf(msg string, args ...interface{}) error {
-	return l.Errorf(msg, args...)
-}
-func (l *WriterLogger) Errm(m map[string]interface{}, msg string, args ...interface{}) error {
-	return l.Errorm(m, msg, args...)
-}
-func (l *WriterLogger) Error(msg string) error {
-	return l.logm(LEVEL_ERROR, nil, msg)
-}
-func (l *WriterLogger) Errorf(msg string, args ...interface{}) error {
-	return l.logm(LEVEL_ERROR, nil, msg, args...)
-}
-func (l *WriterLogger) Errorm(m map[string]interface{}, msg string, args ...interface{}) error {
-	return l.logm(LEVEL_ERROR, m, msg, args...)
-}
-
-func (l *WriterLogger) Fatal(msg string) error {
-	return l.logm(LEVEL_FATAL, nil, msg)
-}
-func (l *WriterLogger) Fatalf(msg string, args ...interface{}) error {
-	return l.logm(LEVEL_FATAL, nil, msg, args...)
-}
-func (l *WriterLogger) Fatalm(m map[string]interface{}, msg string, args ...interface{}) error {
-	return l.logm(LEVEL_FATAL, m, msg, args...)
 }

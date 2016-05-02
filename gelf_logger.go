@@ -2,6 +2,7 @@ package gomol
 
 import (
 	"fmt"
+
 	"github.com/aphistic/golf"
 )
 
@@ -101,100 +102,20 @@ func (l *GelfLogger) ShutdownLogger() error {
 	return nil
 }
 
-func (l *GelfLogger) Dbg(msg string) error {
-	return l.Debug(msg)
-}
-func (l *GelfLogger) Dbgf(msg string, a ...interface{}) error {
-	return l.Debugf(msg, a...)
-}
-func (l *GelfLogger) Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
-	return l.Debugm(m, msg, a...)
-}
-func (l *GelfLogger) Debug(msg string) error {
-	attrs := l.getAttrs(nil)
-	l.getLogger().Dbgm(attrs, msg)
-	return nil
-}
-func (l *GelfLogger) Debugf(msg string, a ...interface{}) error {
-	attrs := l.getAttrs(nil)
-	l.getLogger().Dbgm(attrs, msg, a...)
-	return nil
-}
-func (l *GelfLogger) Debugm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (l *GelfLogger) Logm(level LogLevel, m map[string]interface{}, msg string) error {
 	attrs := l.getAttrs(m)
-	l.getLogger().Dbgm(attrs, msg, a...)
-	return nil
-}
+	switch level {
+	case LEVEL_DEBUG:
+		l.getLogger().Dbgm(attrs, msg)
+	case LEVEL_INFO:
+		l.getLogger().Infom(attrs, msg)
+	case LEVEL_WARNING:
+		l.getLogger().Warnm(attrs, msg)
+	case LEVEL_ERROR:
+		l.getLogger().Errm(attrs, msg)
+	case LEVEL_FATAL:
+		l.getLogger().Emergm(attrs, msg)
 
-func (l *GelfLogger) Info(msg string) error {
-	attrs := l.getAttrs(nil)
-	l.getLogger().Infom(attrs, msg)
-	return nil
-}
-func (l *GelfLogger) Infof(msg string, a ...interface{}) error {
-	attrs := l.getAttrs(nil)
-	l.getLogger().Infom(attrs, msg, a...)
-	return nil
-}
-func (l *GelfLogger) Infom(m map[string]interface{}, msg string, a ...interface{}) error {
-	attrs := l.getAttrs(m)
-	l.getLogger().Infom(attrs, msg, a...)
-	return nil
-}
-
-func (l *GelfLogger) Warn(msg string) error {
-	attrs := l.getAttrs(nil)
-	l.getLogger().Warnm(attrs, msg)
-	return nil
-}
-func (l *GelfLogger) Warnf(msg string, a ...interface{}) error {
-	attrs := l.getAttrs(nil)
-	l.getLogger().Warnm(attrs, msg, a...)
-	return nil
-}
-func (l *GelfLogger) Warnm(m map[string]interface{}, msg string, a ...interface{}) error {
-	attrs := l.getAttrs(m)
-	l.getLogger().Warnm(attrs, msg, a...)
-	return nil
-}
-
-func (l *GelfLogger) Err(msg string) error {
-	return l.Error(msg)
-}
-func (l *GelfLogger) Errf(msg string, a ...interface{}) error {
-	return l.Errorf(msg, a...)
-}
-func (l *GelfLogger) Errm(m map[string]interface{}, msg string, a ...interface{}) error {
-	return Errorm(m, msg, a...)
-}
-func (l *GelfLogger) Error(msg string) error {
-	attrs := l.getAttrs(nil)
-	l.getLogger().Errm(attrs, msg)
-	return nil
-}
-func (l *GelfLogger) Errorf(msg string, a ...interface{}) error {
-	attrs := l.getAttrs(nil)
-	l.getLogger().Errm(attrs, msg, a...)
-	return nil
-}
-func (l *GelfLogger) Errorm(m map[string]interface{}, msg string, a ...interface{}) error {
-	attrs := l.getAttrs(m)
-	l.getLogger().Errm(attrs, msg, a...)
-	return nil
-}
-
-func (l *GelfLogger) Fatal(msg string) error {
-	attrs := l.getAttrs(nil)
-	l.getLogger().Emergm(attrs, msg)
-	return nil
-}
-func (l *GelfLogger) Fatalf(msg string, a ...interface{}) error {
-	attrs := l.getAttrs(nil)
-	l.getLogger().Emergm(attrs, msg, a...)
-	return nil
-}
-func (l *GelfLogger) Fatalm(m map[string]interface{}, msg string, a ...interface{}) error {
-	attrs := l.getAttrs(m)
-	l.getLogger().Emergm(attrs, msg, a...)
+	}
 	return nil
 }

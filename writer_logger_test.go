@@ -2,10 +2,11 @@ package gomol
 
 import (
 	"bytes"
-	. "gopkg.in/check.v1"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	. "gopkg.in/check.v1"
 )
 
 func (s *GomolSuite) TestWriterSetTemplate(c *C) {
@@ -72,8 +73,8 @@ func (s *GomolSuite) TestWriterMultipleMessages(c *C) {
 	cfg := NewWriterLoggerConfig()
 	wl, err := NewWriterLogger(&b, cfg)
 	c.Assert(err, IsNil)
-	wl.Dbgf("dbg 1234")
-	wl.Warnf("warn 4321")
+	wl.Logm(LEVEL_DEBUG, nil, "dbg 1234")
+	wl.Logm(LEVEL_WARNING, nil, "warn 4321")
 
 	wl.flushMessages()
 
@@ -89,10 +90,10 @@ func (s *GomolSuite) TestWriterFlushOnBufferSize(c *C) {
 
 	c.Check(wl.buffer, HasLen, 0)
 
-	wl.Dbg("Message 1")
+	wl.Logm(LEVEL_DEBUG, nil, "Message 1")
 	c.Check(wl.buffer, HasLen, 1)
 
-	wl.Dbg("Message 2")
+	wl.Logm(LEVEL_DEBUG, nil, "Message 2")
 	c.Check(wl.buffer, HasLen, 0)
 
 	c.Check(strings.Count(b.String(), "\n"), Equals, 2)
@@ -110,8 +111,8 @@ func (s *GomolSuite) TestWriterToFile(c *C) {
 	cfg := NewWriterLoggerConfig()
 	wl, _ := NewWriterLogger(f, cfg)
 	wl.InitLogger()
-	wl.Dbg("Message 1")
-	wl.Fatal("Message 2")
+	wl.Logm(LEVEL_DEBUG, nil, "Message 1")
+	wl.Logm(LEVEL_FATAL, nil, "Message 2")
 	wl.ShutdownLogger()
 
 	fData, err := ioutil.ReadFile(f.Name())
@@ -122,205 +123,33 @@ func (s *GomolSuite) TestWriterToFile(c *C) {
 	c.Check(fStr, Equals, "[DEBUG] Message 1\n[FATAL] Message 2\n")
 }
 
-func (s *GomolSuite) TestWriterDbg(c *C) {
+func (s *GomolSuite) TestWriterLogmNoAttrs(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
 	wl, err := NewWriterLogger(&b, cfg)
 	c.Assert(err, IsNil)
-	wl.Dbg("test")
+	wl.Logm(LEVEL_DEBUG, nil, "test")
 
 	wl.flushMessages()
 
 	c.Check(b.String(), Equals, "[DEBUG] test\n")
 }
 
-func (s *GomolSuite) TestWriterDbgf(c *C) {
+func (s *GomolSuite) TestWriterLogmAttrs(c *C) {
 	var b bytes.Buffer
 	cfg := NewWriterLoggerConfig()
 	wl, err := NewWriterLogger(&b, cfg)
 	c.Assert(err, IsNil)
-	wl.Dbgf("test %v", 1234)
+	wl.Logm(
+		LEVEL_DEBUG,
+		map[string]interface{}{
+			"attr1": 4321,
+		},
+		"test 1234")
 
 	wl.flushMessages()
 
 	c.Check(b.String(), Equals, "[DEBUG] test 1234\n")
-}
-
-func (s *GomolSuite) TestWriterDbgm(c *C) {
-	var b bytes.Buffer
-	cfg := NewWriterLoggerConfig()
-	wl, err := NewWriterLogger(&b, cfg)
-	c.Assert(err, IsNil)
-	wl.Dbgm(
-		map[string]interface{}{
-			"attr1": 4321,
-		},
-		"test %v", 1234)
-
-	wl.flushMessages()
-
-	c.Check(b.String(), Equals, "[DEBUG] test 1234\n")
-}
-
-func (s *GomolSuite) TestWriterInfo(c *C) {
-	var b bytes.Buffer
-	cfg := NewWriterLoggerConfig()
-	wl, err := NewWriterLogger(&b, cfg)
-	c.Assert(err, IsNil)
-	wl.Info("test")
-
-	wl.flushMessages()
-
-	c.Check(b.String(), Equals, "[INFO] test\n")
-}
-
-func (s *GomolSuite) TestWriterInfof(c *C) {
-	var b bytes.Buffer
-	cfg := NewWriterLoggerConfig()
-	wl, err := NewWriterLogger(&b, cfg)
-	c.Assert(err, IsNil)
-	wl.Infof("test %v", 1234)
-
-	wl.flushMessages()
-
-	c.Check(b.String(), Equals, "[INFO] test 1234\n")
-}
-
-func (s *GomolSuite) TestWriterInfom(c *C) {
-	var b bytes.Buffer
-	cfg := NewWriterLoggerConfig()
-	wl, err := NewWriterLogger(&b, cfg)
-	c.Assert(err, IsNil)
-	wl.Infom(
-		map[string]interface{}{
-			"attr1": 4321,
-		},
-		"test %v", 1234)
-
-	wl.flushMessages()
-
-	c.Check(b.String(), Equals, "[INFO] test 1234\n")
-}
-
-func (s *GomolSuite) TestWriterWarn(c *C) {
-	var b bytes.Buffer
-	cfg := NewWriterLoggerConfig()
-	wl, err := NewWriterLogger(&b, cfg)
-	c.Assert(err, IsNil)
-	wl.Warn("test")
-
-	wl.flushMessages()
-
-	c.Check(b.String(), Equals, "[WARN] test\n")
-}
-
-func (s *GomolSuite) TestWriterWarnf(c *C) {
-	var b bytes.Buffer
-	cfg := NewWriterLoggerConfig()
-	wl, err := NewWriterLogger(&b, cfg)
-	c.Assert(err, IsNil)
-	wl.Warnf("test %v", 1234)
-
-	wl.flushMessages()
-
-	c.Check(b.String(), Equals, "[WARN] test 1234\n")
-}
-
-func (s *GomolSuite) TestWriterWarnm(c *C) {
-	var b bytes.Buffer
-	cfg := NewWriterLoggerConfig()
-	wl, err := NewWriterLogger(&b, cfg)
-	c.Assert(err, IsNil)
-	wl.Warnm(
-		map[string]interface{}{
-			"attr1": 4321,
-		},
-		"test %v", 1234)
-
-	wl.flushMessages()
-
-	c.Check(b.String(), Equals, "[WARN] test 1234\n")
-}
-
-func (s *GomolSuite) TestWriterErr(c *C) {
-	var b bytes.Buffer
-	cfg := NewWriterLoggerConfig()
-	wl, err := NewWriterLogger(&b, cfg)
-	c.Assert(err, IsNil)
-	wl.Err("test")
-
-	wl.flushMessages()
-
-	c.Check(b.String(), Equals, "[ERROR] test\n")
-}
-
-func (s *GomolSuite) TestWriterErrf(c *C) {
-	var b bytes.Buffer
-	cfg := NewWriterLoggerConfig()
-	wl, err := NewWriterLogger(&b, cfg)
-	c.Assert(err, IsNil)
-	wl.Errf("test %v", 1234)
-
-	wl.flushMessages()
-
-	c.Check(b.String(), Equals, "[ERROR] test 1234\n")
-}
-
-func (s *GomolSuite) TestWriterErrm(c *C) {
-	var b bytes.Buffer
-	cfg := NewWriterLoggerConfig()
-	wl, err := NewWriterLogger(&b, cfg)
-	c.Assert(err, IsNil)
-	wl.Errm(
-		map[string]interface{}{
-			"attr1": 4321,
-		},
-		"test %v", 1234)
-
-	wl.flushMessages()
-
-	c.Check(b.String(), Equals, "[ERROR] test 1234\n")
-}
-
-func (s *GomolSuite) TestWriterFatal(c *C) {
-	var b bytes.Buffer
-	cfg := NewWriterLoggerConfig()
-	wl, err := NewWriterLogger(&b, cfg)
-	c.Assert(err, IsNil)
-	wl.Fatal("test")
-
-	wl.flushMessages()
-
-	c.Check(b.String(), Equals, "[FATAL] test\n")
-}
-
-func (s *GomolSuite) TestWriterFatalf(c *C) {
-	var b bytes.Buffer
-	cfg := NewWriterLoggerConfig()
-	wl, err := NewWriterLogger(&b, cfg)
-	c.Assert(err, IsNil)
-	wl.Fatalf("test %v", 1234)
-
-	wl.flushMessages()
-	c.Assert(err, IsNil)
-
-	c.Check(b.String(), Equals, "[FATAL] test 1234\n")
-}
-
-func (s *GomolSuite) TestWriterFatalm(c *C) {
-	var b bytes.Buffer
-	cfg := NewWriterLoggerConfig()
-	wl, err := NewWriterLogger(&b, cfg)
-	c.Assert(err, IsNil)
-	wl.Fatalm(
-		map[string]interface{}{
-			"attr1": 4321,
-		},
-		"test %v", 1234)
-
-	wl.flushMessages()
-
-	c.Check(b.String(), Equals, "[FATAL] test 1234\n")
 }
 
 func (s *GomolSuite) TestWriterBaseAttrs(c *C) {
@@ -332,12 +161,13 @@ func (s *GomolSuite) TestWriterBaseAttrs(c *C) {
 	cfg := NewWriterLoggerConfig()
 	wl, _ := NewWriterLogger(&buf, cfg)
 	b.AddLogger(wl)
-	wl.Dbgm(
+	wl.Logm(
+		LEVEL_DEBUG,
 		map[string]interface{}{
 			"attr1": 4321,
 			"attr3": "val3",
 		},
-		"test %v", 1234)
+		"test 1234")
 
 	wl.flushMessages()
 

@@ -2,6 +2,7 @@ package gomol
 
 import (
 	"fmt"
+
 	"github.com/segmentio/go-loggly"
 )
 
@@ -98,100 +99,19 @@ func (l *LogglyLogger) ShutdownLogger() error {
 	return nil
 }
 
-func (l *LogglyLogger) Dbg(msg string) error {
-	return l.Debug(msg)
-}
-func (l *LogglyLogger) Dbgf(msg string, a ...interface{}) error {
-	return l.Debugf(msg, a...)
-}
-func (l *LogglyLogger) Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
-	return l.Debugm(m, msg, a...)
-}
-func (l *LogglyLogger) Debug(msg string) error {
+func (l *LogglyLogger) Logm(level LogLevel, m map[string]interface{}, msg string) error {
 	lm := l.getMsg(nil, msg)
-	l.getClient().Debug(l.getFacility(nil), lm)
-	return nil
-}
-func (l *LogglyLogger) Debugf(msg string, a ...interface{}) error {
-	lm := l.getMsg(nil, msg, a...)
-	l.getClient().Debug(l.getFacility(nil), lm)
-	return nil
-}
-func (l *LogglyLogger) Debugm(m map[string]interface{}, msg string, a ...interface{}) error {
-	lm := l.getMsg(m, msg, a...)
-	l.getClient().Debug(l.getFacility(m), lm)
-	return nil
-}
-
-func (l *LogglyLogger) Info(msg string) error {
-	lm := l.getMsg(nil, msg)
-	l.getClient().Info(l.getFacility(nil), lm)
-	return nil
-}
-func (l *LogglyLogger) Infof(msg string, a ...interface{}) error {
-	lm := l.getMsg(nil, msg, a...)
-	l.getClient().Info(l.getFacility(nil), lm)
-	return nil
-}
-func (l *LogglyLogger) Infom(m map[string]interface{}, msg string, a ...interface{}) error {
-	lm := l.getMsg(m, msg, a...)
-	l.getClient().Info(l.getFacility(m), lm)
-	return nil
-}
-
-func (l *LogglyLogger) Warn(msg string) error {
-	lm := l.getMsg(nil, msg)
-	l.getClient().Warn(l.getFacility(nil), lm)
-	return nil
-}
-func (l *LogglyLogger) Warnf(msg string, a ...interface{}) error {
-	lm := l.getMsg(nil, msg, a...)
-	l.getClient().Warn(l.getFacility(nil), lm)
-	return nil
-}
-func (l *LogglyLogger) Warnm(m map[string]interface{}, msg string, a ...interface{}) error {
-	lm := l.getMsg(m, msg, a...)
-	l.getClient().Warn(l.getFacility(m), lm)
-	return nil
-}
-
-func (l *LogglyLogger) Err(msg string) error {
-	return l.Error(msg)
-}
-func (l *LogglyLogger) Errf(msg string, a ...interface{}) error {
-	return l.Errorf(msg, a...)
-}
-func (l *LogglyLogger) Errm(m map[string]interface{}, msg string, a ...interface{}) error {
-	return l.Errorm(m, msg, a...)
-}
-func (l *LogglyLogger) Error(msg string) error {
-	lm := l.getMsg(nil, msg)
-	l.getClient().Error(l.getFacility(nil), lm)
-	return nil
-}
-func (l *LogglyLogger) Errorf(msg string, a ...interface{}) error {
-	lm := l.getMsg(nil, msg, a...)
-	l.getClient().Error(l.getFacility(nil), lm)
-	return nil
-}
-func (l *LogglyLogger) Errorm(m map[string]interface{}, msg string, a ...interface{}) error {
-	lm := l.getMsg(m, msg, a...)
-	l.getClient().Error(l.getFacility(m), lm)
-	return nil
-}
-
-func (l *LogglyLogger) Fatal(msg string) error {
-	lm := l.getMsg(nil, msg)
-	l.getClient().Critical(l.getFacility(nil), lm)
-	return nil
-}
-func (l *LogglyLogger) Fatalf(msg string, a ...interface{}) error {
-	lm := l.getMsg(nil, msg, a...)
-	l.getClient().Critical(l.getFacility(nil), lm)
-	return nil
-}
-func (l *LogglyLogger) Fatalm(m map[string]interface{}, msg string, a ...interface{}) error {
-	lm := l.getMsg(m, msg, a...)
-	l.getClient().Critical(l.getFacility(m), lm)
+	switch level {
+	case LEVEL_DEBUG:
+		l.getClient().Debug(l.getFacility(nil), lm)
+	case LEVEL_INFO:
+		l.getClient().Info(l.getFacility(nil), lm)
+	case LEVEL_WARNING:
+		l.getClient().Warn(l.getFacility(nil), lm)
+	case LEVEL_ERROR:
+		l.getClient().Error(l.getFacility(nil), lm)
+	case LEVEL_FATAL:
+		l.getClient().Critical(l.getFacility(nil), lm)
+	}
 	return nil
 }

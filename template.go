@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/mgutz/ansi"
 	"strings"
 	"text/template"
@@ -138,7 +137,7 @@ func newTemplateMsg(msg *message) (*TemplateMsg, error) {
 		Attrs: make(map[string]interface{}, 0),
 	}
 	tplMsg.Timestamp = msg.Timestamp
-	tplMsg.Message = fmt.Sprintf(msg.MsgFormat, msg.MsgParams...)
+	tplMsg.Message = msg.Msg
 	tplMsg.Level = msg.Level
 	tplMsg.LevelName = getLevelName(msg.Level)
 	if msg.Base != nil {
