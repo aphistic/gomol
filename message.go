@@ -62,7 +62,7 @@ func newMessage(base *Base,
 	nm := &message{
 		Base:      base,
 		Level:     level,
-		Timestamp: clock.Now(),
+		Timestamp: clock().Now(),
 		Attrs:     make(map[string]interface{}, len(msgAttrs)),
 		Msg:       msgStr,
 	}

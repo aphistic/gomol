@@ -4,9 +4,9 @@ import (
 	. "gopkg.in/check.v1"
 )
 
-func newDefaultMemLogger() *MemLogger {
-	cfg := NewMemLoggerConfig()
-	l, _ := NewMemLogger(cfg)
+func newDefaultMemLogger() *memLogger {
+	cfg := newMemLoggerConfig()
+	l, _ := newMemLogger(cfg)
 	return l
 }
 
@@ -18,9 +18,9 @@ func (s *GomolSuite) TestMemInitLogger(c *C) {
 }
 
 func (s *GomolSuite) TestMemInitLoggerFail(c *C) {
-	mlCfg := NewMemLoggerConfig()
+	mlCfg := newMemLoggerConfig()
 	mlCfg.FailInit = true
-	ml, err := NewMemLogger(mlCfg)
+	ml, err := newMemLogger(mlCfg)
 	c.Check(err, IsNil)
 	c.Check(ml.IsInitialized(), Equals, false)
 	err = ml.InitLogger()
@@ -37,9 +37,9 @@ func (s *GomolSuite) TestMemShutdownLogger(c *C) {
 }
 
 func (s *GomolSuite) TestMemShutdownLoggerFail(c *C) {
-	mlCfg := NewMemLoggerConfig()
+	mlCfg := newMemLoggerConfig()
 	mlCfg.FailShutdown = true
-	ml, err := NewMemLogger(mlCfg)
+	ml, err := newMemLogger(mlCfg)
 	c.Check(err, IsNil)
 	c.Check(ml.isShutdown, Equals, false)
 	err = ml.ShutdownLogger()

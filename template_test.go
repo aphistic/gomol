@@ -2,8 +2,9 @@ package gomol
 
 import (
 	"encoding/json"
-	. "gopkg.in/check.v1"
 	"time"
+
+	. "gopkg.in/check.v1"
 )
 
 func (s *GomolSuite) TestNewTemplate(c *C) {
@@ -29,7 +30,7 @@ func (s *GomolSuite) TestNewTemplateMsgError(c *C) {
 }
 
 func (s *GomolSuite) TestTemplateExecuteError(c *C) {
-	clock = NewTestClock(time.Unix(1000000000, 100))
+	setClock(newTestClock(time.Unix(1000000000, 100)))
 
 	msg := newMessage(nil, LEVEL_ERROR, map[string]interface{}{
 		"attr1": "val1",
@@ -69,7 +70,7 @@ func (s *GomolSuite) TestTplFuncsCase(c *C) {
 }
 
 func (s *GomolSuite) TestTplMsgFromInternal(c *C) {
-	clock = NewTestClock(time.Now())
+	setClock(newTestClock(time.Now()))
 
 	b := newBase()
 	b.SetAttr("baseAttr", 1234)
@@ -81,7 +82,7 @@ func (s *GomolSuite) TestTplMsgFromInternal(c *C) {
 
 	tplMsg, err := newTemplateMsg(msg)
 	c.Assert(err, IsNil)
-	c.Check(tplMsg.Timestamp, Equals, clock.Now())
+	c.Check(tplMsg.Timestamp, Equals, clock().Now())
 	c.Check(tplMsg.Level, Equals, LEVEL_INFO)
 	c.Check(tplMsg.LevelName, Equals, "info")
 	c.Check(tplMsg.Message, Equals, "Format 1234 asdf")
@@ -120,7 +121,7 @@ func (s *GomolSuite) TestTplMsgAttrs(c *C) {
 }
 
 func (s *GomolSuite) TestTplTimestamp(c *C) {
-	clock = NewTestClock(time.Now())
+	setClock(newTestClock(time.Now()))
 
 	msg := newMessage(nil, LEVEL_ERROR, nil, "message")
 	tpl, err := NewTemplate("{{ .Timestamp.Format \"2006-01-02T15:04:05.999999999Z07:00\" }}")
@@ -129,11 +130,11 @@ func (s *GomolSuite) TestTplTimestamp(c *C) {
 	out, err := tpl.executeInternalMsg(msg, false)
 	c.Assert(err, IsNil)
 
-	c.Check(out, Equals, clock.Now().Format("2006-01-02T15:04:05.999999999Z07:00"))
+	c.Check(out, Equals, clock().Now().Format("2006-01-02T15:04:05.999999999Z07:00"))
 }
 
 func (s *GomolSuite) TestTplJson(c *C) {
-	clock = NewTestClock(time.Unix(1000000000, 100))
+	setClock(newTestClock(time.Unix(1000000000, 100)))
 
 	msg := newMessage(nil, LEVEL_ERROR, map[string]interface{}{
 		"attr1": "val1",

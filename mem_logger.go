@@ -2,41 +2,41 @@ package gomol
 
 import "errors"
 
-type MemLoggerConfig struct {
+type memLoggerConfig struct {
 	FailInit     bool
 	FailShutdown bool
 }
 
-func NewMemLoggerConfig() *MemLoggerConfig {
-	return &MemLoggerConfig{}
+func newMemLoggerConfig() *memLoggerConfig {
+	return &memLoggerConfig{}
 }
 
-type MemLogger struct {
+type memLogger struct {
 	base   *Base
-	config *MemLoggerConfig
+	config *memLoggerConfig
 
-	Messages []*MemMessage
+	Messages []*memMessage
 
 	isInitialized bool
 	isShutdown    bool
 }
 
-type MemMessage struct {
+type memMessage struct {
 	Level   LogLevel
 	Message string
 	Attrs   map[string]interface{}
 }
 
-func NewMemLogger(config *MemLoggerConfig) (*MemLogger, error) {
-	l := &MemLogger{
+func newMemLogger(config *memLoggerConfig) (*memLogger, error) {
+	l := &memLogger{
 		config:   config,
-		Messages: make([]*MemMessage, 0),
+		Messages: make([]*memMessage, 0),
 	}
 	return l, nil
 }
 
-func NewMemMessage() *MemMessage {
-	msg := &MemMessage{
+func newMemMessage() *memMessage {
+	msg := &memMessage{
 		Level:   LEVEL_UNKNOWN,
 		Message: "",
 		Attrs:   make(map[string]interface{}, 0),
@@ -44,11 +44,11 @@ func NewMemMessage() *MemMessage {
 	return msg
 }
 
-func (l *MemLogger) SetBase(base *Base) {
+func (l *memLogger) SetBase(base *Base) {
 	l.base = base
 }
 
-func (l *MemLogger) InitLogger() error {
+func (l *memLogger) InitLogger() error {
 	if l.config.FailInit {
 		return errors.New("Init failed")
 	}
@@ -56,10 +56,10 @@ func (l *MemLogger) InitLogger() error {
 	l.isShutdown = false
 	return nil
 }
-func (l *MemLogger) IsInitialized() bool {
+func (l *memLogger) IsInitialized() bool {
 	return l.isInitialized
 }
-func (l *MemLogger) ShutdownLogger() error {
+func (l *memLogger) ShutdownLogger() error {
 	if l.config.FailShutdown {
 		return errors.New("Shutdown failed")
 	}
@@ -68,8 +68,8 @@ func (l *MemLogger) ShutdownLogger() error {
 	return nil
 }
 
-func (l *MemLogger) Logm(level LogLevel, m map[string]interface{}, msg string) error {
-	nm := NewMemMessage()
+func (l *memLogger) Logm(level LogLevel, m map[string]interface{}, msg string) error {
+	nm := newMemMessage()
 	nm.Level = level
 	nm.Message = msg
 
@@ -90,6 +90,6 @@ func (l *MemLogger) Logm(level LogLevel, m map[string]interface{}, msg string) e
 	return nil
 }
 
-func (l *MemLogger) ClearMessages() {
-	l.Messages = make([]*MemMessage, 0)
+func (l *memLogger) ClearMessages() {
+	l.Messages = make([]*memMessage, 0)
 }

@@ -8,7 +8,7 @@ func (s *GomolSuite) TestDefaultInitLogger(c *C) {
 	curDefault = newBase()
 	c.Check(IsInitialized(), Equals, false)
 	AddLogger(newDefaultMemLogger())
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Check(defLogger.IsInitialized(), Equals, false)
 	InitLoggers()
 	c.Check(IsInitialized(), Equals, true)
@@ -22,7 +22,7 @@ func (s *GomolSuite) TestDefaultShutdownLogger(c *C) {
 	AddLogger(newDefaultMemLogger())
 	InitLoggers()
 	c.Check(IsInitialized(), Equals, true)
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Check(defLogger.isShutdown, Equals, false)
 	ShutdownLoggers()
 	c.Check(defLogger.isShutdown, Equals, true)
@@ -136,7 +136,7 @@ func (s *GomolSuite) TestDefaultClearAttrs(c *C) {
 func (s *GomolSuite) TestDefaultDbg(c *C) {
 	Dbg("test")
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_DEBUG)
 	c.Check(defLogger.Messages[0].Message, Equals, "test")
@@ -146,7 +146,7 @@ func (s *GomolSuite) TestDefaultDbg(c *C) {
 func (s *GomolSuite) TestDefaultDbgf(c *C) {
 	Dbgf("test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_DEBUG)
 	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
@@ -160,7 +160,7 @@ func (s *GomolSuite) TestDefaultDbgm(c *C) {
 		},
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_DEBUG)
 	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
@@ -171,7 +171,7 @@ func (s *GomolSuite) TestDefaultDbgm(c *C) {
 func (s *GomolSuite) TestDefaultInfo(c *C) {
 	Info("test")
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_INFO)
 	c.Check(defLogger.Messages[0].Message, Equals, "test")
@@ -181,7 +181,7 @@ func (s *GomolSuite) TestDefaultInfo(c *C) {
 func (s *GomolSuite) TestDefaultInfof(c *C) {
 	Infof("test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_INFO)
 	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
@@ -195,7 +195,7 @@ func (s *GomolSuite) TestDefaultInfom(c *C) {
 		},
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_INFO)
 	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
@@ -206,7 +206,7 @@ func (s *GomolSuite) TestDefaultInfom(c *C) {
 func (s *GomolSuite) TestDefaultWarn(c *C) {
 	Warn("test")
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_WARNING)
 	c.Check(defLogger.Messages[0].Message, Equals, "test")
@@ -216,7 +216,7 @@ func (s *GomolSuite) TestDefaultWarn(c *C) {
 func (s *GomolSuite) TestDefaultWarnf(c *C) {
 	Warnf("test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_WARNING)
 	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
@@ -230,7 +230,7 @@ func (s *GomolSuite) TestDefaultWarnm(c *C) {
 		},
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_WARNING)
 	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
@@ -241,7 +241,7 @@ func (s *GomolSuite) TestDefaultWarnm(c *C) {
 func (s *GomolSuite) TestDefaultErr(c *C) {
 	Err("test")
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_ERROR)
 	c.Check(defLogger.Messages[0].Message, Equals, "test")
@@ -251,7 +251,7 @@ func (s *GomolSuite) TestDefaultErr(c *C) {
 func (s *GomolSuite) TestDefaultErrf(c *C) {
 	Errf("test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_ERROR)
 	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
@@ -265,7 +265,7 @@ func (s *GomolSuite) TestDefaultErrm(c *C) {
 		},
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_ERROR)
 	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
@@ -276,7 +276,7 @@ func (s *GomolSuite) TestDefaultErrm(c *C) {
 func (s *GomolSuite) TestDefaultFatal(c *C) {
 	Fatal("test")
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_FATAL)
 	c.Check(defLogger.Messages[0].Message, Equals, "test")
@@ -286,7 +286,7 @@ func (s *GomolSuite) TestDefaultFatal(c *C) {
 func (s *GomolSuite) TestDefaultFatalf(c *C) {
 	Fatalf("test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_FATAL)
 	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
@@ -300,7 +300,7 @@ func (s *GomolSuite) TestDefaultFatalm(c *C) {
 		},
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_FATAL)
 	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
@@ -311,7 +311,7 @@ func (s *GomolSuite) TestDefaultFatalm(c *C) {
 func (s *GomolSuite) TestDefaultDie(c *C) {
 	Die(1234, "test")
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_FATAL)
 	c.Check(defLogger.Messages[0].Message, Equals, "test")
@@ -325,7 +325,7 @@ func (s *GomolSuite) TestDefaultDie(c *C) {
 func (s *GomolSuite) TestDefaultDief(c *C) {
 	Dief(1234, "test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_FATAL)
 	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
@@ -344,7 +344,7 @@ func (s *GomolSuite) TestDefaultDiem(c *C) {
 		},
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
-	defLogger := curDefault.loggers[0].(*MemLogger)
+	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_FATAL)
 	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")

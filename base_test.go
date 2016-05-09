@@ -1,8 +1,9 @@
 package gomol
 
 import (
-	. "gopkg.in/check.v1"
 	"testing"
+
+	. "gopkg.in/check.v1"
 )
 
 func Test(t *testing.T) { TestingT(t) }
@@ -132,9 +133,9 @@ func (s *GomolSuite) TestAddLoggerAfterInitFail(c *C) {
 	b := newBase()
 	b.InitLoggers()
 
-	mlCfg := NewMemLoggerConfig()
+	mlCfg := newMemLoggerConfig()
 	mlCfg.FailInit = true
-	ml, err := NewMemLogger(mlCfg)
+	ml, err := newMemLogger(mlCfg)
 	c.Check(err, IsNil)
 	c.Check(ml.IsInitialized(), Equals, false)
 
@@ -148,9 +149,9 @@ func (s *GomolSuite) TestAddLoggerAfterInitFail(c *C) {
 func (s *GomolSuite) TestAddLoggerAfterShutdownFail(c *C) {
 	b := newBase()
 
-	mlCfg := NewMemLoggerConfig()
+	mlCfg := newMemLoggerConfig()
 	mlCfg.FailShutdown = true
-	ml, err := NewMemLogger(mlCfg)
+	ml, err := newMemLogger(mlCfg)
 	c.Check(err, IsNil)
 	c.Check(ml.IsInitialized(), Equals, false)
 	ml.InitLogger()
@@ -251,11 +252,11 @@ func (s *GomolSuite) TestInitLoggersTwice(c *C) {
 func (s *GomolSuite) TestInitLoggersFail(c *C) {
 	b := newBase()
 
-	mlCfg := NewMemLoggerConfig()
+	mlCfg := newMemLoggerConfig()
 	mlCfg.FailInit = true
-	ml1, err := NewMemLogger(mlCfg)
+	ml1, err := newMemLogger(mlCfg)
 	c.Check(err, IsNil)
-	ml2, err := NewMemLogger(mlCfg)
+	ml2, err := newMemLogger(mlCfg)
 	c.Check(err, IsNil)
 
 	b.AddLogger(ml1)
@@ -289,11 +290,11 @@ func (s *GomolSuite) TestShutdownLoggers(c *C) {
 func (s *GomolSuite) TestShutdownLoggersFail(c *C) {
 	b := newBase()
 
-	mlCfg := NewMemLoggerConfig()
+	mlCfg := newMemLoggerConfig()
 	mlCfg.FailShutdown = true
-	ml1, err := NewMemLogger(mlCfg)
+	ml1, err := newMemLogger(mlCfg)
 	c.Check(err, IsNil)
-	ml2, err := NewMemLogger(mlCfg)
+	ml2, err := newMemLogger(mlCfg)
 	c.Check(err, IsNil)
 
 	b.AddLogger(ml1)

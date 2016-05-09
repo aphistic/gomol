@@ -5,7 +5,7 @@ import (
 )
 
 // Code for the README example to make sure it still builds!
-func ExampleCode() {
+func Example() {
 	// Add a console logger
 	consoleCfg := gomol.NewConsoleLoggerConfig()
 	consoleLogger, _ := gomol.NewConsoleLogger(consoleCfg)

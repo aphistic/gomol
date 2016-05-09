@@ -4,14 +4,21 @@ import (
 	"time"
 )
 
-var clock Clock = &RealClock{}
+var curClock gomolClock = &realClock{}
 
-type Clock interface {
+type gomolClock interface {
 	Now() time.Time
 }
 
-type RealClock struct{}
+func setClock(clock gomolClock) {
+	curClock = clock
+}
+func clock() gomolClock {
+	return curClock
+}
 
-func (*RealClock) Now() time.Time {
+type realClock struct{}
+
+func (*realClock) Now() time.Time {
 	return time.Now()
 }

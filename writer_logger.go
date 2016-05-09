@@ -9,7 +9,7 @@ import (
 
 type WriterLoggerConfig struct {
 	/*
-		The number of messages that will be buffered before flushing them to
+		The number of messages to be buffered before flushing them to
 		the file.
 	*/
 	BufferSize int

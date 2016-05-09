@@ -4,6 +4,11 @@ import (
 	"os"
 )
 
+/*
+Base holds an instance of all information needed for logging.  It is possible
+to create multiple instances of Base if multiple sets of loggers or attributes
+are desired.
+*/
 type Base struct {
 	isInitialized bool
 	queue         *queue
@@ -38,8 +43,8 @@ func setExiter(exiter appExiter) {
 }
 
 /*
-Sets the level to log at.  It will log any message that is at the level
-or more severe than the level.
+SetLogLevel sets the level messages will be logged at.  It will log any message
+that is at the level or more severe than the level.
 */
 func (b *Base) SetLogLevel(level LogLevel) {
 	b.logLevel = level
@@ -52,6 +57,7 @@ func (b *Base) shouldLog(level LogLevel) bool {
 	return false
 }
 
+// AddLogger adds a new logger instance to the Base
 func (b *Base) AddLogger(logger Logger) error {
 	if b.IsInitialized() && !logger.IsInitialized() {
 		err := logger.InitLogger()
@@ -69,6 +75,12 @@ func (b *Base) AddLogger(logger Logger) error {
 	return nil
 }
 
+/*
+ClearLoggers will shut down and remove any loggers added to the Base. If an
+error occurs while shutting down one of the loggers, the list will not be
+cleared but any loggers that have already been shut down before the error
+occurred will remain shut down.
+*/
 func (b *Base) ClearLoggers() error {
 	for _, logger := range b.loggers {
 		err := logger.ShutdownLogger()
@@ -81,10 +93,16 @@ func (b *Base) ClearLoggers() error {
 	return nil
 }
 
+// IsInitialized returns true if InitLoggers has been successfully run on the Base
 func (b *Base) IsInitialized() bool {
 	return b.isInitialized
 }
 
+/*
+InitLoggers will run InitLogger on each Logger that has been added to the Base.
+If an error occurs in initializing a logger, the loggers that have already been
+initialized will continue to be initialized.
+*/
 func (b *Base) InitLoggers() error {
 	for _, logger := range b.loggers {
 		err := logger.InitLogger()
@@ -98,6 +116,11 @@ func (b *Base) InitLoggers() error {
 
 	return nil
 }
+
+/*
+RemoveLogger will run ShutdownLogger on the give logger and then remove the given
+Logger from the list in Base
+*/
 func (b *Base) RemoveLogger(logger Logger) error {
 	for idx, rLogger := range b.loggers {
 		if rLogger == logger {
@@ -113,6 +136,12 @@ func (b *Base) RemoveLogger(logger Logger) error {
 	}
 	return nil
 }
+
+/*
+ShutdownLoggers will run ShutdownLogger on each Logger in Base.  If an error occurs
+while shutting down a Logger, the error will be returned and all the loggers that
+were already shut down will remain shut down.
+*/
 func (b *Base) ShutdownLoggers() error {
 	b.queue.stopQueueWorkers()
 
@@ -128,12 +157,20 @@ func (b *Base) ShutdownLoggers() error {
 	return nil
 }
 
+// ClearAttrs will remove all the attributes added to Base
 func (b *Base) ClearAttrs() {
 	b.BaseAttrs = make(map[string]interface{}, 0)
 }
+
+/*
+SetAttr will set the value for the attribute with the name key.  If the key
+already exists it will be overwritten with the new value.
+*/
 func (b *Base) SetAttr(key string, value interface{}) {
 	b.BaseAttrs[key] = value
 }
+
+// RemoveAttr will remove the attribute with the name key.
 func (b *Base) RemoveAttr(key string) {
 	delete(b.BaseAttrs, key)
 }
@@ -146,42 +183,105 @@ func (b *Base) log(level LogLevel, m map[string]interface{}, msg string, a ...in
 	return b.queue.QueueMessage(nm)
 }
 
+// Dbg is a short-hand version of Debug
 func (b *Base) Dbg(msg string) error {
 	return b.Debug(msg)
 }
+
+// Dbgf is a short-hand version of Debugf
 func (b *Base) Dbgf(msg string, a ...interface{}) error {
 	return b.Debugf(msg, a...)
 }
+
+// Dbgm is a short-hand version of Debugm
 func (b *Base) Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
 	return b.Debugm(m, msg, a...)
 }
+
+// Debug logs msg to all added loggers at LogLevel.LEVEL_DEBUG
 func (b *Base) Debug(msg string) error {
 	return b.log(LEVEL_DEBUG, nil, msg)
 }
+
+/*
+Debugf uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LEVEL_DEBUG
+*/
 func (b *Base) Debugf(msg string, a ...interface{}) error {
 	return b.log(LEVEL_DEBUG, nil, msg, a...)
 }
+
+/*
+Debugm uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LEVEL_DEBUG. It will also
+merge all attributes passed in m with any attributes added to Base and include them
+with the message if the Logger supports it.
+*/
 func (b *Base) Debugm(m map[string]interface{}, msg string, a ...interface{}) error {
 	return b.log(LEVEL_DEBUG, m, msg, a...)
 }
 
+// Info logs msg to all added loggers at LogLevel.LEVEL_INFO
 func (b *Base) Info(msg string) error {
 	return b.log(LEVEL_INFO, nil, msg)
 }
+
+/*
+Infof uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LEVEL_INFO
+*/
 func (b *Base) Infof(msg string, a ...interface{}) error {
 	return b.log(LEVEL_INFO, nil, msg, a...)
 }
+
+/*
+Infom uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LEVEL_INFO. It will also
+merge all attributes passed in m with any attributes added to Base and include them
+with the message if the Logger supports it.
+*/
 func (b *Base) Infom(m map[string]interface{}, msg string, a ...interface{}) error {
 	return b.log(LEVEL_INFO, m, msg, a...)
 }
 
+// Warn is a short-hand version of Warning
 func (b *Base) Warn(msg string) error {
+	return b.Warning(msg)
+}
+
+// Warnf is a short-hand version of Warningf
+func (b *Base) Warnf(msg string, a ...interface{}) error {
+	return b.Warningf(msg, a...)
+}
+
+// Warnm is a short-hand version of Warningm
+func (b *Base) Warnm(m map[string]interface{}, msg string, a ...interface{}) error {
+	return b.Warningm(m, msg, a...)
+}
+
+/*
+Warning uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LEVEL_WARNING
+*/
+func (b *Base) Warning(msg string) error {
 	return b.log(LEVEL_WARNING, nil, msg)
 }
-func (b *Base) Warnf(msg string, a ...interface{}) error {
+
+/*
+Warningf uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LEVEL_WARNING
+*/
+func (b *Base) Warningf(msg string, a ...interface{}) error {
 	return b.log(LEVEL_WARNING, nil, msg, a...)
 }
-func (b *Base) Warnm(m map[string]interface{}, msg string, a ...interface{}) error {
+
+/*
+Warningm uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LEVEL_WARNING. It will also
+merge all attributes passed in m with any attributes added to Base and include them
+with the message if the Logger supports it.
+*/
+func (b *Base) Warningm(m map[string]interface{}, msg string, a ...interface{}) error {
 	return b.log(LEVEL_WARNING, m, msg, a...)
 }
 
