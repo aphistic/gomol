@@ -40,7 +40,7 @@ can add it!
 
 * **Console** - built into gomol at the moment
 * **Graylog Extended Log Format (GELF)** - built into gomol at the moment
-* **Loggly** - [https://github.com/aphistic/gomol-loggly]()
+* **Loggly** - https://github.com/aphistic/gomol-loggly
 * **io.Writer** - built into gomol at the moment
 
 Examples
