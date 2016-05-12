@@ -11,12 +11,6 @@ func Example() {
 	consoleLogger, _ := gomol.NewConsoleLogger(consoleCfg)
 	gomol.AddLogger(consoleLogger)
 
-	// Add a Loggly logger
-	logglyCfg := gomol.NewLogglyLoggerConfig()
-	logglyCfg.Token = "1234"
-	logglyLogger, _ := gomol.NewLogglyLogger(logglyCfg)
-	gomol.AddLogger(logglyLogger)
-
 	// Add a GELF logger
 	gelfCfg := gomol.NewGelfLoggerConfig()
 	gelfCfg.Hostname = "localhost"

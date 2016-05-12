@@ -5,7 +5,7 @@ gomol
 [![Build Status](https://img.shields.io/travis/aphistic/gomol.svg)](https://travis-ci.org/aphistic/gomol)
 [![Code Coverage](https://img.shields.io/codecov/c/github/aphistic/gomol.svg)](http://codecov.io/github/aphistic/gomol?branch=master)
 
-Gomol (Go Multi-Output Logger) is an MIT-licensed Go logging library.  The documentation at this point is thin but will be improving over time. 
+Gomol (Go Multi-Output Logger) is an MIT-licensed Go logging library.  The documentation at this point is thin but will be improving over time.
 
 Features
 ========
@@ -28,6 +28,21 @@ Gomol can also be installed the standard way as well
     ...
     import "github.com/aphistic/gomol"
 
+Loggers
+=======
+
+Right now there are a number of loggers built directly into the gomol library.  This
+adds a number of dependencies that I'd like to remove so I'm in the process of splitting
+each logger out to its own package.  The supported log outputs are listed below.  If
+you have a logger you've written to support gomol and you'd like to add it to this list
+please either submit a pull request with the updated document or let me know and I
+can add it!
+
+* **Console** - built into gomol at the moment
+* **Graylog Extended Log Format (GELF)** - built into gomol at the moment
+* **Loggly** - [https://github.com/aphistic/gomol-loggly]()
+* **io.Writer** - built into gomol at the moment
+
 Examples
 ========
 
@@ -47,12 +62,6 @@ func main() {
 	consoleCfg := gomol.NewConsoleLoggerConfig()
 	consoleLogger, _ := gomol.NewConsoleLogger(consoleCfg)
 	gomol.AddLogger(consoleLogger)
-
-	// Add a Loggly logger
-	logglyCfg := gomol.NewLogglyLoggerConfig()
-	logglyCfg.Token = "1234"
-	logglyLogger, _ := gomol.NewLogglyLogger(logglyCfg)
-	gomol.AddLogger(logglyLogger)
 
 	// Add a GELF logger
 	gelfCfg := gomol.NewGelfLoggerConfig()
