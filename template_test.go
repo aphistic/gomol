@@ -217,6 +217,20 @@ func (s *GomolSuite) TestTplJson(c *C) {
 	c.Check(out, Equals, "{\"attr1\":\"val1\",\"attr2\":1234}")
 }
 
+func (s *GomolSuite) TestTplAttrTemplate(c *C) {
+	msg := newMessage(nil,
+		LEVEL_FATAL,
+		map[string]interface{}{"attrName": "attrVal"},
+		"test")
+	tpl, err := NewTemplate("[{{.Attrs.attrName}}] {{.Message}}")
+	c.Assert(err, IsNil)
+
+	out, err := tpl.executeInternalMsg(msg, true)
+	c.Assert(err, IsNil)
+
+	c.Check(out, Equals, "[attrVal] test")
+}
+
 type marshalTestStruct struct{}
 
 func (s *GomolSuite) TestTplJsonError(c *C) {

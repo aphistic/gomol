@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/mgutz/ansi"
 	"strings"
 	"text/template"
 	"time"
+
+	"github.com/mgutz/ansi"
 )
 
 var colorDbg = ansi.ColorCode("cyan")
