@@ -189,6 +189,22 @@ func (s *GomolSuite) TestBaseRemoveLogger(c *C) {
 	c.Check(b.loggers, HasLen, 2)
 }
 
+func (s *GomolSuite) TestBaseRemoveLoggerNonExistent(c *C) {
+	b := newBase()
+
+	ml1 := newDefaultMemLogger()
+	ml2 := newDefaultMemLogger()
+	b.AddLogger(ml1)
+
+	b.InitLoggers()
+
+	c.Check(ml1.IsInitialized(), Equals, true)
+	c.Check(b.loggers, HasLen, 1)
+
+	err := b.RemoveLogger(ml2)
+	c.Assert(err, IsNil)
+}
+
 func (s *GomolSuite) TestBaseClearLoggers(c *C) {
 	b := newBase()
 

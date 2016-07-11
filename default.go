@@ -48,6 +48,10 @@ func RemoveAttr(key string) {
 	curDefault.RemoveAttr(key)
 }
 
+func NewLogAdapter(attrs map[string]interface{}) *LogAdapter {
+	return curDefault.NewLogAdapter(attrs)
+}
+
 func Dbg(msg string) error {
 	return Debug(msg)
 }

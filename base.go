@@ -157,6 +157,13 @@ func (b *Base) ShutdownLoggers() error {
 	return nil
 }
 
+/*
+NewLogAdapter creates a LogAdapter using Base to log messages
+*/
+func (b *Base) NewLogAdapter(attrs map[string]interface{}) *LogAdapter {
+	return newLogAdapter(b, attrs)
+}
+
 // ClearAttrs will remove all the attributes added to Base
 func (b *Base) ClearAttrs() {
 	b.BaseAttrs = make(map[string]interface{}, 0)

@@ -47,7 +47,51 @@ func (s *GomolSuite) TestTemplateExecuteError(c *C) {
 	c.Check(err, NotNil)
 }
 
-func (s *GomolSuite) TestTplColors(c *C) {
+func (s *GomolSuite) TestTplColorsDebug(c *C) {
+	msg := newMessage(nil, LEVEL_DEBUG, nil, "colors!")
+	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
+	c.Assert(err, IsNil)
+
+	out, err := tpl.executeInternalMsg(msg, true)
+	c.Assert(err, IsNil)
+
+	c.Check(out, Equals, "\x1b[36mhascolor\x1b[0m colors!")
+}
+
+func (s *GomolSuite) TestTplColorsInfo(c *C) {
+	msg := newMessage(nil, LEVEL_INFO, nil, "colors!")
+	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
+	c.Assert(err, IsNil)
+
+	out, err := tpl.executeInternalMsg(msg, true)
+	c.Assert(err, IsNil)
+
+	c.Check(out, Equals, "\x1b[32mhascolor\x1b[0m colors!")
+}
+
+func (s *GomolSuite) TestTplColorsWarning(c *C) {
+	msg := newMessage(nil, LEVEL_WARNING, nil, "colors!")
+	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
+	c.Assert(err, IsNil)
+
+	out, err := tpl.executeInternalMsg(msg, true)
+	c.Assert(err, IsNil)
+
+	c.Check(out, Equals, "\x1b[33mhascolor\x1b[0m colors!")
+}
+
+func (s *GomolSuite) TestTplColorsError(c *C) {
+	msg := newMessage(nil, LEVEL_ERROR, nil, "colors!")
+	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
+	c.Assert(err, IsNil)
+
+	out, err := tpl.executeInternalMsg(msg, true)
+	c.Assert(err, IsNil)
+
+	c.Check(out, Equals, "\x1b[31mhascolor\x1b[0m colors!")
+}
+
+func (s *GomolSuite) TestTplColorsFatal(c *C) {
 	msg := newMessage(nil, LEVEL_FATAL, nil, "colors!")
 	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
 	c.Assert(err, IsNil)

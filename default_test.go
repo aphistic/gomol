@@ -133,6 +133,25 @@ func (s *GomolSuite) TestDefaultClearAttrs(c *C) {
 	c.Check(curDefault.BaseAttrs, HasLen, 0)
 }
 
+func (s *GomolSuite) TestDefaultNewLogAdapter(c *C) {
+	la := NewLogAdapter(map[string]interface{}{"foo": "bar"})
+	defLogger := curDefault.loggers[0].(*memLogger)
+
+	la.Dbgm(map[string]interface{}{"attr": "val"}, "test")
+
+	ShutdownLoggers()
+
+	c.Assert(len(defLogger.Messages), Equals, 1)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Level:   LEVEL_DEBUG,
+		Message: "test",
+		Attrs: map[string]interface{}{
+			"foo":  "bar",
+			"attr": "val",
+		},
+	})
+}
+
 func (s *GomolSuite) TestDefaultDbg(c *C) {
 	Dbg("test")
 	curDefault.queue.stopQueueWorkers()
