@@ -30,11 +30,11 @@ func (s *GomolSuite) SetUpTest(c *C) {
 	curTestExiter = &testExiter{}
 	setExiter(curTestExiter)
 
-	testBase = newBase()
+	testBase = NewBase()
 	testBase.AddLogger(newDefaultMemLogger())
 	testBase.InitLoggers()
 
-	curDefault = newBase()
+	curDefault = NewBase()
 	curDefault.AddLogger(newDefaultMemLogger())
 	curDefault.InitLoggers()
 }
@@ -46,7 +46,7 @@ func (s *GomolSuite) TearDownTest(c *C) {
 }
 
 func (s *GomolSuite) TestShouldLog(c *C) {
-	b := newBase()
+	b := NewBase()
 	b.SetLogLevel(LEVEL_INFO)
 	c.Check(b.shouldLog(LEVEL_UNKNOWN), Equals, false)
 	c.Check(b.shouldLog(LEVEL_DEBUG), Equals, false)
@@ -73,7 +73,7 @@ func (s *GomolSuite) TestShouldLog(c *C) {
 }
 
 func (s *GomolSuite) TestSetLogLevel(c *C) {
-	b := newBase()
+	b := NewBase()
 	b.InitLoggers()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -89,7 +89,7 @@ func (s *GomolSuite) TestSetLogLevel(c *C) {
 }
 
 func (s *GomolSuite) TestAddLogger(c *C) {
-	b := newBase()
+	b := NewBase()
 	b.InitLoggers()
 	c.Check(b.loggers, HasLen, 0)
 
@@ -105,7 +105,7 @@ func (s *GomolSuite) TestAddLogger(c *C) {
 }
 
 func (s *GomolSuite) TestAddLoggerAfterInit(c *C) {
-	b := newBase()
+	b := NewBase()
 	b.InitLoggers()
 
 	ml := newDefaultMemLogger()
@@ -117,7 +117,7 @@ func (s *GomolSuite) TestAddLoggerAfterInit(c *C) {
 }
 
 func (s *GomolSuite) TestAddLoggerAfterShutdown(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	ml := newDefaultMemLogger()
 	c.Check(ml.IsInitialized(), Equals, false)
@@ -130,7 +130,7 @@ func (s *GomolSuite) TestAddLoggerAfterShutdown(c *C) {
 }
 
 func (s *GomolSuite) TestAddLoggerAfterInitFail(c *C) {
-	b := newBase()
+	b := NewBase()
 	b.InitLoggers()
 
 	mlCfg := newMemLoggerConfig()
@@ -147,7 +147,7 @@ func (s *GomolSuite) TestAddLoggerAfterInitFail(c *C) {
 }
 
 func (s *GomolSuite) TestAddLoggerAfterShutdownFail(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	mlCfg := newMemLoggerConfig()
 	mlCfg.FailShutdown = true
@@ -165,7 +165,7 @@ func (s *GomolSuite) TestAddLoggerAfterShutdownFail(c *C) {
 }
 
 func (s *GomolSuite) TestBaseRemoveLogger(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
 	ml2 := newDefaultMemLogger()
@@ -190,7 +190,7 @@ func (s *GomolSuite) TestBaseRemoveLogger(c *C) {
 }
 
 func (s *GomolSuite) TestBaseRemoveLoggerNonExistent(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
 	ml2 := newDefaultMemLogger()
@@ -206,7 +206,7 @@ func (s *GomolSuite) TestBaseRemoveLoggerNonExistent(c *C) {
 }
 
 func (s *GomolSuite) TestBaseClearLoggers(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
 	ml2 := newDefaultMemLogger()
@@ -231,7 +231,7 @@ func (s *GomolSuite) TestBaseClearLoggers(c *C) {
 }
 
 func (s *GomolSuite) TestInitLoggers(c *C) {
-	b := newBase()
+	b := NewBase()
 	c.Check(b.IsInitialized(), Equals, false)
 
 	ml1 := newDefaultMemLogger()
@@ -248,7 +248,7 @@ func (s *GomolSuite) TestInitLoggers(c *C) {
 }
 
 func (s *GomolSuite) TestInitLoggersTwice(c *C) {
-	b := newBase()
+	b := NewBase()
 	c.Check(b.IsInitialized(), Equals, false)
 
 	ml1 := newDefaultMemLogger()
@@ -266,7 +266,7 @@ func (s *GomolSuite) TestInitLoggersTwice(c *C) {
 }
 
 func (s *GomolSuite) TestInitLoggersFail(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	mlCfg := newMemLoggerConfig()
 	mlCfg.FailInit = true
@@ -288,7 +288,7 @@ func (s *GomolSuite) TestInitLoggersFail(c *C) {
 }
 
 func (s *GomolSuite) TestShutdownLoggers(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
 	ml2 := newDefaultMemLogger()
@@ -304,7 +304,7 @@ func (s *GomolSuite) TestShutdownLoggers(c *C) {
 }
 
 func (s *GomolSuite) TestShutdownLoggersFail(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	mlCfg := newMemLoggerConfig()
 	mlCfg.FailShutdown = true
@@ -326,7 +326,7 @@ func (s *GomolSuite) TestShutdownLoggersFail(c *C) {
 }
 
 func (s *GomolSuite) TestShutdownLoggersTwice(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
 	ml2 := newDefaultMemLogger()
@@ -343,7 +343,7 @@ func (s *GomolSuite) TestShutdownLoggersTwice(c *C) {
 }
 
 func (s *GomolSuite) TestSetAttr(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	b.SetAttr("attr1", 1)
 	c.Check(b.BaseAttrs, HasLen, 1)
@@ -354,7 +354,7 @@ func (s *GomolSuite) TestSetAttr(c *C) {
 }
 
 func (s *GomolSuite) TestRemoveAttr(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	b.SetAttr("attr1", 1)
 	c.Check(b.BaseAttrs, HasLen, 1)
@@ -365,7 +365,7 @@ func (s *GomolSuite) TestRemoveAttr(c *C) {
 }
 
 func (s *GomolSuite) TestClearAttrs(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	b.SetAttr("attr1", 1)
 	b.SetAttr("attr2", "val2")
@@ -378,7 +378,7 @@ func (s *GomolSuite) TestClearAttrs(c *C) {
 // Base func tests
 
 func (s *GomolSuite) TestBaseDbg(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	l1 := newDefaultMemLogger()
 	l2 := newDefaultMemLogger()
@@ -402,7 +402,7 @@ func (s *GomolSuite) TestBaseDbg(c *C) {
 }
 
 func (s *GomolSuite) TestBaseDbgf(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	l1 := newDefaultMemLogger()
 	l2 := newDefaultMemLogger()
@@ -426,7 +426,7 @@ func (s *GomolSuite) TestBaseDbgf(c *C) {
 }
 
 func (s *GomolSuite) TestBaseDbgm(c *C) {
-	b := newBase()
+	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
 	l1 := newDefaultMemLogger()
@@ -463,7 +463,7 @@ func (s *GomolSuite) TestBaseDbgm(c *C) {
 }
 
 func (s *GomolSuite) TestBaseInfo(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	l1 := newDefaultMemLogger()
 	l2 := newDefaultMemLogger()
@@ -487,7 +487,7 @@ func (s *GomolSuite) TestBaseInfo(c *C) {
 }
 
 func (s *GomolSuite) TestBaseInfof(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	l1 := newDefaultMemLogger()
 	l2 := newDefaultMemLogger()
@@ -511,7 +511,7 @@ func (s *GomolSuite) TestBaseInfof(c *C) {
 }
 
 func (s *GomolSuite) TestBaseInfom(c *C) {
-	b := newBase()
+	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
 	l1 := newDefaultMemLogger()
@@ -548,7 +548,7 @@ func (s *GomolSuite) TestBaseInfom(c *C) {
 }
 
 func (s *GomolSuite) TestBaseWarn(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	l1 := newDefaultMemLogger()
 	l2 := newDefaultMemLogger()
@@ -572,7 +572,7 @@ func (s *GomolSuite) TestBaseWarn(c *C) {
 }
 
 func (s *GomolSuite) TestBaseWarnf(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	l1 := newDefaultMemLogger()
 	l2 := newDefaultMemLogger()
@@ -596,7 +596,7 @@ func (s *GomolSuite) TestBaseWarnf(c *C) {
 }
 
 func (s *GomolSuite) TestBaseWarnm(c *C) {
-	b := newBase()
+	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
 	l1 := newDefaultMemLogger()
@@ -633,7 +633,7 @@ func (s *GomolSuite) TestBaseWarnm(c *C) {
 }
 
 func (s *GomolSuite) TestBaseErr(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	l1 := newDefaultMemLogger()
 	l2 := newDefaultMemLogger()
@@ -657,7 +657,7 @@ func (s *GomolSuite) TestBaseErr(c *C) {
 }
 
 func (s *GomolSuite) TestBaseErrf(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	l1 := newDefaultMemLogger()
 	l2 := newDefaultMemLogger()
@@ -681,7 +681,7 @@ func (s *GomolSuite) TestBaseErrf(c *C) {
 }
 
 func (s *GomolSuite) TestBaseErrm(c *C) {
-	b := newBase()
+	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
 	l1 := newDefaultMemLogger()
@@ -718,7 +718,7 @@ func (s *GomolSuite) TestBaseErrm(c *C) {
 }
 
 func (s *GomolSuite) TestBaseFatal(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	l1 := newDefaultMemLogger()
 	l2 := newDefaultMemLogger()
@@ -742,7 +742,7 @@ func (s *GomolSuite) TestBaseFatal(c *C) {
 }
 
 func (s *GomolSuite) TestBaseFatalf(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	l1 := newDefaultMemLogger()
 	l2 := newDefaultMemLogger()
@@ -766,7 +766,7 @@ func (s *GomolSuite) TestBaseFatalf(c *C) {
 }
 
 func (s *GomolSuite) TestBaseFatalm(c *C) {
-	b := newBase()
+	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
 	l1 := newDefaultMemLogger()
@@ -803,7 +803,7 @@ func (s *GomolSuite) TestBaseFatalm(c *C) {
 }
 
 func (s *GomolSuite) TestBaseDie(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	l1 := newDefaultMemLogger()
 	l2 := newDefaultMemLogger()
@@ -830,7 +830,7 @@ func (s *GomolSuite) TestBaseDie(c *C) {
 }
 
 func (s *GomolSuite) TestBaseDief(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	l1 := newDefaultMemLogger()
 	l2 := newDefaultMemLogger()
@@ -857,7 +857,7 @@ func (s *GomolSuite) TestBaseDief(c *C) {
 }
 
 func (s *GomolSuite) TestBaseDiem(c *C) {
-	b := newBase()
+	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
 	l1 := newDefaultMemLogger()
@@ -899,7 +899,7 @@ func (s *GomolSuite) TestBaseDiem(c *C) {
 }
 
 func (s *GomolSuite) TestBaseOrdering(c *C) {
-	b := newBase()
+	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
 	l1 := newDefaultMemLogger()

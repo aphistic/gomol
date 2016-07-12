@@ -3,7 +3,7 @@ package gomol
 var curDefault *Base
 
 func init() {
-	curDefault = newBase()
+	curDefault = NewBase()
 }
 
 func SetLogLevel(level LogLevel) {

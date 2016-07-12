@@ -5,7 +5,7 @@ import (
 )
 
 func (s *GomolSuite) TestDefaultInitLogger(c *C) {
-	curDefault = newBase()
+	curDefault = NewBase()
 	c.Check(IsInitialized(), Equals, false)
 	AddLogger(newDefaultMemLogger())
 	defLogger := curDefault.loggers[0].(*memLogger)
@@ -17,7 +17,7 @@ func (s *GomolSuite) TestDefaultInitLogger(c *C) {
 }
 
 func (s *GomolSuite) TestDefaultShutdownLogger(c *C) {
-	curDefault = newBase()
+	curDefault = NewBase()
 	c.Check(IsInitialized(), Equals, false)
 	AddLogger(newDefaultMemLogger())
 	InitLoggers()
@@ -30,14 +30,14 @@ func (s *GomolSuite) TestDefaultShutdownLogger(c *C) {
 }
 
 func (s *GomolSuite) TestDefaultAddLogger(c *C) {
-	curDefault = newBase()
+	curDefault = NewBase()
 	c.Check(curDefault.loggers, HasLen, 0)
 	AddLogger(newDefaultMemLogger())
 	c.Check(curDefault.loggers, HasLen, 1)
 }
 
 func (s *GomolSuite) TestDefaultRemoveLogger(c *C) {
-	curDefault = newBase()
+	curDefault = NewBase()
 
 	ml1 := newDefaultMemLogger()
 	ml2 := newDefaultMemLogger()
@@ -62,7 +62,7 @@ func (s *GomolSuite) TestDefaultRemoveLogger(c *C) {
 }
 
 func (s *GomolSuite) TestDefaultClearLoggers(c *C) {
-	curDefault = newBase()
+	curDefault = NewBase()
 
 	ml1 := newDefaultMemLogger()
 	ml2 := newDefaultMemLogger()
@@ -87,7 +87,7 @@ func (s *GomolSuite) TestDefaultClearLoggers(c *C) {
 }
 
 func (s *GomolSuite) TestDefaultSetLogLevel(c *C) {
-	curDefault = newBase()
+	curDefault = NewBase()
 	InitLoggers()
 	ml := newDefaultMemLogger()
 	AddLogger(ml)
@@ -103,7 +103,7 @@ func (s *GomolSuite) TestDefaultSetLogLevel(c *C) {
 }
 
 func (s *GomolSuite) TestDefaultSetAttr(c *C) {
-	curDefault = newBase()
+	curDefault = NewBase()
 	c.Check(curDefault.BaseAttrs, HasLen, 0)
 	SetAttr("attr", 1234)
 	c.Check(curDefault.BaseAttrs, HasLen, 1)
@@ -111,7 +111,7 @@ func (s *GomolSuite) TestDefaultSetAttr(c *C) {
 }
 
 func (s *GomolSuite) TestDefaultRemoveAttr(c *C) {
-	curDefault = newBase()
+	curDefault = NewBase()
 	c.Check(curDefault.BaseAttrs, HasLen, 0)
 	SetAttr("attr", 1234)
 	c.Check(curDefault.BaseAttrs, HasLen, 1)
@@ -121,7 +121,7 @@ func (s *GomolSuite) TestDefaultRemoveAttr(c *C) {
 }
 
 func (s *GomolSuite) TestDefaultClearAttrs(c *C) {
-	curDefault = newBase()
+	curDefault = NewBase()
 	c.Check(curDefault.BaseAttrs, HasLen, 0)
 	SetAttr("attr", 1234)
 	c.Check(curDefault.BaseAttrs, HasLen, 1)

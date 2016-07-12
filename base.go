@@ -17,7 +17,8 @@ type Base struct {
 	BaseAttrs     map[string]interface{}
 }
 
-func newBase() *Base {
+// NewBase creates a new instance of Base with default values set.
+func NewBase() *Base {
 	b := &Base{
 		queue:     newQueue(),
 		logLevel:  LEVEL_DEBUG,

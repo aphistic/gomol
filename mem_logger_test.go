@@ -82,7 +82,7 @@ func (s *GomolSuite) TestMemLogmAttrs(c *C) {
 }
 
 func (s *GomolSuite) TestMemBaseAttrs(c *C) {
-	b := newBase()
+	b := NewBase()
 	b.SetAttr("attr1", 7890)
 	b.SetAttr("attr2", "val2")
 

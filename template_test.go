@@ -116,7 +116,7 @@ func (s *GomolSuite) TestTplFuncsCase(c *C) {
 func (s *GomolSuite) TestTplMsgFromInternal(c *C) {
 	setClock(newTestClock(time.Now()))
 
-	b := newBase()
+	b := NewBase()
 	b.SetAttr("baseAttr", 1234)
 	b.SetAttr("overrideAttr", 1234)
 	msg := newMessage(b, LEVEL_INFO, map[string]interface{}{
@@ -137,7 +137,7 @@ func (s *GomolSuite) TestTplMsgFromInternal(c *C) {
 }
 
 func (s *GomolSuite) TestTplMsgAttrs(c *C) {
-	b := newBase()
+	b := NewBase()
 	b.SetAttr("baseAttr", 1234)
 	b.SetAttr("overrideAttr", 1234)
 	msg := newMessage(b, LEVEL_INFO, map[string]interface{}{

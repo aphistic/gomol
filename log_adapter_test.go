@@ -5,7 +5,7 @@ import (
 )
 
 func (s *GomolSuite) TestNewLogAdapterEmpty(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	la := b.NewLogAdapter(nil)
 	c.Check(la, NotNil)
@@ -16,7 +16,7 @@ func (s *GomolSuite) TestNewLogAdapterEmpty(c *C) {
 }
 
 func (s *GomolSuite) TestNewLogAdapter(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	la := b.NewLogAdapter(map[string]interface{}{
 		"testNum": 1234,
@@ -32,7 +32,7 @@ func (s *GomolSuite) TestNewLogAdapter(c *C) {
 }
 
 func (s *GomolSuite) TestLogAdapterSetAttr(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	la := b.NewLogAdapter(nil)
 	c.Check(len(la.attrs), Equals, 0)
@@ -42,7 +42,7 @@ func (s *GomolSuite) TestLogAdapterSetAttr(c *C) {
 }
 
 func (s *GomolSuite) TestLogAdapterRemoveAttr(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	la := b.NewLogAdapter(map[string]interface{}{
 		"foo": "bar",
@@ -54,7 +54,7 @@ func (s *GomolSuite) TestLogAdapterRemoveAttr(c *C) {
 }
 
 func (s *GomolSuite) TestLogAdapterClearAttrs(c *C) {
-	b := newBase()
+	b := NewBase()
 
 	la := b.NewLogAdapter(map[string]interface{}{
 		"foo": "bar",
@@ -68,7 +68,7 @@ func (s *GomolSuite) TestLogAdapterClearAttrs(c *C) {
 }
 
 func (s *GomolSuite) TestLogAdapterDebug(c *C) {
-	b := newBase()
+	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	b.InitLoggers()
@@ -136,7 +136,7 @@ func (s *GomolSuite) TestLogAdapterDebug(c *C) {
 }
 
 func (s *GomolSuite) TestLogAdapterInfo(c *C) {
-	b := newBase()
+	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	b.InitLoggers()
@@ -178,7 +178,7 @@ func (s *GomolSuite) TestLogAdapterInfo(c *C) {
 }
 
 func (s *GomolSuite) TestLogAdapterWarn(c *C) {
-	b := newBase()
+	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	b.InitLoggers()
@@ -246,7 +246,7 @@ func (s *GomolSuite) TestLogAdapterWarn(c *C) {
 }
 
 func (s *GomolSuite) TestLogAdapterError(c *C) {
-	b := newBase()
+	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	b.InitLoggers()
@@ -314,7 +314,7 @@ func (s *GomolSuite) TestLogAdapterError(c *C) {
 }
 
 func (s *GomolSuite) TestLogAdapterFatal(c *C) {
-	b := newBase()
+	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	b.InitLoggers()
@@ -356,7 +356,7 @@ func (s *GomolSuite) TestLogAdapterFatal(c *C) {
 }
 
 func (s *GomolSuite) TestLogAdapterDie(c *C) {
-	b := newBase()
+	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	b.InitLoggers()
@@ -381,7 +381,7 @@ func (s *GomolSuite) TestLogAdapterDie(c *C) {
 }
 
 func (s *GomolSuite) TestLogAdapterDief(c *C) {
-	b := newBase()
+	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	b.InitLoggers()
@@ -406,7 +406,7 @@ func (s *GomolSuite) TestLogAdapterDief(c *C) {
 }
 
 func (s *GomolSuite) TestLogAdapterDiem(c *C) {
-	b := newBase()
+	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	b.InitLoggers()

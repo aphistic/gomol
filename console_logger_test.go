@@ -33,7 +33,7 @@ func (s *GomolSuite) TestTestConsoleWriter(c *C) {
 // Issue-specific tests
 
 func (s *GomolSuite) TestIssue5StringFormatting(c *C) {
-	b := newBase()
+	b := NewBase()
 	b.InitLoggers()
 
 	cfg := NewConsoleLoggerConfig()
@@ -110,7 +110,7 @@ func (s *GomolSuite) TestConsoleLogm(c *C) {
 }
 
 func (s *GomolSuite) TestConsoleBaseAttrs(c *C) {
-	b := newBase()
+	b := NewBase()
 	b.SetAttr("attr1", 7890)
 	b.SetAttr("attr2", "val2")
 
