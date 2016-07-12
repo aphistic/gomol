@@ -1,14 +1,15 @@
-package gomol
+package gomolexamples
 
 import (
-	gomol "."
+	"github.com/aphistic/gomol"
+	gc "github.com/aphistic/gomol-console"
 )
 
 // Code for the README example to make sure it still builds!
 func Example() {
 	// Add a console logger
-	consoleCfg := gomol.NewConsoleLoggerConfig()
-	consoleLogger, _ := gomol.NewConsoleLogger(consoleCfg)
+	consoleCfg := gc.NewConsoleLoggerConfig()
+	consoleLogger, _ := gc.NewConsoleLogger(consoleCfg)
 	gomol.AddLogger(consoleLogger)
 
 	// Add a GELF logger

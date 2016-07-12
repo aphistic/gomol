@@ -1,6 +1,8 @@
 package gomol
 
 import (
+	"time"
+
 	. "gopkg.in/check.v1"
 )
 
@@ -51,7 +53,7 @@ func (s *GomolSuite) TestMemShutdownLoggerFail(c *C) {
 func (s *GomolSuite) TestMemClearMessages(c *C) {
 	ml := newDefaultMemLogger()
 	c.Check(ml.Messages, HasLen, 0)
-	ml.Logm(LEVEL_DEBUG, nil, "test")
+	ml.Logm(time.Now(), LEVEL_DEBUG, nil, "test")
 	c.Check(ml.Messages, HasLen, 1)
 	ml.ClearMessages()
 	c.Check(ml.Messages, HasLen, 0)
@@ -59,7 +61,7 @@ func (s *GomolSuite) TestMemClearMessages(c *C) {
 
 func (s *GomolSuite) TestMemLogmNoAttrs(c *C) {
 	ml := newDefaultMemLogger()
-	ml.Logm(LEVEL_DEBUG, nil, "test")
+	ml.Logm(time.Now(), LEVEL_DEBUG, nil, "test")
 	c.Assert(ml.Messages, HasLen, 1)
 	c.Check(ml.Messages[0].Level, Equals, LEVEL_DEBUG)
 	c.Check(ml.Messages[0].Message, Equals, "test")
@@ -67,14 +69,17 @@ func (s *GomolSuite) TestMemLogmNoAttrs(c *C) {
 }
 
 func (s *GomolSuite) TestMemLogmAttrs(c *C) {
+	setClock(newTestClock(time.Now()))
 	ml := newDefaultMemLogger()
 	ml.Logm(
+		clock().Now(),
 		LEVEL_DEBUG,
 		map[string]interface{}{
 			"attr1": 4321,
 		},
 		"test 1234")
 	c.Assert(ml.Messages, HasLen, 1)
+	c.Check(ml.Messages[0].Timestamp, Equals, clock().Now())
 	c.Check(ml.Messages[0].Level, Equals, LEVEL_DEBUG)
 	c.Check(ml.Messages[0].Message, Equals, "test 1234")
 	c.Assert(ml.Messages[0].Attrs, HasLen, 1)
@@ -82,6 +87,8 @@ func (s *GomolSuite) TestMemLogmAttrs(c *C) {
 }
 
 func (s *GomolSuite) TestMemBaseAttrs(c *C) {
+	setClock(newTestClock(time.Now()))
+
 	b := NewBase()
 	b.SetAttr("attr1", 7890)
 	b.SetAttr("attr2", "val2")
@@ -89,6 +96,7 @@ func (s *GomolSuite) TestMemBaseAttrs(c *C) {
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	ml.Logm(
+		clock().Now(),
 		LEVEL_DEBUG,
 		map[string]interface{}{
 			"attr1": 4321,
@@ -96,6 +104,7 @@ func (s *GomolSuite) TestMemBaseAttrs(c *C) {
 		},
 		"test 1234")
 	c.Assert(ml.Messages, HasLen, 1)
+	c.Check(ml.Messages[0].Timestamp, Equals, clock().Now())
 	c.Check(ml.Messages[0].Level, Equals, LEVEL_DEBUG)
 	c.Check(ml.Messages[0].Message, Equals, "test 1234")
 	c.Assert(ml.Messages[0].Attrs, HasLen, 3)

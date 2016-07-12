@@ -1,8 +1,6 @@
 package gomol
 
-import (
-	. "gopkg.in/check.v1"
-)
+import . "gopkg.in/check.v1"
 
 func (s *GomolSuite) TestNewLogAdapterEmpty(c *C) {
 	b := NewBase()
@@ -91,44 +89,50 @@ func (s *GomolSuite) TestLogAdapterDebug(c *C) {
 
 	c.Assert(len(ml.Messages), Equals, 6)
 	c.Check(ml.Messages[0], DeepEquals, &memMessage{
-		Level:   LEVEL_DEBUG,
-		Message: "Message 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_DEBUG,
+		Message:   "Message 1",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
 	})
 	c.Check(ml.Messages[1], DeepEquals, &memMessage{
-		Level:   LEVEL_DEBUG,
-		Message: "Message 2",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_DEBUG,
+		Message:   "Message 2",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
 	})
 	c.Check(ml.Messages[2], DeepEquals, &memMessage{
-		Level:   LEVEL_DEBUG,
-		Message: "MessageF 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_DEBUG,
+		Message:   "MessageF 1",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
 	})
 	c.Check(ml.Messages[3], DeepEquals, &memMessage{
-		Level:   LEVEL_DEBUG,
-		Message: "MessageF 2",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_DEBUG,
+		Message:   "MessageF 2",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
 	})
 	c.Check(ml.Messages[4], DeepEquals, &memMessage{
-		Level:   LEVEL_DEBUG,
-		Message: "MessageM 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_DEBUG,
+		Message:   "MessageM 1",
 		Attrs: map[string]interface{}{
 			"foo":   "bar",
 			"attr1": "val1",
 		},
 	})
 	c.Check(ml.Messages[5], DeepEquals, &memMessage{
-		Level:   LEVEL_DEBUG,
-		Message: "MessageM 2",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_DEBUG,
+		Message:   "MessageM 2",
 		Attrs: map[string]interface{}{
 			"foo": "newBar",
 		},
@@ -154,22 +158,25 @@ func (s *GomolSuite) TestLogAdapterInfo(c *C) {
 
 	c.Assert(len(ml.Messages), Equals, 3)
 	c.Check(ml.Messages[0], DeepEquals, &memMessage{
-		Level:   LEVEL_INFO,
-		Message: "Message 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_INFO,
+		Message:   "Message 1",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
 	})
 	c.Check(ml.Messages[1], DeepEquals, &memMessage{
-		Level:   LEVEL_INFO,
-		Message: "MessageF 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_INFO,
+		Message:   "MessageF 1",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
 	})
 	c.Check(ml.Messages[2], DeepEquals, &memMessage{
-		Level:   LEVEL_INFO,
-		Message: "MessageM 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_INFO,
+		Message:   "MessageM 1",
 		Attrs: map[string]interface{}{
 			"foo":   "bar",
 			"attr1": "val1",
@@ -201,44 +208,50 @@ func (s *GomolSuite) TestLogAdapterWarn(c *C) {
 
 	c.Assert(len(ml.Messages), Equals, 6)
 	c.Check(ml.Messages[0], DeepEquals, &memMessage{
-		Level:   LEVEL_WARNING,
-		Message: "Message 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_WARNING,
+		Message:   "Message 1",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
 	})
 	c.Check(ml.Messages[1], DeepEquals, &memMessage{
-		Level:   LEVEL_WARNING,
-		Message: "Message 2",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_WARNING,
+		Message:   "Message 2",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
 	})
 	c.Check(ml.Messages[2], DeepEquals, &memMessage{
-		Level:   LEVEL_WARNING,
-		Message: "MessageF 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_WARNING,
+		Message:   "MessageF 1",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
 	})
 	c.Check(ml.Messages[3], DeepEquals, &memMessage{
-		Level:   LEVEL_WARNING,
-		Message: "MessageF 2",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_WARNING,
+		Message:   "MessageF 2",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
 	})
 	c.Check(ml.Messages[4], DeepEquals, &memMessage{
-		Level:   LEVEL_WARNING,
-		Message: "MessageM 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_WARNING,
+		Message:   "MessageM 1",
 		Attrs: map[string]interface{}{
 			"foo":   "bar",
 			"attr1": "val1",
 		},
 	})
 	c.Check(ml.Messages[5], DeepEquals, &memMessage{
-		Level:   LEVEL_WARNING,
-		Message: "MessageM 2",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_WARNING,
+		Message:   "MessageM 2",
 		Attrs: map[string]interface{}{
 			"foo": "newBar",
 		},
@@ -269,44 +282,50 @@ func (s *GomolSuite) TestLogAdapterError(c *C) {
 
 	c.Assert(len(ml.Messages), Equals, 6)
 	c.Check(ml.Messages[0], DeepEquals, &memMessage{
-		Level:   LEVEL_ERROR,
-		Message: "Message 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_ERROR,
+		Message:   "Message 1",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
 	})
 	c.Check(ml.Messages[1], DeepEquals, &memMessage{
-		Level:   LEVEL_ERROR,
-		Message: "Message 2",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_ERROR,
+		Message:   "Message 2",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
 	})
 	c.Check(ml.Messages[2], DeepEquals, &memMessage{
-		Level:   LEVEL_ERROR,
-		Message: "MessageF 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_ERROR,
+		Message:   "MessageF 1",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
 	})
 	c.Check(ml.Messages[3], DeepEquals, &memMessage{
-		Level:   LEVEL_ERROR,
-		Message: "MessageF 2",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_ERROR,
+		Message:   "MessageF 2",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
 	})
 	c.Check(ml.Messages[4], DeepEquals, &memMessage{
-		Level:   LEVEL_ERROR,
-		Message: "MessageM 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_ERROR,
+		Message:   "MessageM 1",
 		Attrs: map[string]interface{}{
 			"foo":   "bar",
 			"attr1": "val1",
 		},
 	})
 	c.Check(ml.Messages[5], DeepEquals, &memMessage{
-		Level:   LEVEL_ERROR,
-		Message: "MessageM 2",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_ERROR,
+		Message:   "MessageM 2",
 		Attrs: map[string]interface{}{
 			"foo": "newBar",
 		},
@@ -332,22 +351,25 @@ func (s *GomolSuite) TestLogAdapterFatal(c *C) {
 
 	c.Assert(len(ml.Messages), Equals, 3)
 	c.Check(ml.Messages[0], DeepEquals, &memMessage{
-		Level:   LEVEL_FATAL,
-		Message: "Message 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_FATAL,
+		Message:   "Message 1",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
 	})
 	c.Check(ml.Messages[1], DeepEquals, &memMessage{
-		Level:   LEVEL_FATAL,
-		Message: "MessageF 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_FATAL,
+		Message:   "MessageF 1",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
 	})
 	c.Check(ml.Messages[2], DeepEquals, &memMessage{
-		Level:   LEVEL_FATAL,
-		Message: "MessageM 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_FATAL,
+		Message:   "MessageM 1",
 		Attrs: map[string]interface{}{
 			"foo":   "bar",
 			"attr1": "val1",
@@ -370,8 +392,9 @@ func (s *GomolSuite) TestLogAdapterDie(c *C) {
 
 	c.Assert(len(ml.Messages), Equals, 1)
 	c.Check(ml.Messages[0], DeepEquals, &memMessage{
-		Level:   LEVEL_FATAL,
-		Message: "Message 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_FATAL,
+		Message:   "Message 1",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
@@ -395,8 +418,9 @@ func (s *GomolSuite) TestLogAdapterDief(c *C) {
 
 	c.Assert(len(ml.Messages), Equals, 1)
 	c.Check(ml.Messages[0], DeepEquals, &memMessage{
-		Level:   LEVEL_FATAL,
-		Message: "MessageF 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_FATAL,
+		Message:   "MessageF 1",
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
@@ -422,8 +446,9 @@ func (s *GomolSuite) TestLogAdapterDiem(c *C) {
 
 	c.Assert(len(ml.Messages), Equals, 1)
 	c.Check(ml.Messages[0], DeepEquals, &memMessage{
-		Level:   LEVEL_FATAL,
-		Message: "MessageM 1",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_FATAL,
+		Message:   "MessageM 1",
 		Attrs: map[string]interface{}{
 			"foo":   "bar",
 			"attr1": "val1",

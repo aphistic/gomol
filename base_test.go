@@ -2,6 +2,7 @@ package gomol
 
 import (
 	"testing"
+	"time"
 
 	. "gopkg.in/check.v1"
 )
@@ -27,6 +28,8 @@ func (exiter *testExiter) Exit(code int) {
 var curTestExiter *testExiter
 
 func (s *GomolSuite) SetUpTest(c *C) {
+	setClock(newTestClock(time.Now()))
+
 	curTestExiter = &testExiter{}
 	setExiter(curTestExiter)
 

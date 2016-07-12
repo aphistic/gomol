@@ -187,7 +187,7 @@ func (b *Base) log(level LogLevel, m map[string]interface{}, msg string, a ...in
 	if !b.shouldLog(level) {
 		return nil
 	}
-	nm := newMessage(b, level, m, msg, a...)
+	nm := newMessage(clock().Now(), b, level, m, msg, a...)
 	return b.queue.QueueMessage(nm)
 }
 

@@ -49,7 +49,8 @@ type message struct {
 	Msg       string
 }
 
-func newMessage(base *Base,
+func newMessage(timestamp time.Time,
+	base *Base,
 	level LogLevel,
 	msgAttrs map[string]interface{},
 	format string, va ...interface{}) *message {
@@ -62,7 +63,7 @@ func newMessage(base *Base,
 	nm := &message{
 		Base:      base,
 		Level:     level,
-		Timestamp: clock().Now(),
+		Timestamp: timestamp,
 		Attrs:     make(map[string]interface{}, len(msgAttrs)),
 		Msg:       msgStr,
 	}

@@ -1,6 +1,8 @@
 package gomol
 
 import (
+	"time"
+
 	. "gopkg.in/check.v1"
 )
 
@@ -25,8 +27,10 @@ func (s *GomolSuite) TestLevelString(c *C) {
 }
 
 func (s *GomolSuite) TestNewMessageAttrsNil(c *C) {
-	m := newMessage(curDefault, LEVEL_DEBUG, nil, "test")
+	setClock(newTestClock(time.Now()))
+	m := newMessage(clock().Now(), curDefault, LEVEL_DEBUG, nil, "test")
 	c.Check(m.Base, DeepEquals, curDefault)
+	c.Check(m.Timestamp, Equals, clock().Now())
 	c.Check(m.Level, Equals, LEVEL_DEBUG)
 	c.Check(m.Attrs, NotNil)
 	c.Check(m.Attrs, HasLen, 0)
@@ -34,13 +38,16 @@ func (s *GomolSuite) TestNewMessageAttrsNil(c *C) {
 }
 
 func (s *GomolSuite) TestNewMessageMsgAttrsNil(c *C) {
+	setClock(newTestClock(time.Now()))
+
 	ma := map[string]interface{}{
 		"msgAttr":   "strVal",
 		"otherAttr": 4321,
 	}
 
-	m := newMessage(curDefault, LEVEL_DEBUG, ma, "test")
+	m := newMessage(clock().Now(), curDefault, LEVEL_DEBUG, ma, "test")
 	c.Check(m.Base, DeepEquals, curDefault)
+	c.Check(m.Timestamp, Equals, clock().Now())
 	c.Check(m.Level, Equals, LEVEL_DEBUG)
 	c.Check(m.Attrs, NotNil)
 	c.Check(m.Attrs, HasLen, 2)
@@ -50,8 +57,10 @@ func (s *GomolSuite) TestNewMessageMsgAttrsNil(c *C) {
 }
 
 func (s *GomolSuite) TestNewMessageFormat(c *C) {
-	m := newMessage(curDefault, LEVEL_DEBUG, nil, "test %v %v", "str", 1234)
+	setClock(newTestClock(time.Now()))
+	m := newMessage(clock().Now(), curDefault, LEVEL_DEBUG, nil, "test %v %v", "str", 1234)
 	c.Check(m.Base, DeepEquals, curDefault)
+	c.Check(m.Timestamp, Equals, clock().Now())
 	c.Check(m.Level, Equals, LEVEL_DEBUG)
 	c.Check(m.Attrs, NotNil)
 	c.Check(m.Attrs, HasLen, 0)
@@ -59,13 +68,16 @@ func (s *GomolSuite) TestNewMessageFormat(c *C) {
 }
 
 func (s *GomolSuite) TestNewMessageFormatWithAttrs(c *C) {
+	setClock(newTestClock(time.Now()))
+
 	ma := map[string]interface{}{
 		"msgAttr":   "strVal",
 		"otherAttr": 4321,
 	}
 
-	m := newMessage(curDefault, LEVEL_DEBUG, ma, "test %v %v", "str", 1234)
+	m := newMessage(clock().Now(), curDefault, LEVEL_DEBUG, ma, "test %v %v", "str", 1234)
 	c.Check(m.Base, DeepEquals, curDefault)
+	c.Check(m.Timestamp, Equals, clock().Now())
 	c.Check(m.Level, Equals, LEVEL_DEBUG)
 	c.Check(m.Attrs, NotNil)
 	c.Check(m.Attrs, HasLen, 2)

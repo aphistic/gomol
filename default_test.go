@@ -143,8 +143,9 @@ func (s *GomolSuite) TestDefaultNewLogAdapter(c *C) {
 
 	c.Assert(len(defLogger.Messages), Equals, 1)
 	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
-		Level:   LEVEL_DEBUG,
-		Message: "test",
+		Timestamp: clock().Now(),
+		Level:     LEVEL_DEBUG,
+		Message:   "test",
 		Attrs: map[string]interface{}{
 			"foo":  "bar",
 			"attr": "val",
@@ -157,9 +158,12 @@ func (s *GomolSuite) TestDefaultDbg(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_DEBUG)
-	c.Check(defLogger.Messages[0].Message, Equals, "test")
-	c.Check(defLogger.Messages[0].Attrs, HasLen, 0)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_DEBUG,
+		Message:   "test",
+		Attrs:     map[string]interface{}{},
+	})
 }
 
 func (s *GomolSuite) TestDefaultDbgf(c *C) {
@@ -167,9 +171,12 @@ func (s *GomolSuite) TestDefaultDbgf(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_DEBUG)
-	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
-	c.Check(defLogger.Messages[0].Attrs, HasLen, 0)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_DEBUG,
+		Message:   "test 1234",
+		Attrs:     map[string]interface{}{},
+	})
 }
 
 func (s *GomolSuite) TestDefaultDbgm(c *C) {
@@ -181,10 +188,14 @@ func (s *GomolSuite) TestDefaultDbgm(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_DEBUG)
-	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
-	c.Assert(defLogger.Messages[0].Attrs, HasLen, 1)
-	c.Check(defLogger.Messages[0].Attrs["attr1"], Equals, 4321)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_DEBUG,
+		Message:   "test 1234",
+		Attrs: map[string]interface{}{
+			"attr1": 4321,
+		},
+	})
 }
 
 func (s *GomolSuite) TestDefaultInfo(c *C) {
@@ -192,9 +203,12 @@ func (s *GomolSuite) TestDefaultInfo(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_INFO)
-	c.Check(defLogger.Messages[0].Message, Equals, "test")
-	c.Check(defLogger.Messages[0].Attrs, HasLen, 0)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_INFO,
+		Message:   "test",
+		Attrs:     map[string]interface{}{},
+	})
 }
 
 func (s *GomolSuite) TestDefaultInfof(c *C) {
@@ -202,9 +216,12 @@ func (s *GomolSuite) TestDefaultInfof(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_INFO)
-	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
-	c.Check(defLogger.Messages[0].Attrs, HasLen, 0)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_INFO,
+		Message:   "test 1234",
+		Attrs:     map[string]interface{}{},
+	})
 }
 
 func (s *GomolSuite) TestDefaultInfom(c *C) {
@@ -216,10 +233,14 @@ func (s *GomolSuite) TestDefaultInfom(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_INFO)
-	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
-	c.Assert(defLogger.Messages[0].Attrs, HasLen, 1)
-	c.Check(defLogger.Messages[0].Attrs["attr1"], Equals, 4321)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_INFO,
+		Message:   "test 1234",
+		Attrs: map[string]interface{}{
+			"attr1": 4321,
+		},
+	})
 }
 
 func (s *GomolSuite) TestDefaultWarn(c *C) {
@@ -227,9 +248,12 @@ func (s *GomolSuite) TestDefaultWarn(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_WARNING)
-	c.Check(defLogger.Messages[0].Message, Equals, "test")
-	c.Check(defLogger.Messages[0].Attrs, HasLen, 0)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_WARNING,
+		Message:   "test",
+		Attrs:     map[string]interface{}{},
+	})
 }
 
 func (s *GomolSuite) TestDefaultWarnf(c *C) {
@@ -237,9 +261,12 @@ func (s *GomolSuite) TestDefaultWarnf(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_WARNING)
-	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
-	c.Check(defLogger.Messages[0].Attrs, HasLen, 0)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_WARNING,
+		Message:   "test 1234",
+		Attrs:     map[string]interface{}{},
+	})
 }
 
 func (s *GomolSuite) TestDefaultWarnm(c *C) {
@@ -251,10 +278,14 @@ func (s *GomolSuite) TestDefaultWarnm(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_WARNING)
-	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
-	c.Assert(defLogger.Messages[0].Attrs, HasLen, 1)
-	c.Check(defLogger.Messages[0].Attrs["attr1"], Equals, 4321)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_WARNING,
+		Message:   "test 1234",
+		Attrs: map[string]interface{}{
+			"attr1": 4321,
+		},
+	})
 }
 
 func (s *GomolSuite) TestDefaultErr(c *C) {
@@ -262,9 +293,12 @@ func (s *GomolSuite) TestDefaultErr(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_ERROR)
-	c.Check(defLogger.Messages[0].Message, Equals, "test")
-	c.Check(defLogger.Messages[0].Attrs, HasLen, 0)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_ERROR,
+		Message:   "test",
+		Attrs:     map[string]interface{}{},
+	})
 }
 
 func (s *GomolSuite) TestDefaultErrf(c *C) {
@@ -272,9 +306,12 @@ func (s *GomolSuite) TestDefaultErrf(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_ERROR)
-	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
-	c.Check(defLogger.Messages[0].Attrs, HasLen, 0)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_ERROR,
+		Message:   "test 1234",
+		Attrs:     map[string]interface{}{},
+	})
 }
 
 func (s *GomolSuite) TestDefaultErrm(c *C) {
@@ -286,10 +323,14 @@ func (s *GomolSuite) TestDefaultErrm(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_ERROR)
-	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
-	c.Assert(defLogger.Messages[0].Attrs, HasLen, 1)
-	c.Check(defLogger.Messages[0].Attrs["attr1"], Equals, 4321)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_ERROR,
+		Message:   "test 1234",
+		Attrs: map[string]interface{}{
+			"attr1": 4321,
+		},
+	})
 }
 
 func (s *GomolSuite) TestDefaultFatal(c *C) {
@@ -297,9 +338,12 @@ func (s *GomolSuite) TestDefaultFatal(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_FATAL)
-	c.Check(defLogger.Messages[0].Message, Equals, "test")
-	c.Check(defLogger.Messages[0].Attrs, HasLen, 0)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_FATAL,
+		Message:   "test",
+		Attrs:     map[string]interface{}{},
+	})
 }
 
 func (s *GomolSuite) TestDefaultFatalf(c *C) {
@@ -307,9 +351,12 @@ func (s *GomolSuite) TestDefaultFatalf(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_FATAL)
-	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
-	c.Check(defLogger.Messages[0].Attrs, HasLen, 0)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_FATAL,
+		Message:   "test 1234",
+		Attrs:     map[string]interface{}{},
+	})
 }
 
 func (s *GomolSuite) TestDefaultFatalm(c *C) {
@@ -321,10 +368,14 @@ func (s *GomolSuite) TestDefaultFatalm(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_FATAL)
-	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
-	c.Assert(defLogger.Messages[0].Attrs, HasLen, 1)
-	c.Check(defLogger.Messages[0].Attrs["attr1"], Equals, 4321)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_FATAL,
+		Message:   "test 1234",
+		Attrs: map[string]interface{}{
+			"attr1": 4321,
+		},
+	})
 }
 
 func (s *GomolSuite) TestDefaultDie(c *C) {
@@ -332,9 +383,12 @@ func (s *GomolSuite) TestDefaultDie(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_FATAL)
-	c.Check(defLogger.Messages[0].Message, Equals, "test")
-	c.Check(defLogger.Messages[0].Attrs, HasLen, 0)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_FATAL,
+		Message:   "test",
+		Attrs:     map[string]interface{}{},
+	})
 
 	c.Check(curDefault.isInitialized, Equals, false)
 	c.Check(curTestExiter.exited, Equals, true)
@@ -346,6 +400,12 @@ func (s *GomolSuite) TestDefaultDief(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_FATAL,
+		Message:   "test 1234",
+		Attrs:     map[string]interface{}{},
+	})
 	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_FATAL)
 	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
 	c.Check(defLogger.Messages[0].Attrs, HasLen, 0)
@@ -365,10 +425,14 @@ func (s *GomolSuite) TestDefaultDiem(c *C) {
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0].Level, Equals, LEVEL_FATAL)
-	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
-	c.Assert(defLogger.Messages[0].Attrs, HasLen, 1)
-	c.Check(defLogger.Messages[0].Attrs["attr1"], Equals, 4321)
+	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+		Timestamp: clock().Now(),
+		Level:     LEVEL_FATAL,
+		Message:   "test 1234",
+		Attrs: map[string]interface{}{
+			"attr1": 4321,
+		},
+	})
 
 	c.Check(curDefault.isInitialized, Equals, false)
 	c.Check(curTestExiter.exited, Equals, true)

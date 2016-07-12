@@ -2,6 +2,7 @@ package gomol
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/aphistic/golf"
 )
@@ -102,7 +103,7 @@ func (l *GelfLogger) ShutdownLogger() error {
 	return nil
 }
 
-func (l *GelfLogger) Logm(level LogLevel, m map[string]interface{}, msg string) error {
+func (l *GelfLogger) Logm(timestamp time.Time, level LogLevel, m map[string]interface{}, msg string) error {
 	attrs := l.getAttrs(m)
 	switch level {
 	case LEVEL_DEBUG:

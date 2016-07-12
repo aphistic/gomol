@@ -99,7 +99,7 @@ func NewTemplate(tpl string) (*Template, error) {
 }
 
 func (t *Template) executeInternalMsg(msg *message, colorize bool) (string, error) {
-	tplMsg, err := newTemplateMsg(msg)
+	tplMsg, err := newTemplateMsgFromMessage(msg)
 	if err != nil {
 		return "", err
 	}
@@ -129,7 +129,22 @@ type TemplateMsg struct {
 	Attrs     map[string]interface{} `json:"attrs"`
 }
 
-func newTemplateMsg(msg *message) (*TemplateMsg, error) {
+func NewTemplateMsg(timestamp time.Time, level LogLevel, m map[string]interface{}, msg string) *TemplateMsg {
+	msgAttrs := m
+	if msgAttrs == nil {
+		msgAttrs = make(map[string]interface{})
+	}
+	tplMsg := &TemplateMsg{
+		Timestamp: timestamp,
+		Message:   msg,
+		Level:     level,
+		LevelName: level.String(),
+		Attrs:     msgAttrs,
+	}
+	return tplMsg
+}
+
+func newTemplateMsgFromMessage(msg *message) (*TemplateMsg, error) {
 	if msg == nil {
 		return nil, errors.New("msg cannot be nil")
 	}

@@ -38,7 +38,7 @@ you have a logger you've written to support gomol and you'd like to add it to th
 please either submit a pull request with the updated document or let me know and I
 can add it!
 
-* **Console** - built into gomol at the moment
+* **Console** - https://github.com/aphistic/gomol-console
 * **Graylog Extended Log Format (GELF)** - built into gomol at the moment
 * **Loggly** - https://github.com/aphistic/gomol-loggly
 * **io.Writer** - https://github.com/aphistic/gomol-writer
@@ -55,12 +55,13 @@ package main
 
 import (
 	"github.com/aphistic/gomol"
+	gc "github.com/aphistic/gomol-console"
 )
 
 func main() {
 	// Add a console logger
-	consoleCfg := gomol.NewConsoleLoggerConfig()
-	consoleLogger, _ := gomol.NewConsoleLogger(consoleCfg)
+	consoleCfg := gc.NewConsoleLoggerConfig()
+	consoleLogger, _ := gc.NewConsoleLogger(consoleCfg)
 	gomol.AddLogger(consoleLogger)
 
 	// Add a GELF logger

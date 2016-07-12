@@ -1,6 +1,9 @@
 package gomol
 
-import "errors"
+import (
+	"errors"
+	"time"
+)
 
 type memLoggerConfig struct {
 	FailInit     bool
@@ -22,9 +25,10 @@ type memLogger struct {
 }
 
 type memMessage struct {
-	Level   LogLevel
-	Message string
-	Attrs   map[string]interface{}
+	Timestamp time.Time
+	Level     LogLevel
+	Message   string
+	Attrs     map[string]interface{}
 }
 
 func newMemLogger(config *memLoggerConfig) (*memLogger, error) {
@@ -68,8 +72,9 @@ func (l *memLogger) ShutdownLogger() error {
 	return nil
 }
 
-func (l *memLogger) Logm(level LogLevel, m map[string]interface{}, msg string) error {
+func (l *memLogger) Logm(timestamp time.Time, level LogLevel, m map[string]interface{}, msg string) error {
 	nm := newMemMessage()
+	nm.Timestamp = timestamp
 	nm.Level = level
 	nm.Message = msg
 

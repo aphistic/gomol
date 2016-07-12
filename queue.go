@@ -116,7 +116,7 @@ func (queue *queue) senderWorker(exiting bool) {
 			}
 
 			for _, l := range msg.Base.loggers {
-				l.Logm(msg.Level, msg.Attrs, msg.Msg)
+				l.Logm(msg.Timestamp, msg.Level, msg.Attrs, msg.Msg)
 			}
 		}
 	}
