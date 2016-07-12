@@ -3,6 +3,7 @@ package gomolexamples
 import (
 	"github.com/aphistic/gomol"
 	gc "github.com/aphistic/gomol-console"
+	gg "github.com/aphistic/gomol-gelf"
 )
 
 // Code for the README example to make sure it still builds!
@@ -13,10 +14,11 @@ func Example() {
 	gomol.AddLogger(consoleLogger)
 
 	// Add a GELF logger
-	gelfCfg := gomol.NewGelfLoggerConfig()
+	gelfCfg := gg.NewGelfLoggerConfig()
 	gelfCfg.Hostname = "localhost"
 	gelfCfg.Port = 12201
-	gomol.AddLogger(gomol.NewGelfLogger(gelfCfg))
+	gelfLogger, _ := gg.NewGelfLogger(gelfCfg)
+	gomol.AddLogger(gelfLogger)
 
 	// Set some global attrs that will be added to all
 	// messages automatically

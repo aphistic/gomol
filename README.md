@@ -39,7 +39,7 @@ please either submit a pull request with the updated document or let me know and
 can add it!
 
 * **Console** - https://github.com/aphistic/gomol-console
-* **Graylog Extended Log Format (GELF)** - built into gomol at the moment
+* **Graylog Extended Log Format (GELF)** - https://github.com/aphistic/gomol-gelf
 * **Loggly** - https://github.com/aphistic/gomol-loggly
 * **io.Writer** - https://github.com/aphistic/gomol-writer
 
@@ -56,6 +56,7 @@ package main
 import (
 	"github.com/aphistic/gomol"
 	gc "github.com/aphistic/gomol-console"
+	gg "github.com/aphistic/gomol-gelf"
 )
 
 func main() {
@@ -65,10 +66,11 @@ func main() {
 	gomol.AddLogger(consoleLogger)
 
 	// Add a GELF logger
-	gelfCfg := gomol.NewGelfLoggerConfig()
+	gelfCfg := gg.NewGelfLoggerConfig()
 	gelfCfg.Hostname = "localhost"
 	gelfCfg.Port = 12201
-	gomol.AddLogger(gomol.NewGelfLogger(gelfCfg))
+	gelfLogger, _ := gg.NewGelfLogger(gelfCfg)
+	gomol.AddLogger(gelfLogger)
 
 	// Set some global attrs that will be added to all
 	// messages automatically
