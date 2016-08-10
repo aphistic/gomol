@@ -39,6 +39,17 @@ func (s *GomolSuite) TestLogAdapterSetAttr(c *C) {
 	c.Check(la.attrs["foo"], Equals, "bar")
 }
 
+func (s *GomolSuite) TestLogAdapterGetAttr(c *C) {
+	b := NewBase()
+
+	la := b.NewLogAdapter(nil)
+	la.SetAttr("attr1", 1)
+	la.SetAttr("attr2", "val2")
+
+	c.Check(la.GetAttr("attr2"), Equals, "val2")
+	c.Check(la.GetAttr("notakey"), IsNil)
+}
+
 func (s *GomolSuite) TestLogAdapterRemoveAttr(c *C) {
 	b := NewBase()
 

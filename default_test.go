@@ -110,6 +110,15 @@ func (s *GomolSuite) TestDefaultSetAttr(c *C) {
 	c.Check(curDefault.BaseAttrs["attr"], Equals, 1234)
 }
 
+func (s *GomolSuite) TestDefaultGetAttr(c *C) {
+	curDefault = NewBase()
+	SetAttr("attr1", 1)
+	SetAttr("attr2", "val2")
+
+	c.Check(GetAttr("attr2"), Equals, "val2")
+	c.Check(GetAttr("notakey"), IsNil)
+}
+
 func (s *GomolSuite) TestDefaultRemoveAttr(c *C) {
 	curDefault = NewBase()
 	c.Check(curDefault.BaseAttrs, HasLen, 0)

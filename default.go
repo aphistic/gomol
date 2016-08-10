@@ -44,6 +44,9 @@ func ClearAttrs() {
 func SetAttr(key string, value interface{}) {
 	curDefault.SetAttr(key, value)
 }
+func GetAttr(key string) interface{} {
+	return curDefault.GetAttr(key)
+}
 func RemoveAttr(key string) {
 	curDefault.RemoveAttr(key)
 }

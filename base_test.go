@@ -356,6 +356,16 @@ func (s *GomolSuite) TestSetAttr(c *C) {
 	c.Check(b.BaseAttrs["attr2"], Equals, "val2")
 }
 
+func (s *GomolSuite) TestGetAttr(c *C) {
+	b := NewBase()
+
+	b.SetAttr("attr1", 1)
+	b.SetAttr("attr2", "val2")
+
+	c.Check(b.GetAttr("attr2"), Equals, "val2")
+	c.Check(b.GetAttr("notakey"), IsNil)
+}
+
 func (s *GomolSuite) TestRemoveAttr(c *C) {
 	b := NewBase()
 

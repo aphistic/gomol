@@ -178,6 +178,17 @@ func (b *Base) SetAttr(key string, value interface{}) {
 	b.BaseAttrs[key] = value
 }
 
+/*
+GetAttr will return the current value for the given attribute key.  If the key
+isn't set this will return nil
+*/
+func (b *Base) GetAttr(key string) interface{} {
+	if val, ok := b.BaseAttrs[key]; ok {
+		return val
+	}
+	return nil
+}
+
 // RemoveAttr will remove the attribute with the name key.
 func (b *Base) RemoveAttr(key string) {
 	delete(b.BaseAttrs, key)

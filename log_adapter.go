@@ -26,6 +26,15 @@ func (la *LogAdapter) SetAttr(key string, value interface{}) {
 	la.attrs[key] = value
 }
 
+// GetAttr gets the attribute with the given key for this LogAdapter only. If the
+// key doesn't exist on this LogAdapter it will return nil
+func (la *LogAdapter) GetAttr(key string) interface{} {
+	if val, ok := la.attrs[key]; ok {
+		return val
+	}
+	return nil
+}
+
 // RemoveAttr removes the attribute key for this LogAdapter only
 func (la *LogAdapter) RemoveAttr(key string) {
 	delete(la.attrs, key)
