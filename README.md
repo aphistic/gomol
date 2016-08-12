@@ -12,36 +12,33 @@ Features
 
 * Attach meta-data to each log message with attributes
 * Multiple outputs at the same time
+* Pluggable Logger interface
+* Asynchronous logging so slow loggers won't slow down your application
 
 Installation
 ============
 
-The recommended way to install is via http://gopkg.in
-
-    go get gopkg.in/aphistic/gomol.v0
-    ...
-    import "gopkg.in/aphistic/gomol.v0"
-
-Gomol can also be installed the standard way as well
+Gomol can also be installed the standard way for Go:
 
     go get github.com/aphistic/gomol
     ...
     import "github.com/aphistic/gomol"
 
+Vendoring is recommended!
+
 Loggers
 =======
 
-Right now there are a number of loggers built directly into the gomol library.  This
-adds a number of dependencies that I'd like to remove so I'm in the process of splitting
-each logger out to its own package.  The supported log outputs are listed below.  If
-you have a logger you've written to support gomol and you'd like to add it to this list
-please either submit a pull request with the updated document or let me know and I
-can add it!
+Gomol has a growing list of supported logging formats.  The known loggers are listed
+below.  If you have a logger you've written to support gomol and you'd like to add it
+to this list please either submit a pull request with the updated document or let me
+know and I can add it!
 
 * **Console** - https://github.com/aphistic/gomol-console
 * **Graylog Extended Log Format (GELF)** - https://github.com/aphistic/gomol-gelf
-* **Loggly** - https://github.com/aphistic/gomol-loggly
 * **io.Writer** - https://github.com/aphistic/gomol-writer
+* **JSON** - https://github.com/aphistic/gomol-json
+* **Loggly** - https://github.com/aphistic/gomol-loggly
 
 Examples
 ========
