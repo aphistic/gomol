@@ -41,7 +41,7 @@ func newMemLogger(config *memLoggerConfig) (*memLogger, error) {
 
 func newMemMessage() *memMessage {
 	msg := &memMessage{
-		Level:   LEVEL_UNKNOWN,
+		Level:   LevelUnknown,
 		Message: "",
 		Attrs:   make(map[string]interface{}, 0),
 	}

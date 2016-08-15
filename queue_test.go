@@ -87,7 +87,7 @@ func (s *GomolSuite) TestQueueFlushMessages(c *C) {
 	q.startQueueWorkers()
 
 	for i := 0; i < 100; i++ {
-		q.QueueMessage(newMessage(time.Now(), testBase, LEVEL_DEBUG, nil, "test"))
+		q.QueueMessage(newMessage(time.Now(), testBase, LevelDebug, nil, "test"))
 	}
 
 	q.stopQueueWorkers()

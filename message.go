@@ -9,13 +9,13 @@ import (
 type LogLevel int
 
 const (
-	LEVEL_UNKNOWN LogLevel = math.MaxInt64
-	LEVEL_DEBUG   LogLevel = 7
-	LEVEL_INFO    LogLevel = 6
-	LEVEL_WARNING LogLevel = 4
-	LEVEL_ERROR   LogLevel = 3
-	LEVEL_FATAL   LogLevel = 2
-	LEVEL_NONE    LogLevel = math.MinInt64
+	LevelUnknown LogLevel = math.MaxInt64
+	LevelDebug   LogLevel = 7
+	LevelInfo    LogLevel = 6
+	LevelWarning LogLevel = 4
+	LevelError   LogLevel = 3
+	LevelFatal   LogLevel = 2
+	LevelNone    LogLevel = math.MinInt64
 )
 
 func (ll LogLevel) String() string {
@@ -24,17 +24,17 @@ func (ll LogLevel) String() string {
 
 func getLevelName(level LogLevel) string {
 	switch level {
-	case LEVEL_NONE:
+	case LevelNone:
 		return "none"
-	case LEVEL_DEBUG:
+	case LevelDebug:
 		return "debug"
-	case LEVEL_INFO:
+	case LevelInfo:
 		return "info"
-	case LEVEL_WARNING:
+	case LevelWarning:
 		return "warn"
-	case LEVEL_ERROR:
+	case LevelError:
 		return "error"
-	case LEVEL_FATAL:
+	case LevelFatal:
 		return "fatal"
 	default:
 		return "unknown"

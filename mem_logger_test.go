@@ -53,7 +53,7 @@ func (s *GomolSuite) TestMemShutdownLoggerFail(c *C) {
 func (s *GomolSuite) TestMemClearMessages(c *C) {
 	ml := newDefaultMemLogger()
 	c.Check(ml.Messages, HasLen, 0)
-	ml.Logm(time.Now(), LEVEL_DEBUG, nil, "test")
+	ml.Logm(time.Now(), LevelDebug, nil, "test")
 	c.Check(ml.Messages, HasLen, 1)
 	ml.ClearMessages()
 	c.Check(ml.Messages, HasLen, 0)
@@ -61,9 +61,9 @@ func (s *GomolSuite) TestMemClearMessages(c *C) {
 
 func (s *GomolSuite) TestMemLogmNoAttrs(c *C) {
 	ml := newDefaultMemLogger()
-	ml.Logm(time.Now(), LEVEL_DEBUG, nil, "test")
+	ml.Logm(time.Now(), LevelDebug, nil, "test")
 	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, LEVEL_DEBUG)
+	c.Check(ml.Messages[0].Level, Equals, LevelDebug)
 	c.Check(ml.Messages[0].Message, Equals, "test")
 	c.Check(ml.Messages[0].Attrs, HasLen, 0)
 }
@@ -73,14 +73,14 @@ func (s *GomolSuite) TestMemLogmAttrs(c *C) {
 	ml := newDefaultMemLogger()
 	ml.Logm(
 		clock().Now(),
-		LEVEL_DEBUG,
+		LevelDebug,
 		map[string]interface{}{
 			"attr1": 4321,
 		},
 		"test 1234")
 	c.Assert(ml.Messages, HasLen, 1)
 	c.Check(ml.Messages[0].Timestamp, Equals, clock().Now())
-	c.Check(ml.Messages[0].Level, Equals, LEVEL_DEBUG)
+	c.Check(ml.Messages[0].Level, Equals, LevelDebug)
 	c.Check(ml.Messages[0].Message, Equals, "test 1234")
 	c.Assert(ml.Messages[0].Attrs, HasLen, 1)
 	c.Check(ml.Messages[0].Attrs["attr1"], Equals, 4321)
@@ -97,7 +97,7 @@ func (s *GomolSuite) TestMemBaseAttrs(c *C) {
 	b.AddLogger(ml)
 	ml.Logm(
 		clock().Now(),
-		LEVEL_DEBUG,
+		LevelDebug,
 		map[string]interface{}{
 			"attr1": 4321,
 			"attr3": "val3",
@@ -105,7 +105,7 @@ func (s *GomolSuite) TestMemBaseAttrs(c *C) {
 		"test 1234")
 	c.Assert(ml.Messages, HasLen, 1)
 	c.Check(ml.Messages[0].Timestamp, Equals, clock().Now())
-	c.Check(ml.Messages[0].Level, Equals, LEVEL_DEBUG)
+	c.Check(ml.Messages[0].Level, Equals, LevelDebug)
 	c.Check(ml.Messages[0].Message, Equals, "test 1234")
 	c.Assert(ml.Messages[0].Attrs, HasLen, 3)
 	c.Check(ml.Messages[0].Attrs["attr1"], Equals, 4321)
