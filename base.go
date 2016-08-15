@@ -1,8 +1,6 @@
 package gomol
 
-import (
-	"os"
-)
+import "os"
 
 /*
 Base holds an instance of all information needed for logging.  It is possible
@@ -11,6 +9,7 @@ are desired.
 */
 type Base struct {
 	isInitialized bool
+	config        *Config
 	queue         *queue
 	logLevel      LogLevel
 	loggers       []Logger
@@ -20,6 +19,7 @@ type Base struct {
 // NewBase creates a new instance of Base with default values set.
 func NewBase() *Base {
 	b := &Base{
+		config:    NewConfig(),
 		queue:     newQueue(),
 		logLevel:  LEVEL_DEBUG,
 		loggers:   make([]Logger, 0),
@@ -41,6 +41,11 @@ var curExiter appExiter = &osExiter{}
 
 func setExiter(exiter appExiter) {
 	curExiter = exiter
+}
+
+// SetConfig will set the configuration for the Base to the given Config
+func (b *Base) SetConfig(config *Config) {
+	b.config = config
 }
 
 /*
@@ -198,6 +203,20 @@ func (b *Base) log(level LogLevel, m map[string]interface{}, msg string, a ...in
 	if !b.shouldLog(level) {
 		return nil
 	}
+
+	if len(b.config.FilenameAttr) > 0 || len(b.config.LineNumberAttr) > 0 {
+		file, line := getCallerInfo()
+		if m == nil {
+			m = make(map[string]interface{})
+		}
+		if len(b.config.FilenameAttr) > 0 {
+			m[b.config.FilenameAttr] = file
+		}
+		if len(b.config.LineNumberAttr) > 0 {
+			m[b.config.LineNumberAttr] = line
+		}
+	}
+
 	nm := newMessage(clock().Now(), b, level, m, msg, a...)
 	return b.queue.QueueMessage(nm)
 }

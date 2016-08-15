@@ -75,6 +75,35 @@ func (s *GomolSuite) TestShouldLog(c *C) {
 	c.Check(b.shouldLog(LEVEL_FATAL), Equals, false)
 }
 
+func (s *GomolSuite) TestNewBase(c *C) {
+	b := NewBase()
+	c.Check(b.isInitialized, Equals, false)
+	c.Assert(b.config, NotNil)
+	c.Check(b.config.FilenameAttr, Equals, "")
+	c.Check(b.config.LineNumberAttr, Equals, "")
+	c.Assert(b.queue, NotNil)
+	c.Check(b.logLevel, Equals, LevelDebug)
+	c.Check(b.loggers, HasLen, 0)
+	c.Check(b.BaseAttrs, HasLen, 0)
+}
+
+func (s *GomolSuite) TestSetConfig(c *C) {
+	b := NewBase()
+
+	c.Assert(b.config, NotNil)
+	c.Check(b.config.FilenameAttr, Equals, "")
+	c.Check(b.config.LineNumberAttr, Equals, "")
+
+	cfg := NewConfig()
+	cfg.FilenameAttr = "filename"
+	cfg.LineNumberAttr = "line_number"
+
+	b.SetConfig(cfg)
+	c.Assert(b.config, NotNil)
+	c.Check(b.config.FilenameAttr, Equals, "filename")
+	c.Check(b.config.LineNumberAttr, Equals, "line_number")
+}
+
 func (s *GomolSuite) TestSetLogLevel(c *C) {
 	b := NewBase()
 	b.InitLoggers()
@@ -389,6 +418,20 @@ func (s *GomolSuite) TestClearAttrs(c *C) {
 }
 
 // Base func tests
+
+func (s *GomolSuite) BenchmarkBasicLogInsertion(c *C) {
+	base := NewBase()
+	base.InitLoggers()
+	for i := 0; i < c.N; i++ {
+		base.log(LevelDebug, map[string]interface{}{
+			"attr1": "val1",
+			"attr2": "val2",
+			"attr3": 3,
+			"attr4": 4,
+		}, "msg %v %v", "string", 1234)
+	}
+	base.ShutdownLoggers()
+}
 
 func (s *GomolSuite) TestBaseDbg(c *C) {
 	b := NewBase()

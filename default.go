@@ -6,6 +6,10 @@ func init() {
 	curDefault = NewBase()
 }
 
+func SetConfig(config *Config) {
+	curDefault.SetConfig(config)
+}
+
 func SetLogLevel(level LogLevel) {
 	curDefault.SetLogLevel(level)
 }
@@ -31,8 +35,8 @@ func InitLoggers() error {
 }
 
 /*
-Calls ShutdownLogger() on all loggers that are part of the current default
-logger base.
+ShutdownLoggers will call ShutdownLogger on each logger that has been added to
+the current default logger.
 */
 func ShutdownLoggers() error {
 	return curDefault.ShutdownLoggers()
