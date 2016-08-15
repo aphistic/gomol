@@ -21,7 +21,7 @@ func NewBase() *Base {
 	b := &Base{
 		config:    NewConfig(),
 		queue:     newQueue(),
-		logLevel:  LEVEL_DEBUG,
+		logLevel:  LevelDebug,
 		loggers:   make([]Logger, 0),
 		BaseAttrs: make(map[string]interface{}, 0),
 	}
@@ -236,50 +236,50 @@ func (b *Base) Dbgm(m map[string]interface{}, msg string, a ...interface{}) erro
 	return b.Debugm(m, msg, a...)
 }
 
-// Debug logs msg to all added loggers at LogLevel.LEVEL_DEBUG
+// Debug logs msg to all added loggers at LogLevel.LevelDebug
 func (b *Base) Debug(msg string) error {
-	return b.log(LEVEL_DEBUG, nil, msg)
+	return b.log(LevelDebug, nil, msg)
 }
 
 /*
 Debugf uses msg as a format string with subsequent parameters as values and logs
-the resulting message to all added loggers at LogLevel.LEVEL_DEBUG
+the resulting message to all added loggers at LogLevel.LevelDebug
 */
 func (b *Base) Debugf(msg string, a ...interface{}) error {
-	return b.log(LEVEL_DEBUG, nil, msg, a...)
+	return b.log(LevelDebug, nil, msg, a...)
 }
 
 /*
 Debugm uses msg as a format string with subsequent parameters as values and logs
-the resulting message to all added loggers at LogLevel.LEVEL_DEBUG. It will also
+the resulting message to all added loggers at LogLevel.LevelDebug. It will also
 merge all attributes passed in m with any attributes added to Base and include them
 with the message if the Logger supports it.
 */
 func (b *Base) Debugm(m map[string]interface{}, msg string, a ...interface{}) error {
-	return b.log(LEVEL_DEBUG, m, msg, a...)
+	return b.log(LevelDebug, m, msg, a...)
 }
 
-// Info logs msg to all added loggers at LogLevel.LEVEL_INFO
+// Info logs msg to all added loggers at LogLevel.LevelInfo
 func (b *Base) Info(msg string) error {
-	return b.log(LEVEL_INFO, nil, msg)
+	return b.log(LevelInfo, nil, msg)
 }
 
 /*
 Infof uses msg as a format string with subsequent parameters as values and logs
-the resulting message to all added loggers at LogLevel.LEVEL_INFO
+the resulting message to all added loggers at LogLevel.LevelInfo
 */
 func (b *Base) Infof(msg string, a ...interface{}) error {
-	return b.log(LEVEL_INFO, nil, msg, a...)
+	return b.log(LevelInfo, nil, msg, a...)
 }
 
 /*
 Infom uses msg as a format string with subsequent parameters as values and logs
-the resulting message to all added loggers at LogLevel.LEVEL_INFO. It will also
+the resulting message to all added loggers at LogLevel.LevelInfo. It will also
 merge all attributes passed in m with any attributes added to Base and include them
 with the message if the Logger supports it.
 */
 func (b *Base) Infom(m map[string]interface{}, msg string, a ...interface{}) error {
-	return b.log(LEVEL_INFO, m, msg, a...)
+	return b.log(LevelInfo, m, msg, a...)
 }
 
 // Warn is a short-hand version of Warning
@@ -299,28 +299,28 @@ func (b *Base) Warnm(m map[string]interface{}, msg string, a ...interface{}) err
 
 /*
 Warning uses msg as a format string with subsequent parameters as values and logs
-the resulting message to all added loggers at LogLevel.LEVEL_WARNING
+the resulting message to all added loggers at LogLevel.LevelWarning
 */
 func (b *Base) Warning(msg string) error {
-	return b.log(LEVEL_WARNING, nil, msg)
+	return b.log(LevelWarning, nil, msg)
 }
 
 /*
 Warningf uses msg as a format string with subsequent parameters as values and logs
-the resulting message to all added loggers at LogLevel.LEVEL_WARNING
+the resulting message to all added loggers at LogLevel.LevelWarning
 */
 func (b *Base) Warningf(msg string, a ...interface{}) error {
-	return b.log(LEVEL_WARNING, nil, msg, a...)
+	return b.log(LevelWarning, nil, msg, a...)
 }
 
 /*
 Warningm uses msg as a format string with subsequent parameters as values and logs
-the resulting message to all added loggers at LogLevel.LEVEL_WARNING. It will also
+the resulting message to all added loggers at LogLevel.LevelWarning. It will also
 merge all attributes passed in m with any attributes added to Base and include them
 with the message if the Logger supports it.
 */
 func (b *Base) Warningm(m map[string]interface{}, msg string, a ...interface{}) error {
-	return b.log(LEVEL_WARNING, m, msg, a...)
+	return b.log(LevelWarning, m, msg, a...)
 }
 
 func (b *Base) Err(msg string) error {
@@ -333,37 +333,37 @@ func (b *Base) Errm(m map[string]interface{}, msg string, a ...interface{}) erro
 	return b.Errorm(m, msg, a...)
 }
 func (b *Base) Error(msg string) error {
-	return b.log(LEVEL_ERROR, nil, msg)
+	return b.log(LevelError, nil, msg)
 }
 func (b *Base) Errorf(msg string, a ...interface{}) error {
-	return b.log(LEVEL_ERROR, nil, msg, a...)
+	return b.log(LevelError, nil, msg, a...)
 }
 func (b *Base) Errorm(m map[string]interface{}, msg string, a ...interface{}) error {
-	return b.log(LEVEL_ERROR, m, msg, a...)
+	return b.log(LevelError, m, msg, a...)
 }
 
 func (b *Base) Fatal(msg string) error {
-	return b.log(LEVEL_FATAL, nil, msg)
+	return b.log(LevelFatal, nil, msg)
 }
 func (b *Base) Fatalf(msg string, a ...interface{}) error {
-	return b.log(LEVEL_FATAL, nil, msg, a...)
+	return b.log(LevelFatal, nil, msg, a...)
 }
 func (b *Base) Fatalm(m map[string]interface{}, msg string, a ...interface{}) error {
-	return b.log(LEVEL_FATAL, m, msg, a...)
+	return b.log(LevelFatal, m, msg, a...)
 }
 
 func (b *Base) Die(exitCode int, msg string) {
-	b.log(LEVEL_FATAL, nil, msg)
+	b.log(LevelFatal, nil, msg)
 	b.ShutdownLoggers()
 	curExiter.Exit(exitCode)
 }
 func (b *Base) Dief(exitCode int, msg string, a ...interface{}) {
-	b.log(LEVEL_FATAL, nil, msg, a...)
+	b.log(LevelFatal, nil, msg, a...)
 	b.ShutdownLoggers()
 	curExiter.Exit(exitCode)
 }
 func (b *Base) Diem(exitCode int, m map[string]interface{}, msg string, a ...interface{}) {
-	b.log(LEVEL_FATAL, m, msg, a...)
+	b.log(LevelFatal, m, msg, a...)
 	b.ShutdownLoggers()
 	curExiter.Exit(exitCode)
 }

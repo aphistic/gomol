@@ -32,7 +32,7 @@ func (s *GomolSuite) TestNewTemplateMsgError(c *C) {
 func (s *GomolSuite) TestTemplateExecuteError(c *C) {
 	setClock(newTestClock(time.Unix(1000000000, 100)))
 
-	msg := newMessage(clock().Now(), nil, LEVEL_ERROR, map[string]interface{}{
+	msg := newMessage(clock().Now(), nil, LevelError, map[string]interface{}{
 		"attr1": "val1",
 		"attr2": 1234,
 	}, "message")
@@ -49,7 +49,7 @@ func (s *GomolSuite) TestTemplateExecuteError(c *C) {
 
 func (s *GomolSuite) TestTplColorsDebug(c *C) {
 	setClock(newTestClock(time.Now()))
-	msg := newMessage(clock().Now(), nil, LEVEL_DEBUG, nil, "colors!")
+	msg := newMessage(clock().Now(), nil, LevelDebug, nil, "colors!")
 	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
 	c.Assert(err, IsNil)
 
@@ -61,7 +61,7 @@ func (s *GomolSuite) TestTplColorsDebug(c *C) {
 
 func (s *GomolSuite) TestTplColorsInfo(c *C) {
 	setClock(newTestClock(time.Now()))
-	msg := newMessage(clock().Now(), nil, LEVEL_INFO, nil, "colors!")
+	msg := newMessage(clock().Now(), nil, LevelInfo, nil, "colors!")
 	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
 	c.Assert(err, IsNil)
 
@@ -73,7 +73,7 @@ func (s *GomolSuite) TestTplColorsInfo(c *C) {
 
 func (s *GomolSuite) TestTplColorsWarning(c *C) {
 	setClock(newTestClock(time.Now()))
-	msg := newMessage(clock().Now(), nil, LEVEL_WARNING, nil, "colors!")
+	msg := newMessage(clock().Now(), nil, LevelWarning, nil, "colors!")
 	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
 	c.Assert(err, IsNil)
 
@@ -85,7 +85,7 @@ func (s *GomolSuite) TestTplColorsWarning(c *C) {
 
 func (s *GomolSuite) TestTplColorsError(c *C) {
 	setClock(newTestClock(time.Now()))
-	msg := newMessage(clock().Now(), nil, LEVEL_ERROR, nil, "colors!")
+	msg := newMessage(clock().Now(), nil, LevelError, nil, "colors!")
 	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
 	c.Assert(err, IsNil)
 
@@ -97,7 +97,7 @@ func (s *GomolSuite) TestTplColorsError(c *C) {
 
 func (s *GomolSuite) TestTplColorsFatal(c *C) {
 	setClock(newTestClock(time.Now()))
-	msg := newMessage(clock().Now(), nil, LEVEL_FATAL, nil, "colors!")
+	msg := newMessage(clock().Now(), nil, LevelFatal, nil, "colors!")
 	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
 	c.Assert(err, IsNil)
 
@@ -109,7 +109,7 @@ func (s *GomolSuite) TestTplColorsFatal(c *C) {
 
 func (s *GomolSuite) TestTplFuncsCase(c *C) {
 	setClock(newTestClock(time.Now()))
-	msg := newMessage(clock().Now(), nil, LEVEL_ERROR, nil, "UPPER")
+	msg := newMessage(clock().Now(), nil, LevelError, nil, "UPPER")
 	tpl, err := NewTemplate("{{ucase .LevelName}} {{lcase .Message}} {{title .LevelName}}")
 	c.Assert(err, IsNil)
 
@@ -125,7 +125,7 @@ func (s *GomolSuite) TestTplMsgFromInternal(c *C) {
 	b := NewBase()
 	b.SetAttr("baseAttr", 1234)
 	b.SetAttr("overrideAttr", 1234)
-	msg := newMessage(clock().Now(), b, LEVEL_INFO, map[string]interface{}{
+	msg := newMessage(clock().Now(), b, LevelInfo, map[string]interface{}{
 		"msgAttr":      4321,
 		"overrideAttr": "test",
 	}, "Format %v %v", 1234, "asdf")
@@ -133,7 +133,7 @@ func (s *GomolSuite) TestTplMsgFromInternal(c *C) {
 	tplMsg, err := newTemplateMsgFromMessage(msg)
 	c.Assert(err, IsNil)
 	c.Check(tplMsg.Timestamp, Equals, clock().Now())
-	c.Check(tplMsg.Level, Equals, LEVEL_INFO)
+	c.Check(tplMsg.Level, Equals, LevelInfo)
 	c.Check(tplMsg.LevelName, Equals, "info")
 	c.Check(tplMsg.Message, Equals, "Format 1234 asdf")
 	c.Assert(tplMsg.Attrs, HasLen, 3)
@@ -148,14 +148,14 @@ func (s *GomolSuite) TestTplMsgAttrs(c *C) {
 	b := NewBase()
 	b.SetAttr("baseAttr", 1234)
 	b.SetAttr("overrideAttr", 1234)
-	msg := newMessage(clock().Now(), b, LEVEL_INFO, map[string]interface{}{
+	msg := newMessage(clock().Now(), b, LevelInfo, map[string]interface{}{
 		"msgAttr":      4321,
 		"overrideAttr": "test",
 	}, "Format %v %v", 1234, "asdf")
 
 	tplMsg, err := newTemplateMsgFromMessage(msg)
 	c.Assert(err, IsNil)
-	c.Check(tplMsg.Level, Equals, LEVEL_INFO)
+	c.Check(tplMsg.Level, Equals, LevelInfo)
 	c.Check(tplMsg.LevelName, Equals, "info")
 	c.Check(tplMsg.Message, Equals, "Format 1234 asdf")
 	c.Assert(tplMsg.Attrs, HasLen, 3)
@@ -175,7 +175,7 @@ func (s *GomolSuite) TestTplMsgAttrs(c *C) {
 func (s *GomolSuite) TestTplTimestamp(c *C) {
 	setClock(newTestClock(time.Now()))
 
-	msg := newMessage(clock().Now(), nil, LEVEL_ERROR, nil, "message")
+	msg := newMessage(clock().Now(), nil, LevelError, nil, "message")
 	tpl, err := NewTemplate("{{ .Timestamp.Format \"2006-01-02T15:04:05.999999999Z07:00\" }}")
 	c.Assert(err, IsNil)
 
@@ -185,10 +185,10 @@ func (s *GomolSuite) TestTplTimestamp(c *C) {
 	c.Check(out, Equals, clock().Now().Format("2006-01-02T15:04:05.999999999Z07:00"))
 }
 
-func (s *GomolSuite) TestTplJson(c *C) {
+func (s *GomolSuite) TestTplJSON(c *C) {
 	setClock(newTestClock(time.Unix(1000000000, 100)))
 
-	msg := newMessage(clock().Now(), nil, LEVEL_ERROR, map[string]interface{}{
+	msg := newMessage(clock().Now(), nil, LevelError, map[string]interface{}{
 		"attr1": "val1",
 		"attr2": 1234,
 	}, "message")
@@ -229,7 +229,7 @@ func (s *GomolSuite) TestTplAttrTemplate(c *C) {
 	setClock(newTestClock(time.Now()))
 	msg := newMessage(clock().Now(),
 		nil,
-		LEVEL_FATAL,
+		LevelFatal,
 		map[string]interface{}{"attrName": "attrVal"},
 		"test")
 	tpl, err := NewTemplate("[{{.Attrs.attrName}}] {{.Message}}")
@@ -241,8 +241,8 @@ func (s *GomolSuite) TestTplAttrTemplate(c *C) {
 	c.Check(out, Equals, "[attrVal] test")
 }
 
-func (s *GomolSuite) TestTplJsonError(c *C) {
-	data, err := tplJson(map[string]interface{}{
+func (s *GomolSuite) TestTplJSONError(c *C) {
+	data, err := tplJSON(map[string]interface{}{
 		"attr1": s.SetUpTest,
 		"attr2": s.TearDownTest,
 	})
@@ -253,10 +253,10 @@ func (s *GomolSuite) TestTplJsonError(c *C) {
 func (s *GomolSuite) TestNewTemplateMsgMinimal(c *C) {
 	setClock(newTestClock(time.Now()))
 
-	tmsg := NewTemplateMsg(clock().Now(), LEVEL_DEBUG, nil, "test")
+	tmsg := NewTemplateMsg(clock().Now(), LevelDebug, nil, "test")
 	c.Check(tmsg.Timestamp, Equals, clock().Now())
-	c.Check(tmsg.Level, Equals, LEVEL_DEBUG)
-	c.Check(tmsg.LevelName, Equals, LEVEL_DEBUG.String())
+	c.Check(tmsg.Level, Equals, LevelDebug)
+	c.Check(tmsg.LevelName, Equals, LevelDebug.String())
 	c.Check(tmsg.Attrs, DeepEquals, map[string]interface{}{})
 	c.Check(tmsg.Message, Equals, "test")
 }

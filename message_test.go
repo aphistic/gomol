@@ -7,31 +7,31 @@ import (
 )
 
 func (s *GomolSuite) TestLevelGetName(c *C) {
-	c.Check(getLevelName(LEVEL_DEBUG), Equals, "debug")
-	c.Check(getLevelName(LEVEL_INFO), Equals, "info")
-	c.Check(getLevelName(LEVEL_WARNING), Equals, "warn")
-	c.Check(getLevelName(LEVEL_ERROR), Equals, "error")
-	c.Check(getLevelName(LEVEL_FATAL), Equals, "fatal")
-	c.Check(getLevelName(LEVEL_NONE), Equals, "none")
-	c.Check(getLevelName(LEVEL_UNKNOWN), Equals, "unknown")
+	c.Check(getLevelName(LevelDebug), Equals, "debug")
+	c.Check(getLevelName(LevelInfo), Equals, "info")
+	c.Check(getLevelName(LevelWarning), Equals, "warn")
+	c.Check(getLevelName(LevelError), Equals, "error")
+	c.Check(getLevelName(LevelFatal), Equals, "fatal")
+	c.Check(getLevelName(LevelNone), Equals, "none")
+	c.Check(getLevelName(LevelUnknown), Equals, "unknown")
 }
 
 func (s *GomolSuite) TestLevelString(c *C) {
-	c.Check(LEVEL_DEBUG.String(), Equals, "debug")
-	c.Check(LEVEL_INFO.String(), Equals, "info")
-	c.Check(LEVEL_WARNING.String(), Equals, "warn")
-	c.Check(LEVEL_ERROR.String(), Equals, "error")
-	c.Check(LEVEL_FATAL.String(), Equals, "fatal")
-	c.Check(LEVEL_NONE.String(), Equals, "none")
-	c.Check(LEVEL_UNKNOWN.String(), Equals, "unknown")
+	c.Check(LevelDebug.String(), Equals, "debug")
+	c.Check(LevelInfo.String(), Equals, "info")
+	c.Check(LevelWarning.String(), Equals, "warn")
+	c.Check(LevelError.String(), Equals, "error")
+	c.Check(LevelFatal.String(), Equals, "fatal")
+	c.Check(LevelNone.String(), Equals, "none")
+	c.Check(LevelUnknown.String(), Equals, "unknown")
 }
 
 func (s *GomolSuite) TestNewMessageAttrsNil(c *C) {
 	setClock(newTestClock(time.Now()))
-	m := newMessage(clock().Now(), curDefault, LEVEL_DEBUG, nil, "test")
+	m := newMessage(clock().Now(), curDefault, LevelDebug, nil, "test")
 	c.Check(m.Base, DeepEquals, curDefault)
 	c.Check(m.Timestamp, Equals, clock().Now())
-	c.Check(m.Level, Equals, LEVEL_DEBUG)
+	c.Check(m.Level, Equals, LevelDebug)
 	c.Check(m.Attrs, NotNil)
 	c.Check(m.Attrs, HasLen, 0)
 	c.Check(m.Msg, Equals, "test")
@@ -45,10 +45,10 @@ func (s *GomolSuite) TestNewMessageMsgAttrsNil(c *C) {
 		"otherAttr": 4321,
 	}
 
-	m := newMessage(clock().Now(), curDefault, LEVEL_DEBUG, ma, "test")
+	m := newMessage(clock().Now(), curDefault, LevelDebug, ma, "test")
 	c.Check(m.Base, DeepEquals, curDefault)
 	c.Check(m.Timestamp, Equals, clock().Now())
-	c.Check(m.Level, Equals, LEVEL_DEBUG)
+	c.Check(m.Level, Equals, LevelDebug)
 	c.Check(m.Attrs, NotNil)
 	c.Check(m.Attrs, HasLen, 2)
 	c.Check(m.Attrs["msgAttr"], Equals, "strVal")
@@ -58,10 +58,10 @@ func (s *GomolSuite) TestNewMessageMsgAttrsNil(c *C) {
 
 func (s *GomolSuite) TestNewMessageFormat(c *C) {
 	setClock(newTestClock(time.Now()))
-	m := newMessage(clock().Now(), curDefault, LEVEL_DEBUG, nil, "test %v %v", "str", 1234)
+	m := newMessage(clock().Now(), curDefault, LevelDebug, nil, "test %v %v", "str", 1234)
 	c.Check(m.Base, DeepEquals, curDefault)
 	c.Check(m.Timestamp, Equals, clock().Now())
-	c.Check(m.Level, Equals, LEVEL_DEBUG)
+	c.Check(m.Level, Equals, LevelDebug)
 	c.Check(m.Attrs, NotNil)
 	c.Check(m.Attrs, HasLen, 0)
 	c.Check(m.Msg, Equals, "test str 1234")
@@ -75,10 +75,10 @@ func (s *GomolSuite) TestNewMessageFormatWithAttrs(c *C) {
 		"otherAttr": 4321,
 	}
 
-	m := newMessage(clock().Now(), curDefault, LEVEL_DEBUG, ma, "test %v %v", "str", 1234)
+	m := newMessage(clock().Now(), curDefault, LevelDebug, ma, "test %v %v", "str", 1234)
 	c.Check(m.Base, DeepEquals, curDefault)
 	c.Check(m.Timestamp, Equals, clock().Now())
-	c.Check(m.Level, Equals, LEVEL_DEBUG)
+	c.Check(m.Level, Equals, LevelDebug)
 	c.Check(m.Attrs, NotNil)
 	c.Check(m.Attrs, HasLen, 2)
 	c.Check(m.Attrs["msgAttr"], Equals, "strVal")

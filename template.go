@@ -39,7 +39,7 @@ func tplColorNone() string {
 func tplColorReset() string {
 	return colorReset
 }
-func tplJson(data interface{}) (string, error) {
+func tplJSON(data interface{}) (string, error) {
 	json, err := json.Marshal(data)
 	if err != nil {
 		return "", err
@@ -56,19 +56,19 @@ func getFuncMap(level LogLevel) template.FuncMap {
 		"title": strings.Title,
 		"lcase": strings.ToLower,
 		"ucase": strings.ToUpper,
-		"json":  tplJson,
+		"json":  tplJSON,
 	}
 	fMap["reset"] = tplColorReset
 	switch level {
-	case LEVEL_DEBUG:
+	case LevelDebug:
 		fMap["color"] = tplColorDebug
-	case LEVEL_INFO:
+	case LevelInfo:
 		fMap["color"] = tplColorInfo
-	case LEVEL_WARNING:
+	case LevelWarning:
 		fMap["color"] = tplColorWarn
-	case LEVEL_ERROR:
+	case LevelError:
 		fMap["color"] = tplColorError
-	case LEVEL_FATAL:
+	case LevelFatal:
 		fMap["color"] = tplColorFatal
 	default:
 		fMap["color"] = tplColorNone
@@ -79,7 +79,7 @@ func getFuncMap(level LogLevel) template.FuncMap {
 }
 
 func NewTemplate(tpl string) (*Template, error) {
-	var levels = []LogLevel{LEVEL_NONE, LEVEL_DEBUG, LEVEL_INFO, LEVEL_WARNING, LEVEL_ERROR, LEVEL_FATAL}
+	var levels = []LogLevel{LevelNone, LevelDebug, LevelInfo, LevelWarning, LevelError, LevelFatal}
 	tpls := make(map[LogLevel]*template.Template, 0)
 	for _, level := range levels {
 		parsedTpl, err := template.New(getLevelName(level)).
@@ -110,7 +110,7 @@ func (t *Template) executeInternalMsg(msg *message, colorize bool) (string, erro
 func (t *Template) Execute(msg *TemplateMsg, colorize bool) (string, error) {
 	tplLevel := msg.Level
 	if !colorize {
-		tplLevel = LEVEL_NONE
+		tplLevel = LevelNone
 	}
 	var buf bytes.Buffer
 	err := t.tpls[tplLevel].Execute(&buf, msg)
