@@ -55,7 +55,7 @@ func RemoveAttr(key string) {
 	curDefault.RemoveAttr(key)
 }
 
-func NewLogAdapter(attrs map[string]interface{}) *LogAdapter {
+func NewLogAdapter(attrs *Attrs) *LogAdapter {
 	return curDefault.NewLogAdapter(attrs)
 }
 
@@ -65,7 +65,7 @@ func Dbg(msg string) error {
 func Dbgf(msg string, a ...interface{}) error {
 	return Debugf(msg, a...)
 }
-func Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
+func Dbgm(m *Attrs, msg string, a ...interface{}) error {
 	return Debugm(m, msg, a...)
 }
 func Debug(msg string) error {
@@ -74,7 +74,7 @@ func Debug(msg string) error {
 func Debugf(msg string, a ...interface{}) error {
 	return curDefault.Debugf(msg, a...)
 }
-func Debugm(m map[string]interface{}, msg string, a ...interface{}) error {
+func Debugm(m *Attrs, msg string, a ...interface{}) error {
 	return curDefault.Debugm(m, msg, a...)
 }
 
@@ -84,7 +84,7 @@ func Info(msg string) error {
 func Infof(msg string, a ...interface{}) error {
 	return curDefault.Infof(msg, a...)
 }
-func Infom(m map[string]interface{}, msg string, a ...interface{}) error {
+func Infom(m *Attrs, msg string, a ...interface{}) error {
 	return curDefault.Infom(m, msg, a...)
 }
 
@@ -94,7 +94,7 @@ func Warn(msg string) error {
 func Warnf(msg string, a ...interface{}) error {
 	return curDefault.Warnf(msg, a...)
 }
-func Warnm(m map[string]interface{}, msg string, a ...interface{}) error {
+func Warnm(m *Attrs, msg string, a ...interface{}) error {
 	return curDefault.Warnm(m, msg, a...)
 }
 
@@ -104,7 +104,7 @@ func Err(msg string) error {
 func Errf(msg string, a ...interface{}) error {
 	return Errorf(msg, a...)
 }
-func Errm(m map[string]interface{}, msg string, a ...interface{}) error {
+func Errm(m *Attrs, msg string, a ...interface{}) error {
 	return Errorm(m, msg, a...)
 }
 func Error(msg string) error {
@@ -113,7 +113,7 @@ func Error(msg string) error {
 func Errorf(msg string, a ...interface{}) error {
 	return curDefault.Errorf(msg, a...)
 }
-func Errorm(m map[string]interface{}, msg string, a ...interface{}) error {
+func Errorm(m *Attrs, msg string, a ...interface{}) error {
 	return curDefault.Errorm(m, msg, a...)
 }
 
@@ -123,7 +123,7 @@ func Fatal(msg string) error {
 func Fatalf(msg string, a ...interface{}) error {
 	return curDefault.Fatalf(msg, a...)
 }
-func Fatalm(m map[string]interface{}, msg string, a ...interface{}) error {
+func Fatalm(m *Attrs, msg string, a ...interface{}) error {
 	return curDefault.Fatalm(m, msg, a...)
 }
 
@@ -133,6 +133,6 @@ func Die(exitCode int, msg string) {
 func Dief(exitCode int, msg string, a ...interface{}) {
 	curDefault.Dief(exitCode, msg, a...)
 }
-func Diem(exitCode int, m map[string]interface{}, msg string, a ...interface{}) {
+func Diem(exitCode int, m *Attrs, msg string, a ...interface{}) {
 	curDefault.Diem(exitCode, m, msg, a...)
 }

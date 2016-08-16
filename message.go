@@ -45,14 +45,14 @@ type message struct {
 	Base      *Base
 	Level     LogLevel
 	Timestamp time.Time
-	Attrs     map[string]interface{}
+	Attrs     *Attrs
 	Msg       string
 }
 
 func newMessage(timestamp time.Time,
 	base *Base,
 	level LogLevel,
-	msgAttrs map[string]interface{},
+	msgAttrs *Attrs,
 	format string, va ...interface{}) *message {
 
 	msgStr := format
@@ -60,28 +60,20 @@ func newMessage(timestamp time.Time,
 		msgStr = fmt.Sprintf(format, va...)
 	}
 
+	var attrs *Attrs
+	if msgAttrs != nil {
+		attrs = msgAttrs
+	} else {
+		attrs = NewAttrs()
+	}
+
 	nm := &message{
 		Base:      base,
 		Level:     level,
 		Timestamp: timestamp,
-		Attrs:     make(map[string]interface{}, len(msgAttrs)),
+		Attrs:     attrs,
 		Msg:       msgStr,
 	}
 
-	for msgKey, msgVal := range msgAttrs {
-		nm.Attrs[msgKey] = msgVal
-	}
-
 	return nm
-}
-
-func mergeAttrs(baseAttrs map[string]interface{}, msgAttrs map[string]interface{}) map[string]interface{} {
-	attrs := make(map[string]interface{}, len(baseAttrs)+len(msgAttrs))
-	for attrKey, attrVal := range baseAttrs {
-		attrs[attrKey] = attrVal
-	}
-	for attrKey, attrVal := range msgAttrs {
-		attrs[attrKey] = attrVal
-	}
-	return attrs
 }

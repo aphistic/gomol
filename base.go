@@ -13,7 +13,7 @@ type Base struct {
 	queue         *queue
 	logLevel      LogLevel
 	loggers       []Logger
-	BaseAttrs     map[string]interface{}
+	BaseAttrs     *Attrs
 }
 
 // NewBase creates a new instance of Base with default values set.
@@ -23,7 +23,7 @@ func NewBase() *Base {
 		queue:     newQueue(),
 		logLevel:  LevelDebug,
 		loggers:   make([]Logger, 0),
-		BaseAttrs: make(map[string]interface{}, 0),
+		BaseAttrs: NewAttrs(),
 	}
 	return b
 }
@@ -166,13 +166,13 @@ func (b *Base) ShutdownLoggers() error {
 /*
 NewLogAdapter creates a LogAdapter using Base to log messages
 */
-func (b *Base) NewLogAdapter(attrs map[string]interface{}) *LogAdapter {
+func (b *Base) NewLogAdapter(attrs *Attrs) *LogAdapter {
 	return newLogAdapter(b, attrs)
 }
 
 // ClearAttrs will remove all the attributes added to Base
 func (b *Base) ClearAttrs() {
-	b.BaseAttrs = make(map[string]interface{}, 0)
+	b.BaseAttrs = NewAttrs()
 }
 
 /*
@@ -180,7 +180,7 @@ SetAttr will set the value for the attribute with the name key.  If the key
 already exists it will be overwritten with the new value.
 */
 func (b *Base) SetAttr(key string, value interface{}) {
-	b.BaseAttrs[key] = value
+	b.BaseAttrs.SetAttr(key, value)
 }
 
 /*
@@ -188,18 +188,15 @@ GetAttr will return the current value for the given attribute key.  If the key
 isn't set this will return nil
 */
 func (b *Base) GetAttr(key string) interface{} {
-	if val, ok := b.BaseAttrs[key]; ok {
-		return val
-	}
-	return nil
+	return b.BaseAttrs.GetAttr(key)
 }
 
 // RemoveAttr will remove the attribute with the name key.
 func (b *Base) RemoveAttr(key string) {
-	delete(b.BaseAttrs, key)
+	b.BaseAttrs.RemoveAttr(key)
 }
 
-func (b *Base) log(level LogLevel, m map[string]interface{}, msg string, a ...interface{}) error {
+func (b *Base) log(level LogLevel, m *Attrs, msg string, a ...interface{}) error {
 	if !b.shouldLog(level) {
 		return nil
 	}
@@ -207,13 +204,13 @@ func (b *Base) log(level LogLevel, m map[string]interface{}, msg string, a ...in
 	if len(b.config.FilenameAttr) > 0 || len(b.config.LineNumberAttr) > 0 {
 		file, line := getCallerInfo()
 		if m == nil {
-			m = make(map[string]interface{})
+			m = NewAttrs()
 		}
 		if len(b.config.FilenameAttr) > 0 {
-			m[b.config.FilenameAttr] = file
+			m.SetAttr(b.config.FilenameAttr, file)
 		}
 		if len(b.config.LineNumberAttr) > 0 {
-			m[b.config.LineNumberAttr] = line
+			m.SetAttr(b.config.LineNumberAttr, line)
 		}
 	}
 
@@ -232,7 +229,7 @@ func (b *Base) Dbgf(msg string, a ...interface{}) error {
 }
 
 // Dbgm is a short-hand version of Debugm
-func (b *Base) Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (b *Base) Dbgm(m *Attrs, msg string, a ...interface{}) error {
 	return b.Debugm(m, msg, a...)
 }
 
@@ -255,7 +252,7 @@ the resulting message to all added loggers at LogLevel.LevelDebug. It will also
 merge all attributes passed in m with any attributes added to Base and include them
 with the message if the Logger supports it.
 */
-func (b *Base) Debugm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (b *Base) Debugm(m *Attrs, msg string, a ...interface{}) error {
 	return b.log(LevelDebug, m, msg, a...)
 }
 
@@ -278,7 +275,7 @@ the resulting message to all added loggers at LogLevel.LevelInfo. It will also
 merge all attributes passed in m with any attributes added to Base and include them
 with the message if the Logger supports it.
 */
-func (b *Base) Infom(m map[string]interface{}, msg string, a ...interface{}) error {
+func (b *Base) Infom(m *Attrs, msg string, a ...interface{}) error {
 	return b.log(LevelInfo, m, msg, a...)
 }
 
@@ -293,7 +290,7 @@ func (b *Base) Warnf(msg string, a ...interface{}) error {
 }
 
 // Warnm is a short-hand version of Warningm
-func (b *Base) Warnm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (b *Base) Warnm(m *Attrs, msg string, a ...interface{}) error {
 	return b.Warningm(m, msg, a...)
 }
 
@@ -319,7 +316,7 @@ the resulting message to all added loggers at LogLevel.LevelWarning. It will als
 merge all attributes passed in m with any attributes added to Base and include them
 with the message if the Logger supports it.
 */
-func (b *Base) Warningm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (b *Base) Warningm(m *Attrs, msg string, a ...interface{}) error {
 	return b.log(LevelWarning, m, msg, a...)
 }
 
@@ -329,7 +326,7 @@ func (b *Base) Err(msg string) error {
 func (b *Base) Errf(msg string, a ...interface{}) error {
 	return b.Errorf(msg, a...)
 }
-func (b *Base) Errm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (b *Base) Errm(m *Attrs, msg string, a ...interface{}) error {
 	return b.Errorm(m, msg, a...)
 }
 func (b *Base) Error(msg string) error {
@@ -338,7 +335,7 @@ func (b *Base) Error(msg string) error {
 func (b *Base) Errorf(msg string, a ...interface{}) error {
 	return b.log(LevelError, nil, msg, a...)
 }
-func (b *Base) Errorm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (b *Base) Errorm(m *Attrs, msg string, a ...interface{}) error {
 	return b.log(LevelError, m, msg, a...)
 }
 
@@ -348,7 +345,7 @@ func (b *Base) Fatal(msg string) error {
 func (b *Base) Fatalf(msg string, a ...interface{}) error {
 	return b.log(LevelFatal, nil, msg, a...)
 }
-func (b *Base) Fatalm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (b *Base) Fatalm(m *Attrs, msg string, a ...interface{}) error {
 	return b.log(LevelFatal, m, msg, a...)
 }
 
@@ -362,7 +359,7 @@ func (b *Base) Dief(exitCode int, msg string, a ...interface{}) {
 	b.ShutdownLoggers()
 	curExiter.Exit(exitCode)
 }
-func (b *Base) Diem(exitCode int, m map[string]interface{}, msg string, a ...interface{}) {
+func (b *Base) Diem(exitCode int, m *Attrs, msg string, a ...interface{}) {
 	b.log(LevelFatal, m, msg, a...)
 	b.ShutdownLoggers()
 	curExiter.Exit(exitCode)

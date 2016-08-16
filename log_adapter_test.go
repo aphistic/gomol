@@ -10,33 +10,28 @@ func (s *GomolSuite) TestNewLogAdapterEmpty(c *C) {
 	c.Check(la.base, Equals, b)
 
 	c.Check(la.attrs, NotNil)
-	c.Check(len(la.attrs), Equals, 0)
 }
 
 func (s *GomolSuite) TestNewLogAdapter(c *C) {
 	b := NewBase()
 
-	la := b.NewLogAdapter(map[string]interface{}{
-		"testNum": 1234,
-		"testStr": "foo",
-	})
+	la := b.NewLogAdapter(NewAttrs().
+		SetAttr("testNum", 1234).
+		SetAttr("testStr", "foo"))
 	c.Check(la, NotNil)
 	c.Check(la.base, Equals, b)
 
 	c.Check(la.attrs, NotNil)
-	c.Assert(len(la.attrs), Equals, 2)
-	c.Check(la.attrs["testNum"], Equals, 1234)
-	c.Check(la.attrs["testStr"], Equals, "foo")
+	c.Check(la.attrs.GetAttr("testNum"), Equals, 1234)
+	c.Check(la.attrs.GetAttr("testStr"), Equals, "foo")
 }
 
 func (s *GomolSuite) TestLogAdapterSetAttr(c *C) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(nil)
-	c.Check(len(la.attrs), Equals, 0)
 	la.SetAttr("foo", "bar")
-	c.Assert(len(la.attrs), Equals, 1)
-	c.Check(la.attrs["foo"], Equals, "bar")
+	c.Check(la.attrs.GetAttr("foo"), Equals, "bar")
 }
 
 func (s *GomolSuite) TestLogAdapterGetAttr(c *C) {
@@ -53,27 +48,23 @@ func (s *GomolSuite) TestLogAdapterGetAttr(c *C) {
 func (s *GomolSuite) TestLogAdapterRemoveAttr(c *C) {
 	b := NewBase()
 
-	la := b.NewLogAdapter(map[string]interface{}{
-		"foo": "bar",
-	})
-	c.Assert(len(la.attrs), Equals, 1)
-	c.Check(la.attrs["foo"], Equals, "bar")
+	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
+	c.Check(la.attrs.GetAttr("foo"), Equals, "bar")
 	la.RemoveAttr("foo")
-	c.Check(len(la.attrs), Equals, 0)
+	c.Check(la.attrs.GetAttr("foo"), IsNil)
 }
 
 func (s *GomolSuite) TestLogAdapterClearAttrs(c *C) {
 	b := NewBase()
 
-	la := b.NewLogAdapter(map[string]interface{}{
-		"foo": "bar",
-		"baz": "qux",
-	})
-	c.Assert(len(la.attrs), Equals, 2)
-	c.Check(la.attrs["foo"], Equals, "bar")
-	c.Check(la.attrs["baz"], Equals, "qux")
+	la := b.NewLogAdapter(NewAttrs().
+		SetAttr("foo", "bar").
+		SetAttr("baz", "qux"))
+	c.Check(la.attrs.GetAttr("foo"), Equals, "bar")
+	c.Check(la.attrs.GetAttr("baz"), Equals, "qux")
 	la.ClearAttrs()
-	c.Check(len(la.attrs), Equals, 0)
+	c.Check(la.attrs.GetAttr("foo"), IsNil)
+	c.Check(la.attrs.GetAttr("baz"), IsNil)
 }
 
 func (s *GomolSuite) TestLogAdapterDebug(c *C) {
@@ -82,19 +73,15 @@ func (s *GomolSuite) TestLogAdapterDebug(c *C) {
 	b.AddLogger(ml)
 	b.InitLoggers()
 
-	la := b.NewLogAdapter(map[string]interface{}{"foo": "bar"})
+	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
 	c.Check(len(ml.Messages), Equals, 0)
 
 	la.Dbg("Message 1")
 	la.Debug("Message 2")
 	la.Dbgf("MessageF %v", 1)
 	la.Debugf("MessageF %v", 2)
-	la.Dbgm(map[string]interface{}{
-		"attr1": "val1",
-	}, "MessageM %v", 1)
-	la.Debugm(map[string]interface{}{
-		"foo": "newBar",
-	}, "MessageM %v", 2)
+	la.Dbgm(NewAttrs().SetAttr("attr1", "val1"), "MessageM %v", 1)
+	la.Debugm(NewAttrs().SetAttr("foo", "newBar"), "MessageM %v", 2)
 
 	b.ShutdownLoggers()
 
@@ -156,14 +143,12 @@ func (s *GomolSuite) TestLogAdapterInfo(c *C) {
 	b.AddLogger(ml)
 	b.InitLoggers()
 
-	la := b.NewLogAdapter(map[string]interface{}{"foo": "bar"})
+	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
 	c.Check(len(ml.Messages), Equals, 0)
 
 	la.Info("Message 1")
 	la.Infof("MessageF %v", 1)
-	la.Infom(map[string]interface{}{
-		"attr1": "val1",
-	}, "MessageM %v", 1)
+	la.Infom(NewAttrs().SetAttr("attr1", "val1"), "MessageM %v", 1)
 
 	b.ShutdownLoggers()
 
@@ -201,19 +186,15 @@ func (s *GomolSuite) TestLogAdapterWarn(c *C) {
 	b.AddLogger(ml)
 	b.InitLoggers()
 
-	la := b.NewLogAdapter(map[string]interface{}{"foo": "bar"})
+	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
 	c.Check(len(ml.Messages), Equals, 0)
 
 	la.Warn("Message 1")
 	la.Warning("Message 2")
 	la.Warnf("MessageF %v", 1)
 	la.Warningf("MessageF %v", 2)
-	la.Warnm(map[string]interface{}{
-		"attr1": "val1",
-	}, "MessageM %v", 1)
-	la.Warningm(map[string]interface{}{
-		"foo": "newBar",
-	}, "MessageM %v", 2)
+	la.Warnm(NewAttrs().SetAttr("attr1", "val1"), "MessageM %v", 1)
+	la.Warningm(NewAttrs().SetAttr("foo", "newBar"), "MessageM %v", 2)
 
 	b.ShutdownLoggers()
 
@@ -275,19 +256,15 @@ func (s *GomolSuite) TestLogAdapterError(c *C) {
 	b.AddLogger(ml)
 	b.InitLoggers()
 
-	la := b.NewLogAdapter(map[string]interface{}{"foo": "bar"})
+	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
 	c.Check(len(ml.Messages), Equals, 0)
 
 	la.Err("Message 1")
 	la.Error("Message 2")
 	la.Errf("MessageF %v", 1)
 	la.Errorf("MessageF %v", 2)
-	la.Errm(map[string]interface{}{
-		"attr1": "val1",
-	}, "MessageM %v", 1)
-	la.Errorm(map[string]interface{}{
-		"foo": "newBar",
-	}, "MessageM %v", 2)
+	la.Errm(NewAttrs().SetAttr("attr1", "val1"), "MessageM %v", 1)
+	la.Errorm(NewAttrs().SetAttr("foo", "newBar"), "MessageM %v", 2)
 
 	b.ShutdownLoggers()
 
@@ -349,14 +326,12 @@ func (s *GomolSuite) TestLogAdapterFatal(c *C) {
 	b.AddLogger(ml)
 	b.InitLoggers()
 
-	la := b.NewLogAdapter(map[string]interface{}{"foo": "bar"})
+	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
 	c.Check(len(ml.Messages), Equals, 0)
 
 	la.Fatal("Message 1")
 	la.Fatalf("MessageF %v", 1)
-	la.Fatalm(map[string]interface{}{
-		"attr1": "val1",
-	}, "MessageM %v", 1)
+	la.Fatalm(NewAttrs().SetAttr("attr1", "val1"), "MessageM %v", 1)
 
 	b.ShutdownLoggers()
 
@@ -394,7 +369,7 @@ func (s *GomolSuite) TestLogAdapterDie(c *C) {
 	b.AddLogger(ml)
 	b.InitLoggers()
 
-	la := b.NewLogAdapter(map[string]interface{}{"foo": "bar"})
+	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
 	c.Check(len(ml.Messages), Equals, 0)
 
 	la.Die(1234, "Message 1")
@@ -420,7 +395,7 @@ func (s *GomolSuite) TestLogAdapterDief(c *C) {
 	b.AddLogger(ml)
 	b.InitLoggers()
 
-	la := b.NewLogAdapter(map[string]interface{}{"foo": "bar"})
+	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
 	c.Check(len(ml.Messages), Equals, 0)
 
 	la.Dief(1234, "MessageF %v", 1)
@@ -446,12 +421,10 @@ func (s *GomolSuite) TestLogAdapterDiem(c *C) {
 	b.AddLogger(ml)
 	b.InitLoggers()
 
-	la := b.NewLogAdapter(map[string]interface{}{"foo": "bar"})
+	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
 	c.Check(len(ml.Messages), Equals, 0)
 
-	la.Diem(1234, map[string]interface{}{
-		"attr1": "val1",
-	}, "MessageM %v", 1)
+	la.Diem(1234, NewAttrs().SetAttr("attr1", "val1"), "MessageM %v", 1)
 
 	b.ShutdownLoggers()
 

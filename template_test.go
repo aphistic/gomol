@@ -32,10 +32,11 @@ func (s *GomolSuite) TestNewTemplateMsgError(c *C) {
 func (s *GomolSuite) TestTemplateExecuteError(c *C) {
 	setClock(newTestClock(time.Unix(1000000000, 100)))
 
-	msg := newMessage(clock().Now(), nil, LevelError, map[string]interface{}{
-		"attr1": "val1",
-		"attr2": 1234,
-	}, "message")
+	msg := newMessage(clock().Now(), nil, LevelError,
+		NewAttrs().
+			SetAttr("attr1", "val1").
+			SetAttr("attr2", 1234),
+		"message")
 	tpl, err := NewTemplate("{{ .ThisDoesNotExist }}")
 	c.Assert(err, IsNil)
 
@@ -125,10 +126,11 @@ func (s *GomolSuite) TestTplMsgFromInternal(c *C) {
 	b := NewBase()
 	b.SetAttr("baseAttr", 1234)
 	b.SetAttr("overrideAttr", 1234)
-	msg := newMessage(clock().Now(), b, LevelInfo, map[string]interface{}{
-		"msgAttr":      4321,
-		"overrideAttr": "test",
-	}, "Format %v %v", 1234, "asdf")
+	msg := newMessage(clock().Now(), b, LevelInfo,
+		NewAttrs().
+			SetAttr("msgAttr", 4321).
+			SetAttr("overrideAttr", "test"),
+		"Format %v %v", 1234, "asdf")
 
 	tplMsg, err := newTemplateMsgFromMessage(msg)
 	c.Assert(err, IsNil)
@@ -148,10 +150,11 @@ func (s *GomolSuite) TestTplMsgAttrs(c *C) {
 	b := NewBase()
 	b.SetAttr("baseAttr", 1234)
 	b.SetAttr("overrideAttr", 1234)
-	msg := newMessage(clock().Now(), b, LevelInfo, map[string]interface{}{
-		"msgAttr":      4321,
-		"overrideAttr": "test",
-	}, "Format %v %v", 1234, "asdf")
+	msg := newMessage(clock().Now(), b, LevelInfo,
+		NewAttrs().
+			SetAttr("msgAttr", 4321).
+			SetAttr("overrideAttr", "test"),
+		"Format %v %v", 1234, "asdf")
 
 	tplMsg, err := newTemplateMsgFromMessage(msg)
 	c.Assert(err, IsNil)
@@ -188,10 +191,11 @@ func (s *GomolSuite) TestTplTimestamp(c *C) {
 func (s *GomolSuite) TestTplJSON(c *C) {
 	setClock(newTestClock(time.Unix(1000000000, 100)))
 
-	msg := newMessage(clock().Now(), nil, LevelError, map[string]interface{}{
-		"attr1": "val1",
-		"attr2": 1234,
-	}, "message")
+	msg := newMessage(clock().Now(), nil, LevelError,
+		NewAttrs().
+			SetAttr("attr1", "val1").
+			SetAttr("attr2", 1234),
+		"message")
 	tpl, err := NewTemplate("{{ json . }}")
 	c.Assert(err, IsNil)
 
@@ -230,7 +234,7 @@ func (s *GomolSuite) TestTplAttrTemplate(c *C) {
 	msg := newMessage(clock().Now(),
 		nil,
 		LevelFatal,
-		map[string]interface{}{"attrName": "attrVal"},
+		NewAttrs().SetAttr("attrName", "attrVal"),
 		"test")
 	tpl, err := NewTemplate("[{{.Attrs.attrName}}] {{.Message}}")
 	c.Assert(err, IsNil)

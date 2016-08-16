@@ -6,13 +6,13 @@ modifying the base attributes or specifying them for every log message.
 */
 type LogAdapter struct {
 	base  *Base
-	attrs map[string]interface{}
+	attrs *Attrs
 }
 
-func newLogAdapter(base *Base, attrs map[string]interface{}) *LogAdapter {
+func newLogAdapter(base *Base, attrs *Attrs) *LogAdapter {
 	newAttrs := attrs
 	if attrs == nil {
-		newAttrs = make(map[string]interface{})
+		newAttrs = NewAttrs()
 	}
 
 	return &LogAdapter{
@@ -23,30 +23,28 @@ func newLogAdapter(base *Base, attrs map[string]interface{}) *LogAdapter {
 
 // SetAttr sets the attribute key to value for this LogAdapter only
 func (la *LogAdapter) SetAttr(key string, value interface{}) {
-	la.attrs[key] = value
+	la.attrs.SetAttr(key, value)
 }
 
 // GetAttr gets the attribute with the given key for this LogAdapter only. If the
 // key doesn't exist on this LogAdapter it will return nil
 func (la *LogAdapter) GetAttr(key string) interface{} {
-	if val, ok := la.attrs[key]; ok {
-		return val
-	}
-	return nil
+	return la.attrs.GetAttr(key)
 }
 
 // RemoveAttr removes the attribute key for this LogAdapter only
 func (la *LogAdapter) RemoveAttr(key string) {
-	delete(la.attrs, key)
+	la.attrs.RemoveAttr(key)
 }
 
 // ClearAttrs removes all attributes for this LogAdapter only
 func (la *LogAdapter) ClearAttrs() {
-	la.attrs = make(map[string]interface{})
+	la.attrs = NewAttrs()
 }
 
-func (la *LogAdapter) log(level LogLevel, attrs map[string]interface{}, msg string, a ...interface{}) error {
-	mergedAttrs := mergeAttrs(la.attrs, attrs)
+func (la *LogAdapter) log(level LogLevel, attrs *Attrs, msg string, a ...interface{}) error {
+	mergedAttrs := la.attrs.clone()
+	mergedAttrs.mergeAttrs(attrs)
 	return la.base.log(level, mergedAttrs, msg, a...)
 }
 
@@ -61,7 +59,7 @@ func (la *LogAdapter) Dbgf(msg string, a ...interface{}) error {
 }
 
 // Dbgm is a short-hand version of Debugm
-func (la *LogAdapter) Dbgm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (la *LogAdapter) Dbgm(m *Attrs, msg string, a ...interface{}) error {
 	return la.Debugm(m, msg, a...)
 }
 
@@ -84,7 +82,7 @@ the resulting message to all added loggers at LogLevel.LevelDebug. It will also
 merge all attributes passed in m with any attributes added to Base and include them
 with the message if the Logger supports it.
 */
-func (la *LogAdapter) Debugm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (la *LogAdapter) Debugm(m *Attrs, msg string, a ...interface{}) error {
 	return la.log(LevelDebug, m, msg, a...)
 }
 
@@ -107,7 +105,7 @@ the resulting message to all added loggers at LogLevel.LevelInfo. It will also
 merge all attributes passed in m with any attributes added to Base and include them
 with the message if the Logger supports it.
 */
-func (la *LogAdapter) Infom(m map[string]interface{}, msg string, a ...interface{}) error {
+func (la *LogAdapter) Infom(m *Attrs, msg string, a ...interface{}) error {
 	return la.log(LevelInfo, m, msg, a...)
 }
 
@@ -122,7 +120,7 @@ func (la *LogAdapter) Warnf(msg string, a ...interface{}) error {
 }
 
 // Warnm is a short-hand version of Warningm
-func (la *LogAdapter) Warnm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (la *LogAdapter) Warnm(m *Attrs, msg string, a ...interface{}) error {
 	return la.Warningm(m, msg, a...)
 }
 
@@ -148,7 +146,7 @@ the resulting message to all added loggers at LogLevel.LevelWarning. It will als
 merge all attributes passed in m with any attributes added to Base and include them
 with the message if the Logger supports it.
 */
-func (la *LogAdapter) Warningm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (la *LogAdapter) Warningm(m *Attrs, msg string, a ...interface{}) error {
 	return la.log(LevelWarning, m, msg, a...)
 }
 
@@ -158,7 +156,7 @@ func (la *LogAdapter) Err(msg string) error {
 func (la *LogAdapter) Errf(msg string, a ...interface{}) error {
 	return la.Errorf(msg, a...)
 }
-func (la *LogAdapter) Errm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (la *LogAdapter) Errm(m *Attrs, msg string, a ...interface{}) error {
 	return la.Errorm(m, msg, a...)
 }
 func (la *LogAdapter) Error(msg string) error {
@@ -167,7 +165,7 @@ func (la *LogAdapter) Error(msg string) error {
 func (la *LogAdapter) Errorf(msg string, a ...interface{}) error {
 	return la.log(LevelError, nil, msg, a...)
 }
-func (la *LogAdapter) Errorm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (la *LogAdapter) Errorm(m *Attrs, msg string, a ...interface{}) error {
 	return la.log(LevelError, m, msg, a...)
 }
 
@@ -177,7 +175,7 @@ func (la *LogAdapter) Fatal(msg string) error {
 func (la *LogAdapter) Fatalf(msg string, a ...interface{}) error {
 	return la.log(LevelFatal, nil, msg, a...)
 }
-func (la *LogAdapter) Fatalm(m map[string]interface{}, msg string, a ...interface{}) error {
+func (la *LogAdapter) Fatalm(m *Attrs, msg string, a ...interface{}) error {
 	return la.log(LevelFatal, m, msg, a...)
 }
 
@@ -191,7 +189,7 @@ func (la *LogAdapter) Dief(exitCode int, msg string, a ...interface{}) {
 	la.base.ShutdownLoggers()
 	curExiter.Exit(exitCode)
 }
-func (la *LogAdapter) Diem(exitCode int, m map[string]interface{}, msg string, a ...interface{}) {
+func (la *LogAdapter) Diem(exitCode int, m *Attrs, msg string, a ...interface{}) {
 	la.log(LevelFatal, m, msg, a...)
 	la.base.ShutdownLoggers()
 	curExiter.Exit(exitCode)

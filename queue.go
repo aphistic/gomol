@@ -116,11 +116,15 @@ func (queue *queue) senderWorker(exiting bool) {
 			}
 
 			for _, l := range msg.Base.loggers {
-				l.Logm(msg.Timestamp, msg.Level, msg.Attrs, msg.Msg)
+				l.Logm(msg.Timestamp, msg.Level, msg.Attrs.Attrs(), msg.Msg)
 			}
 		}
 	}
 	queue.workersDone.Done()
+}
+
+func (queue *queue) IsActivate() bool {
+	return queue.running
 }
 
 func (queue *queue) QueueMessage(msg *message) error {

@@ -84,7 +84,7 @@ func (s *GomolSuite) TestNewBase(c *C) {
 	c.Assert(b.queue, NotNil)
 	c.Check(b.logLevel, Equals, LevelDebug)
 	c.Check(b.loggers, HasLen, 0)
-	c.Check(b.BaseAttrs, HasLen, 0)
+	c.Check(b.BaseAttrs.Attrs(), HasLen, 0)
 }
 
 func (s *GomolSuite) TestSetConfig(c *C) {
@@ -378,11 +378,11 @@ func (s *GomolSuite) TestSetAttr(c *C) {
 	b := NewBase()
 
 	b.SetAttr("attr1", 1)
-	c.Check(b.BaseAttrs, HasLen, 1)
-	c.Check(b.BaseAttrs["attr1"], Equals, 1)
+	c.Check(b.BaseAttrs.Attrs(), HasLen, 1)
+	c.Check(b.BaseAttrs.GetAttr("attr1"), Equals, 1)
 	b.SetAttr("attr2", "val2")
-	c.Check(b.BaseAttrs, HasLen, 2)
-	c.Check(b.BaseAttrs["attr2"], Equals, "val2")
+	c.Check(b.BaseAttrs.Attrs(), HasLen, 2)
+	c.Check(b.BaseAttrs.GetAttr("attr2"), Equals, "val2")
 }
 
 func (s *GomolSuite) TestGetAttr(c *C) {
@@ -399,11 +399,11 @@ func (s *GomolSuite) TestRemoveAttr(c *C) {
 	b := NewBase()
 
 	b.SetAttr("attr1", 1)
-	c.Check(b.BaseAttrs, HasLen, 1)
-	c.Check(b.BaseAttrs["attr1"], Equals, 1)
+	c.Check(b.BaseAttrs.Attrs(), HasLen, 1)
+	c.Check(b.BaseAttrs.GetAttr("attr1"), Equals, 1)
 
 	b.RemoveAttr("attr1")
-	c.Check(b.BaseAttrs, HasLen, 0)
+	c.Check(b.BaseAttrs.Attrs(), HasLen, 0)
 }
 
 func (s *GomolSuite) TestClearAttrs(c *C) {
@@ -411,27 +411,13 @@ func (s *GomolSuite) TestClearAttrs(c *C) {
 
 	b.SetAttr("attr1", 1)
 	b.SetAttr("attr2", "val2")
-	c.Check(b.BaseAttrs, HasLen, 2)
+	c.Check(b.BaseAttrs.Attrs(), HasLen, 2)
 
 	b.ClearAttrs()
-	c.Check(b.BaseAttrs, HasLen, 0)
+	c.Check(b.BaseAttrs.Attrs(), HasLen, 0)
 }
 
 // Base func tests
-
-func (s *GomolSuite) BenchmarkBasicLogInsertion(c *C) {
-	base := NewBase()
-	base.InitLoggers()
-	for i := 0; i < c.N; i++ {
-		base.log(LevelDebug, map[string]interface{}{
-			"attr1": "val1",
-			"attr2": "val2",
-			"attr3": 3,
-			"attr4": 4,
-		}, "msg %v %v", "string", 1234)
-	}
-	base.ShutdownLoggers()
-}
 
 func (s *GomolSuite) TestBaseDbg(c *C) {
 	b := NewBase()
@@ -493,10 +479,9 @@ func (s *GomolSuite) TestBaseDbgm(c *C) {
 
 	b.InitLoggers()
 	b.Dbgm(
-		map[string]interface{}{
-			"attr2": 4321,
-			"attr3": "val3",
-		},
+		NewAttrs().
+			SetAttr("attr2", 4321).
+			SetAttr("attr3", "val3"),
 		"test %v",
 		1234)
 	b.ShutdownLoggers()
@@ -578,10 +563,9 @@ func (s *GomolSuite) TestBaseInfom(c *C) {
 
 	b.InitLoggers()
 	b.Infom(
-		map[string]interface{}{
-			"attr2": 4321,
-			"attr3": "val3",
-		},
+		NewAttrs().
+			SetAttr("attr2", 4321).
+			SetAttr("attr3", "val3"),
 		"test %v",
 		1234)
 	b.ShutdownLoggers()
@@ -663,10 +647,9 @@ func (s *GomolSuite) TestBaseWarnm(c *C) {
 
 	b.InitLoggers()
 	b.Warnm(
-		map[string]interface{}{
-			"attr2": 4321,
-			"attr3": "val3",
-		},
+		NewAttrs().
+			SetAttr("attr2", 4321).
+			SetAttr("attr3", "val3"),
 		"test %v",
 		1234)
 	b.ShutdownLoggers()
@@ -748,10 +731,9 @@ func (s *GomolSuite) TestBaseErrm(c *C) {
 
 	b.InitLoggers()
 	b.Errm(
-		map[string]interface{}{
-			"attr2": 4321,
-			"attr3": "val3",
-		},
+		NewAttrs().
+			SetAttr("attr2", 4321).
+			SetAttr("attr3", "val3"),
 		"test %v",
 		1234)
 	b.ShutdownLoggers()
@@ -833,10 +815,9 @@ func (s *GomolSuite) TestBaseFatalm(c *C) {
 
 	b.InitLoggers()
 	b.Fatalm(
-		map[string]interface{}{
-			"attr2": 4321,
-			"attr3": "val3",
-		},
+		NewAttrs().
+			SetAttr("attr2", 4321).
+			SetAttr("attr3", "val3"),
 		"test %v",
 		1234)
 	b.ShutdownLoggers()
@@ -925,10 +906,9 @@ func (s *GomolSuite) TestBaseDiem(c *C) {
 	b.InitLoggers()
 	b.Diem(
 		1234,
-		map[string]interface{}{
-			"attr2": 4321,
-			"attr3": "val3",
-		},
+		NewAttrs().
+			SetAttr("attr2", 4321).
+			SetAttr("attr3", "val3"),
 		"test %v",
 		1234)
 	b.ShutdownLoggers()
@@ -966,17 +946,15 @@ func (s *GomolSuite) TestBaseOrdering(c *C) {
 
 	b.InitLoggers()
 	b.Fatalm(
-		map[string]interface{}{
-			"attr2": 4321,
-			"attr3": "val3",
-		},
+		NewAttrs().
+			SetAttr("attr2", 4321).
+			SetAttr("attr3", "val3"),
 		"test %v",
 		1234)
 	b.Fatalm(
-		map[string]interface{}{
-			"attr4": 4321,
-			"attr5": "val3",
-		},
+		NewAttrs().
+			SetAttr("attr4", 4321).
+			SetAttr("attr5", "val3"),
 		"test %v",
 		4321)
 	b.ShutdownLoggers()

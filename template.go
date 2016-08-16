@@ -156,13 +156,13 @@ func newTemplateMsgFromMessage(msg *message) (*TemplateMsg, error) {
 	tplMsg.Message = msg.Msg
 	tplMsg.Level = msg.Level
 	tplMsg.LevelName = getLevelName(msg.Level)
+
+	tplAttrs := NewAttrs()
 	if msg.Base != nil {
-		for key, val := range msg.Base.BaseAttrs {
-			tplMsg.Attrs[key] = val
-		}
+		tplAttrs.mergeAttrs(msg.Base.BaseAttrs)
 	}
-	for key, val := range msg.Attrs {
-		tplMsg.Attrs[key] = val
-	}
+	tplAttrs.mergeAttrs(msg.Attrs)
+	tplMsg.Attrs = tplAttrs.Attrs()
+
 	return tplMsg, nil
 }

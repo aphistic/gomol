@@ -104,10 +104,10 @@ func (s *GomolSuite) TestDefaultSetLogLevel(c *C) {
 
 func (s *GomolSuite) TestDefaultSetAttr(c *C) {
 	curDefault = NewBase()
-	c.Check(curDefault.BaseAttrs, HasLen, 0)
+	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 0)
 	SetAttr("attr", 1234)
-	c.Check(curDefault.BaseAttrs, HasLen, 1)
-	c.Check(curDefault.BaseAttrs["attr"], Equals, 1234)
+	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 1)
+	c.Check(curDefault.BaseAttrs.GetAttr("attr"), Equals, 1234)
 }
 
 func (s *GomolSuite) TestDefaultGetAttr(c *C) {
@@ -121,32 +121,32 @@ func (s *GomolSuite) TestDefaultGetAttr(c *C) {
 
 func (s *GomolSuite) TestDefaultRemoveAttr(c *C) {
 	curDefault = NewBase()
-	c.Check(curDefault.BaseAttrs, HasLen, 0)
+	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 0)
 	SetAttr("attr", 1234)
-	c.Check(curDefault.BaseAttrs, HasLen, 1)
-	c.Check(curDefault.BaseAttrs["attr"], Equals, 1234)
+	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 1)
+	c.Check(curDefault.BaseAttrs.GetAttr("attr"), Equals, 1234)
 	RemoveAttr("attr")
-	c.Check(curDefault.BaseAttrs, HasLen, 0)
+	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 0)
 }
 
 func (s *GomolSuite) TestDefaultClearAttrs(c *C) {
 	curDefault = NewBase()
-	c.Check(curDefault.BaseAttrs, HasLen, 0)
+	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 0)
 	SetAttr("attr", 1234)
-	c.Check(curDefault.BaseAttrs, HasLen, 1)
-	c.Check(curDefault.BaseAttrs["attr"], Equals, 1234)
+	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 1)
+	c.Check(curDefault.BaseAttrs.GetAttr("attr"), Equals, 1234)
 	SetAttr("attr2", 1234)
-	c.Check(curDefault.BaseAttrs, HasLen, 2)
-	c.Check(curDefault.BaseAttrs["attr2"], Equals, 1234)
+	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 2)
+	c.Check(curDefault.BaseAttrs.GetAttr("attr2"), Equals, 1234)
 	ClearAttrs()
-	c.Check(curDefault.BaseAttrs, HasLen, 0)
+	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 0)
 }
 
 func (s *GomolSuite) TestDefaultNewLogAdapter(c *C) {
-	la := NewLogAdapter(map[string]interface{}{"foo": "bar"})
+	la := NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
 	defLogger := curDefault.loggers[0].(*memLogger)
 
-	la.Dbgm(map[string]interface{}{"attr": "val"}, "test")
+	la.Dbgm(NewAttrs().SetAttr("attr", "val"), "test")
 
 	ShutdownLoggers()
 
@@ -190,9 +190,7 @@ func (s *GomolSuite) TestDefaultDbgf(c *C) {
 
 func (s *GomolSuite) TestDefaultDbgm(c *C) {
 	Dbgm(
-		map[string]interface{}{
-			"attr1": 4321,
-		},
+		NewAttrs().SetAttr("attr1", 4321),
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
@@ -235,9 +233,7 @@ func (s *GomolSuite) TestDefaultInfof(c *C) {
 
 func (s *GomolSuite) TestDefaultInfom(c *C) {
 	Infom(
-		map[string]interface{}{
-			"attr1": 4321,
-		},
+		NewAttrs().SetAttr("attr1", 4321),
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
@@ -280,9 +276,7 @@ func (s *GomolSuite) TestDefaultWarnf(c *C) {
 
 func (s *GomolSuite) TestDefaultWarnm(c *C) {
 	Warnm(
-		map[string]interface{}{
-			"attr1": 4321,
-		},
+		NewAttrs().SetAttr("attr1", 4321),
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
@@ -325,9 +319,7 @@ func (s *GomolSuite) TestDefaultErrf(c *C) {
 
 func (s *GomolSuite) TestDefaultErrm(c *C) {
 	Errm(
-		map[string]interface{}{
-			"attr1": 4321,
-		},
+		NewAttrs().SetAttr("attr1", 4321),
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
@@ -370,9 +362,7 @@ func (s *GomolSuite) TestDefaultFatalf(c *C) {
 
 func (s *GomolSuite) TestDefaultFatalm(c *C) {
 	Fatalm(
-		map[string]interface{}{
-			"attr1": 4321,
-		},
+		NewAttrs().SetAttr("attr1", 4321),
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
@@ -427,9 +417,7 @@ func (s *GomolSuite) TestDefaultDief(c *C) {
 func (s *GomolSuite) TestDefaultDiem(c *C) {
 	Diem(
 		1234,
-		map[string]interface{}{
-			"attr1": 4321,
-		},
+		NewAttrs().SetAttr("attr1", 4321),
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)

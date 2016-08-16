@@ -74,9 +74,7 @@ func (s *GomolSuite) TestMemLogmAttrs(c *C) {
 	ml.Logm(
 		clock().Now(),
 		LevelDebug,
-		map[string]interface{}{
-			"attr1": 4321,
-		},
+		map[string]interface{}{"attr1": 4321},
 		"test 1234")
 	c.Assert(ml.Messages, HasLen, 1)
 	c.Check(ml.Messages[0].Timestamp, Equals, clock().Now())

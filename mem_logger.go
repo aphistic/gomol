@@ -79,7 +79,7 @@ func (l *memLogger) Logm(timestamp time.Time, level LogLevel, m map[string]inter
 	nm.Message = msg
 
 	if l.base != nil {
-		for k, v := range l.base.BaseAttrs {
+		for k, v := range l.base.BaseAttrs.Attrs() {
 			nm.Attrs[k] = v
 		}
 	}
