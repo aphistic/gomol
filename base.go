@@ -1,6 +1,7 @@
 package gomol
 
 import "os"
+import "sync/atomic"
 
 /*
 Base holds an instance of all information needed for logging.  It is possible
@@ -13,6 +14,7 @@ type Base struct {
 	queue         *queue
 	logLevel      LogLevel
 	loggers       []Logger
+	sequence      uint64
 	BaseAttrs     *Attrs
 }
 
@@ -23,6 +25,7 @@ func NewBase() *Base {
 		queue:     newQueue(),
 		logLevel:  LevelDebug,
 		loggers:   make([]Logger, 0),
+		sequence:  0,
 		BaseAttrs: NewAttrs(),
 	}
 	return b
@@ -212,6 +215,14 @@ func (b *Base) log(level LogLevel, m *Attrs, msg string, a ...interface{}) error
 		if len(b.config.LineNumberAttr) > 0 {
 			m.SetAttr(b.config.LineNumberAttr, line)
 		}
+	}
+
+	if len(b.config.SequenceAttr) > 0 {
+		if m == nil {
+			m = NewAttrs()
+		}
+		seq := atomic.AddUint64(&b.sequence, 1)
+		m.SetAttr(b.config.SequenceAttr, seq)
 	}
 
 	nm := newMessage(clock().Now(), b, level, m, msg, a...)

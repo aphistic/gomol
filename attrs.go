@@ -34,7 +34,8 @@ func (a *Attrs) clone() *Attrs {
 }
 
 func (a *Attrs) SetAttr(key string, value interface{}) *Attrs {
-	a.attrs[getAttrHash(key)] = value
+	hash := getAttrHash(key)
+	a.attrs[hash] = value
 	return a
 }
 

@@ -417,6 +417,48 @@ func (s *GomolSuite) TestClearAttrs(c *C) {
 	c.Check(b.BaseAttrs.Attrs(), HasLen, 0)
 }
 
+func (s *GomolSuite) TestSequenceDisabled(c *C) {
+	b := NewBase()
+
+	b.InitLoggers()
+
+	c.Check(b.sequence, Equals, uint64(0))
+	b.Dbg("test")
+	c.Check(b.sequence, Equals, uint64(0))
+	b.Dbg("test")
+	c.Check(b.sequence, Equals, uint64(0))
+
+	b.ShutdownLoggers()
+}
+
+func (s *GomolSuite) TestSequence(c *C) {
+	b := NewBase()
+	b.config.SequenceAttr = "seq"
+
+	l := newDefaultMemLogger()
+	b.AddLogger(l)
+
+	b.InitLoggers()
+
+	c.Check(b.sequence, Equals, uint64(0))
+	b.Dbg("test")
+	c.Check(b.sequence, Equals, uint64(1))
+	b.Dbg("test")
+	c.Check(b.sequence, Equals, uint64(2))
+
+	b.ShutdownLoggers()
+
+	c.Assert(l.Messages, HasLen, 2)
+	c.Check(l.Messages[0].Message, Equals, "test")
+	c.Check(l.Messages[0].Attrs, HasLen, 1)
+	c.Check(l.Messages[0].Attrs["seq"], Equals, uint64(1))
+	c.Check(l.Messages[0].Level, Equals, LevelDebug)
+	c.Check(l.Messages[1].Message, Equals, "test")
+	c.Check(l.Messages[1].Attrs, HasLen, 1)
+	c.Check(l.Messages[1].Attrs["seq"], Equals, uint64(2))
+	c.Check(l.Messages[1].Level, Equals, LevelDebug)
+}
+
 // Base func tests
 
 func (s *GomolSuite) TestBaseDbg(c *C) {
