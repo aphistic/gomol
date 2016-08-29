@@ -29,3 +29,10 @@ func (s *GomolSuite) TestAttrsChaining(c *C) {
 	c.Check(attrs.attrs[getAttrHash("attr3")], Equals, 3)
 	c.Check(attrs.attrs[getAttrHash("attr4")], Equals, 4)
 }
+
+func (s *GomolSuite) TestGetHashAttrMissing(c *C) {
+	res, err := getHashAttr(1234)
+
+	c.Check(res, Equals, "")
+	c.Check(err.Error(), Equals, "Could not find attr for hash 1234")
+}

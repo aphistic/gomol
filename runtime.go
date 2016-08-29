@@ -12,7 +12,27 @@ type fileRecord struct {
 
 var gomolFiles = make(map[string]fileRecord)
 
+var fakeCaller = false
+var fakeCallerFile = ""
+var fakeCallerLine = 0
+
+func setFakeCallerInfo(file string, line int) {
+	if len(file) > 0 {
+		fakeCaller = true
+		fakeCallerFile = file
+		fakeCallerLine = line
+	} else {
+		fakeCaller = false
+		fakeCallerFile = ""
+		fakeCallerLine = 0
+	}
+}
+
 func getCallerInfo() (string, int) {
+	if fakeCaller {
+		return fakeCallerFile, fakeCallerLine
+	}
+
 	file := ""
 	line := 0
 	/*

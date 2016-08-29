@@ -28,7 +28,9 @@ func (exiter *testExiter) Exit(code int) {
 var curTestExiter *testExiter
 
 func (s *GomolSuite) SetUpTest(c *C) {
+	setFakeCallerInfo("", 0)
 	setClock(newTestClock(time.Now()))
+	gomolFiles = map[string]fileRecord{}
 
 	curTestExiter = &testExiter{}
 	setExiter(curTestExiter)

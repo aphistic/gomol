@@ -4,6 +4,20 @@ import (
 	. "gopkg.in/check.v1"
 )
 
+func (s *GomolSuite) TestDefaultSetConfig(c *C) {
+	cfg := NewConfig()
+
+	c.Check(curDefault.config, DeepEquals, cfg)
+
+	cfg.FilenameAttr = "file"
+	cfg.LineNumberAttr = "line"
+	cfg.SequenceAttr = "seq"
+	SetConfig(cfg)
+
+	c.Check(curDefault.config, Equals, cfg)
+	c.Check(curDefault.config, DeepEquals, cfg)
+}
+
 func (s *GomolSuite) TestDefaultInitLogger(c *C) {
 	curDefault = NewBase()
 	c.Check(IsInitialized(), Equals, false)

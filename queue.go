@@ -123,7 +123,7 @@ func (queue *queue) senderWorker(exiting bool) {
 	queue.workersDone.Done()
 }
 
-func (queue *queue) IsActivate() bool {
+func (queue *queue) IsActive() bool {
 	return queue.running
 }
 
