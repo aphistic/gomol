@@ -2,6 +2,16 @@ package gomol
 
 import . "gopkg.in/check.v1"
 
+func (s *GomolSuite) TestNewAttrsFromMap(c *C) {
+	attrs := NewAttrsFromMap(map[string]interface{}{
+		"attr1": "val1",
+		"attr2": 1234,
+	})
+	c.Check(attrs.attrs, HasLen, 2)
+	c.Check(attrs.attrs[getAttrHash("attr1")], Equals, "val1")
+	c.Check(attrs.attrs[getAttrHash("attr2")], Equals, 1234)
+}
+
 func (s *GomolSuite) TestAttrsMergeNilAttrs(c *C) {
 	attrs := NewAttrs()
 	attrs.mergeAttrs(nil)

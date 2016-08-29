@@ -10,10 +10,20 @@ type Attrs struct {
 	attrs map[uint32]interface{}
 }
 
+// NewAttrs will create a new Attrs struct with an empty set of attributes.
 func NewAttrs() *Attrs {
 	return &Attrs{
 		attrs: make(map[uint32]interface{}),
 	}
+}
+
+// NewAttrsFromMap will create a new Attrs struct with the given attributes pre-populated
+func NewAttrsFromMap(attrs map[string]interface{}) *Attrs {
+	newAttrs := NewAttrs()
+	for attrKey, attrVal := range attrs {
+		newAttrs.SetAttr(attrKey, attrVal)
+	}
+	return newAttrs
 }
 
 func (a *Attrs) mergeAttrs(attrs *Attrs) {
