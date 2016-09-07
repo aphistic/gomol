@@ -4,6 +4,7 @@ import (
 	"github.com/spaolacci/murmur3"
 
 	"fmt"
+	"sync"
 )
 
 type Attrs struct {
@@ -71,10 +72,24 @@ type logAttr struct {
 	Value interface{}
 }
 
+var hashMutex sync.RWMutex
 var attrHashes = make(map[string]uint32)
 var hashAttrs = make(map[uint32]string)
 
 func getAttrHash(attr string) uint32 {
+	// First try to acquire a read lock to see if we even need to hash
+	// the string at all
+	hashMutex.RLock()
+	if hash, ok := attrHashes[attr]; ok {
+		hashMutex.RUnlock()
+		return hash
+	}
+
+	// We do need to hash it so release the read lock and acquire a write lock
+	hashMutex.RUnlock()
+
+	hashMutex.Lock()
+	defer hashMutex.Unlock()
 	if hash, ok := attrHashes[attr]; ok {
 		return hash
 	}
