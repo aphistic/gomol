@@ -13,6 +13,8 @@ func (s *GomolSuite) TestLevelGetName(c *C) {
 	c.Check(getLevelName(LevelError), Equals, "error")
 	c.Check(getLevelName(LevelFatal), Equals, "fatal")
 	c.Check(getLevelName(LevelNone), Equals, "none")
+
+	c.Check(getLevelName(LogLevel(-1234)), Equals, "unknown")
 }
 
 func (s *GomolSuite) TestLevelString(c *C) {

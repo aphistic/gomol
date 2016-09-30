@@ -41,7 +41,7 @@ func (s *GomolSuite) TestQueueMessageWithoutWorkers(c *C) {
 func (s *GomolSuite) TestQueueStartWorkers(c *C) {
 	q := newQueue()
 	q.startQueueWorkers()
-	c.Check(q.running, Equals, true)
+	c.Check(q.IsActive(), Equals, true)
 	c.Check(q.queue, HasLen, 0)
 	q.stopQueueWorkers()
 }
@@ -50,7 +50,7 @@ func (s *GomolSuite) TestQueueStartWorkersTwice(c *C) {
 	q := newQueue()
 	err := q.startQueueWorkers()
 	c.Check(err, IsNil)
-	c.Check(q.running, Equals, true)
+	c.Check(q.IsActive(), Equals, true)
 	c.Check(q.queue, HasLen, 0)
 	err = q.startQueueWorkers()
 	c.Check(err, NotNil)
@@ -63,7 +63,7 @@ func (s *GomolSuite) TestQueueStopWorkers(c *C) {
 	q.startQueueWorkers()
 
 	q.stopQueueWorkers()
-	c.Check(q.running, Equals, false)
+	c.Check(q.IsActive(), Equals, false)
 	c.Check(q.queue, HasLen, 0)
 	c.Check(len(q.queueChan), Equals, 0)
 }
@@ -74,7 +74,7 @@ func (s *GomolSuite) TestQueueStopWorkersTwice(c *C) {
 
 	err := q.stopQueueWorkers()
 	c.Check(err, IsNil)
-	c.Check(q.running, Equals, false)
+	c.Check(q.IsActive(), Equals, false)
 	c.Check(q.queue, HasLen, 0)
 	c.Check(len(q.queueChan), Equals, 0)
 	err = q.stopQueueWorkers()
@@ -91,7 +91,7 @@ func (s *GomolSuite) TestQueueFlushMessages(c *C) {
 	}
 
 	q.stopQueueWorkers()
-	c.Check(q.running, Equals, false)
+	c.Check(q.IsActive(), Equals, false)
 	c.Check(q.queue, HasLen, 0)
 	c.Check(len(q.queueChan), Equals, 0)
 }

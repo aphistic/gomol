@@ -48,6 +48,18 @@ func (s *GomolSuite) TestTemplateExecuteError(c *C) {
 	c.Check(err, NotNil)
 }
 
+func (s *GomolSuite) TestTplColorsNone(c *C) {
+	setClock(newTestClock(time.Now()))
+	msg := newMessage(clock().Now(), nil, LevelNone, nil, "colors!")
+	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
+	c.Assert(err, IsNil)
+
+	out, err := tpl.executeInternalMsg(msg, true)
+	c.Assert(err, IsNil)
+
+	c.Check(out, Equals, "hascolor colors!")
+}
+
 func (s *GomolSuite) TestTplColorsDebug(c *C) {
 	setClock(newTestClock(time.Now()))
 	msg := newMessage(clock().Now(), nil, LevelDebug, nil, "colors!")
@@ -106,6 +118,16 @@ func (s *GomolSuite) TestTplColorsFatal(c *C) {
 	c.Assert(err, IsNil)
 
 	c.Check(out, Equals, "\x1b[1;31mhascolor\x1b[0m colors!")
+}
+
+func (s *GomolSuite) TestTplColorsUnknown(c *C) {
+	setClock(newTestClock(time.Now()))
+	msg := newMessage(clock().Now(), nil, LogLevel(-1000), nil, "colors!")
+	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
+	c.Assert(err, IsNil)
+
+	_, err = tpl.executeInternalMsg(msg, true)
+	c.Assert(err, Equals, ErrUnknownLevel)
 }
 
 func (s *GomolSuite) TestTplFuncsCase(c *C) {

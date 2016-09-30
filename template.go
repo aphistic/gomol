@@ -113,7 +113,11 @@ func (t *Template) Execute(msg *TemplateMsg, colorize bool) (string, error) {
 		tplLevel = LevelNone
 	}
 	var buf bytes.Buffer
-	err := t.tpls[tplLevel].Execute(&buf, msg)
+	execTpl := t.tpls[tplLevel]
+	if execTpl == nil {
+		return "", ErrUnknownLevel
+	}
+	err := execTpl.Execute(&buf, msg)
 	if err != nil {
 		return "", err
 	}
