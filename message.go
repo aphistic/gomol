@@ -20,7 +20,7 @@ const (
 
 // ToLogLevel will take a string and return the appropriate log level for
 // the string if known.  If the string is not recognized it will return
-// LevelUnknown and ErrUnknownLevel.
+// an ErrUnknownLevel error.
 func ToLogLevel(level string) (LogLevel, error) {
 	lowLevel := strings.ToLower(level)
 
