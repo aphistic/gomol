@@ -43,6 +43,32 @@ func (s *GomolSuite) BenchmarkBaseDbgm(c *C) {
 	b.ShutdownLoggers()
 }
 
+func (s *GomolSuite) BenchmarkBaseStaticStringNoLogger(c *C) {
+	b := NewBase()
+
+	b.InitLoggers()
+
+	c.ResetTimer()
+	for idx := 0; idx < c.N; idx++ {
+		b.Info("Hi I'm a log!")
+	}
+	b.ShutdownLoggers()
+}
+
+func (s *GomolSuite) BenchmarkBaseStaticStringMemLogger(c *C) {
+	b := NewBase()
+
+	l := newDefaultMemLogger()
+	b.AddLogger(l)
+	b.InitLoggers()
+
+	c.ResetTimer()
+	for idx := 0; idx < c.N; idx++ {
+		b.Info("Hi I'm a log!")
+	}
+	b.ShutdownLoggers()
+}
+
 func (s *GomolSuite) BenchmarkLogInsertionWithFilename(c *C) {
 	base := NewBase()
 	base.config.FilenameAttr = "filename"
