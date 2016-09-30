@@ -3,13 +3,13 @@ package gomol
 import (
 	"fmt"
 	"math"
+	"strings"
 	"time"
 )
 
 type LogLevel int
 
 const (
-	LevelUnknown LogLevel = math.MaxInt64
 	LevelDebug   LogLevel = 7
 	LevelInfo    LogLevel = 6
 	LevelWarning LogLevel = 4
@@ -17,6 +17,36 @@ const (
 	LevelFatal   LogLevel = 2
 	LevelNone    LogLevel = math.MinInt64
 )
+
+// ToLogLevel will take a string and return the appropriate log level for
+// the string if known.  If the string is not recognized it will return
+// LevelUnknown and ErrUnknownLevel.
+func ToLogLevel(level string) (LogLevel, error) {
+	lowLevel := strings.ToLower(level)
+
+	switch lowLevel {
+	case "dbg":
+		fallthrough
+	case "debug":
+		return LevelDebug, nil
+	case "info":
+		return LevelInfo, nil
+	case "warn":
+		fallthrough
+	case "warning":
+		return LevelWarning, nil
+	case "err":
+		fallthrough
+	case "error":
+		return LevelError, nil
+	case "fatal":
+		return LevelFatal, nil
+	case "none":
+		return LevelNone, nil
+	}
+
+	return 0, ErrUnknownLevel
+}
 
 func (ll LogLevel) String() string {
 	return getLevelName(ll)

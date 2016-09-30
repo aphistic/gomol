@@ -13,7 +13,6 @@ func (s *GomolSuite) TestLevelGetName(c *C) {
 	c.Check(getLevelName(LevelError), Equals, "error")
 	c.Check(getLevelName(LevelFatal), Equals, "fatal")
 	c.Check(getLevelName(LevelNone), Equals, "none")
-	c.Check(getLevelName(LevelUnknown), Equals, "unknown")
 }
 
 func (s *GomolSuite) TestLevelString(c *C) {
@@ -23,7 +22,53 @@ func (s *GomolSuite) TestLevelString(c *C) {
 	c.Check(LevelError.String(), Equals, "error")
 	c.Check(LevelFatal.String(), Equals, "fatal")
 	c.Check(LevelNone.String(), Equals, "none")
-	c.Check(LevelUnknown.String(), Equals, "unknown")
+}
+
+func (s *GomolSuite) TestToLogLevel(c *C) {
+	var level LogLevel
+	var err error
+
+	level, err = ToLogLevel("dBg")
+	c.Check(level, Equals, LevelDebug)
+	c.Check(err, IsNil)
+	level, err = ToLogLevel("DebuG")
+	c.Check(level, Equals, LevelDebug)
+	c.Check(err, IsNil)
+
+	level, err = ToLogLevel("InFo")
+	c.Check(level, Equals, LevelInfo)
+	c.Check(err, IsNil)
+
+	level, err = ToLogLevel("wARn")
+	c.Check(level, Equals, LevelWarning)
+	c.Check(err, IsNil)
+	level, err = ToLogLevel("WaRNiNg")
+	c.Check(level, Equals, LevelWarning)
+	c.Check(err, IsNil)
+
+	level, err = ToLogLevel("ErR")
+	c.Check(level, Equals, LevelError)
+	c.Check(err, IsNil)
+	level, err = ToLogLevel("ERRoR")
+	c.Check(level, Equals, LevelError)
+	c.Check(err, IsNil)
+
+	level, err = ToLogLevel("FaTaL")
+	c.Check(level, Equals, LevelFatal)
+	c.Check(err, IsNil)
+
+	level, err = ToLogLevel("NonE")
+	c.Check(level, Equals, LevelNone)
+	c.Check(err, IsNil)
+}
+
+func (s *GomolSuite) TestToLogLevelError(c *C) {
+	var level LogLevel
+	var err error
+
+	level, err = ToLogLevel("asdf")
+	c.Check(level, Equals, LogLevel(0))
+	c.Check(err, Equals, ErrUnknownLevel)
 }
 
 func (s *GomolSuite) TestNewMessageAttrsNil(c *C) {

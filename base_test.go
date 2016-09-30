@@ -53,7 +53,6 @@ func (s *GomolSuite) TearDownTest(c *C) {
 func (s *GomolSuite) TestShouldLog(c *C) {
 	b := NewBase()
 	b.SetLogLevel(LevelInfo)
-	c.Check(b.shouldLog(LevelUnknown), Equals, false)
 	c.Check(b.shouldLog(LevelDebug), Equals, false)
 	c.Check(b.shouldLog(LevelInfo), Equals, true)
 	c.Check(b.shouldLog(LevelWarning), Equals, true)
@@ -61,7 +60,6 @@ func (s *GomolSuite) TestShouldLog(c *C) {
 	c.Check(b.shouldLog(LevelFatal), Equals, true)
 
 	b.SetLogLevel(LevelFatal)
-	c.Check(b.shouldLog(LevelUnknown), Equals, false)
 	c.Check(b.shouldLog(LevelDebug), Equals, false)
 	c.Check(b.shouldLog(LevelInfo), Equals, false)
 	c.Check(b.shouldLog(LevelWarning), Equals, false)
@@ -69,7 +67,6 @@ func (s *GomolSuite) TestShouldLog(c *C) {
 	c.Check(b.shouldLog(LevelFatal), Equals, true)
 
 	b.SetLogLevel(LevelNone)
-	c.Check(b.shouldLog(LevelUnknown), Equals, false)
 	c.Check(b.shouldLog(LevelDebug), Equals, false)
 	c.Check(b.shouldLog(LevelInfo), Equals, false)
 	c.Check(b.shouldLog(LevelWarning), Equals, false)
