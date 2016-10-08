@@ -42,10 +42,10 @@ func (la *LogAdapter) ClearAttrs() {
 	la.attrs = NewAttrs()
 }
 
-func (la *LogAdapter) log(level LogLevel, attrs *Attrs, msg string, a ...interface{}) error {
+func (la *LogAdapter) Log(level LogLevel, attrs *Attrs, msg string, a ...interface{}) error {
 	mergedAttrs := la.attrs.clone()
 	mergedAttrs.mergeAttrs(attrs)
-	return la.base.log(level, mergedAttrs, msg, a...)
+	return la.base.Log(level, mergedAttrs, msg, a...)
 }
 
 // Dbg is a short-hand version of Debug
@@ -65,7 +65,7 @@ func (la *LogAdapter) Dbgm(m *Attrs, msg string, a ...interface{}) error {
 
 // Debug logs msg to all added loggers at LogLevel.LevelDebug
 func (la *LogAdapter) Debug(msg string) error {
-	return la.log(LevelDebug, nil, msg)
+	return la.Log(LevelDebug, nil, msg)
 }
 
 /*
@@ -73,7 +73,7 @@ Debugf uses msg as a format string with subsequent parameters as values and logs
 the resulting message to all added loggers at LogLevel.LevelDebug
 */
 func (la *LogAdapter) Debugf(msg string, a ...interface{}) error {
-	return la.log(LevelDebug, nil, msg, a...)
+	return la.Log(LevelDebug, nil, msg, a...)
 }
 
 /*
@@ -83,12 +83,12 @@ merge all attributes passed in m with any attributes added to Base and include t
 with the message if the Logger supports it.
 */
 func (la *LogAdapter) Debugm(m *Attrs, msg string, a ...interface{}) error {
-	return la.log(LevelDebug, m, msg, a...)
+	return la.Log(LevelDebug, m, msg, a...)
 }
 
 // Info logs msg to all added loggers at LogLevel.LevelInfo
 func (la *LogAdapter) Info(msg string) error {
-	return la.log(LevelInfo, nil, msg)
+	return la.Log(LevelInfo, nil, msg)
 }
 
 /*
@@ -96,7 +96,7 @@ Infof uses msg as a format string with subsequent parameters as values and logs
 the resulting message to all added loggers at LogLevel.LevelInfo
 */
 func (la *LogAdapter) Infof(msg string, a ...interface{}) error {
-	return la.log(LevelInfo, nil, msg, a...)
+	return la.Log(LevelInfo, nil, msg, a...)
 }
 
 /*
@@ -106,7 +106,7 @@ merge all attributes passed in m with any attributes added to Base and include t
 with the message if the Logger supports it.
 */
 func (la *LogAdapter) Infom(m *Attrs, msg string, a ...interface{}) error {
-	return la.log(LevelInfo, m, msg, a...)
+	return la.Log(LevelInfo, m, msg, a...)
 }
 
 // Warn is a short-hand version of Warning
@@ -129,7 +129,7 @@ Warning uses msg as a format string with subsequent parameters as values and log
 the resulting message to all added loggers at LogLevel.LevelWarning
 */
 func (la *LogAdapter) Warning(msg string) error {
-	return la.log(LevelWarning, nil, msg)
+	return la.Log(LevelWarning, nil, msg)
 }
 
 /*
@@ -137,7 +137,7 @@ Warningf uses msg as a format string with subsequent parameters as values and lo
 the resulting message to all added loggers at LogLevel.LevelWarning
 */
 func (la *LogAdapter) Warningf(msg string, a ...interface{}) error {
-	return la.log(LevelWarning, nil, msg, a...)
+	return la.Log(LevelWarning, nil, msg, a...)
 }
 
 /*
@@ -147,7 +147,7 @@ merge all attributes passed in m with any attributes added to Base and include t
 with the message if the Logger supports it.
 */
 func (la *LogAdapter) Warningm(m *Attrs, msg string, a ...interface{}) error {
-	return la.log(LevelWarning, m, msg, a...)
+	return la.Log(LevelWarning, m, msg, a...)
 }
 
 func (la *LogAdapter) Err(msg string) error {
@@ -160,37 +160,37 @@ func (la *LogAdapter) Errm(m *Attrs, msg string, a ...interface{}) error {
 	return la.Errorm(m, msg, a...)
 }
 func (la *LogAdapter) Error(msg string) error {
-	return la.log(LevelError, nil, msg)
+	return la.Log(LevelError, nil, msg)
 }
 func (la *LogAdapter) Errorf(msg string, a ...interface{}) error {
-	return la.log(LevelError, nil, msg, a...)
+	return la.Log(LevelError, nil, msg, a...)
 }
 func (la *LogAdapter) Errorm(m *Attrs, msg string, a ...interface{}) error {
-	return la.log(LevelError, m, msg, a...)
+	return la.Log(LevelError, m, msg, a...)
 }
 
 func (la *LogAdapter) Fatal(msg string) error {
-	return la.log(LevelFatal, nil, msg)
+	return la.Log(LevelFatal, nil, msg)
 }
 func (la *LogAdapter) Fatalf(msg string, a ...interface{}) error {
-	return la.log(LevelFatal, nil, msg, a...)
+	return la.Log(LevelFatal, nil, msg, a...)
 }
 func (la *LogAdapter) Fatalm(m *Attrs, msg string, a ...interface{}) error {
-	return la.log(LevelFatal, m, msg, a...)
+	return la.Log(LevelFatal, m, msg, a...)
 }
 
 func (la *LogAdapter) Die(exitCode int, msg string) {
-	la.log(LevelFatal, nil, msg)
+	la.Log(LevelFatal, nil, msg)
 	la.base.ShutdownLoggers()
 	curExiter.Exit(exitCode)
 }
 func (la *LogAdapter) Dief(exitCode int, msg string, a ...interface{}) {
-	la.log(LevelFatal, nil, msg, a...)
+	la.Log(LevelFatal, nil, msg, a...)
 	la.base.ShutdownLoggers()
 	curExiter.Exit(exitCode)
 }
 func (la *LogAdapter) Diem(exitCode int, m *Attrs, msg string, a ...interface{}) {
-	la.log(LevelFatal, m, msg, a...)
+	la.Log(LevelFatal, m, msg, a...)
 	la.base.ShutdownLoggers()
 	curExiter.Exit(exitCode)
 }

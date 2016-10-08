@@ -6,6 +6,11 @@ func init() {
 	curDefault = NewBase()
 }
 
+// Default will return the current default gomol Base logger
+func Default() *Base {
+	return curDefault
+}
+
 func SetConfig(config *Config) {
 	curDefault.SetConfig(config)
 }
