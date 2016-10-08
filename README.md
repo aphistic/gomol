@@ -40,6 +40,14 @@ know and I can add it!
 * **JSON** - https://github.com/aphistic/gomol-json
 * **Loggly** - https://github.com/aphistic/gomol-loggly
 
+Other Usages
+============
+
+In addition to the loggers listed above, gomol can be used with other projects as well.
+
+* **negroni-gomol** (https://github.com/aphistic/negroni-gomol) - Negroni logging middleware
+	using gomol.
+
 Examples
 ========
 
