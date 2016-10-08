@@ -11,7 +11,7 @@ func (s *GomolSuite) BenchmarkBasicLogInsertion(c *C) {
 	b.InitLoggers()
 
 	for idx := 0; idx < c.N; idx++ {
-		b.log(
+		b.Log(
 			LevelDebug,
 			NewAttrs().
 				SetAttr("attr2", 4321).
@@ -74,7 +74,7 @@ func (s *GomolSuite) BenchmarkLogInsertionWithFilename(c *C) {
 	base.config.FilenameAttr = "filename"
 	base.InitLoggers()
 	for i := 0; i < c.N; i++ {
-		base.log(LevelDebug,
+		base.Log(LevelDebug,
 			NewAttrs().
 				SetAttr("attr1", "val1").
 				SetAttr("attr2", "val2").
@@ -89,7 +89,7 @@ func (s *GomolSuite) BenchmarkLogInsertionWithLineNumber(c *C) {
 	base.config.LineNumberAttr = "line"
 	base.InitLoggers()
 	for i := 0; i < c.N; i++ {
-		base.log(LevelDebug,
+		base.Log(LevelDebug,
 			NewAttrs().
 				SetAttr("attr1", "val1").
 				SetAttr("attr2", "val2").
@@ -105,7 +105,7 @@ func (s *GomolSuite) BenchmarkLogInsertionWithFilenameAndLineNumber(c *C) {
 	base.config.LineNumberAttr = "line"
 	base.InitLoggers()
 	for i := 0; i < c.N; i++ {
-		base.log(LevelDebug,
+		base.Log(LevelDebug,
 			NewAttrs().
 				SetAttr("attr1", "val1").
 				SetAttr("attr2", "val2").
