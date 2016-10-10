@@ -460,6 +460,23 @@ func (s *GomolSuite) TestSequence(c *C) {
 
 // Base func tests
 
+func (s *GomolSuite) TestBaseDbgfWithFormattingParams(c *C) {
+	b := NewBase()
+
+	l1 := newDefaultMemLogger()
+
+	b.AddLogger(l1)
+
+	b.InitLoggers()
+	b.Dbgf("LOG %s", "%2b")
+	b.ShutdownLoggers()
+
+	c.Assert(l1.Messages, HasLen, 1)
+	c.Check(l1.Messages[0].Message, Equals, "LOG %2b")
+	c.Check(l1.Messages[0].Attrs, HasLen, 0)
+	c.Check(l1.Messages[0].Level, Equals, LevelDebug)
+}
+
 func (s *GomolSuite) TestBaseDbg(c *C) {
 	b := NewBase()
 
