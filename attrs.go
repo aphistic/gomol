@@ -27,7 +27,8 @@ func NewAttrsFromMap(attrs map[string]interface{}) *Attrs {
 	return newAttrs
 }
 
-func (a *Attrs) mergeAttrs(attrs *Attrs) {
+// MergeAttrs accepts another existing Attrs and merges the attributes into its own.
+func (a *Attrs) MergeAttrs(attrs *Attrs) {
 	if attrs == nil {
 		return
 	}

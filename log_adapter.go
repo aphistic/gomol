@@ -44,7 +44,7 @@ func (la *LogAdapter) ClearAttrs() {
 
 func (la *LogAdapter) Log(level LogLevel, attrs *Attrs, msg string, a ...interface{}) error {
 	mergedAttrs := la.attrs.clone()
-	mergedAttrs.mergeAttrs(attrs)
+	mergedAttrs.MergeAttrs(attrs)
 	return la.base.Log(level, mergedAttrs, msg, a...)
 }
 

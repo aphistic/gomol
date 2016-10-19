@@ -163,9 +163,9 @@ func newTemplateMsgFromMessage(msg *message) (*TemplateMsg, error) {
 
 	tplAttrs := NewAttrs()
 	if msg.Base != nil {
-		tplAttrs.mergeAttrs(msg.Base.BaseAttrs)
+		tplAttrs.MergeAttrs(msg.Base.BaseAttrs)
 	}
-	tplAttrs.mergeAttrs(msg.Attrs)
+	tplAttrs.MergeAttrs(msg.Attrs)
 	tplMsg.Attrs = tplAttrs.Attrs()
 
 	return tplMsg, nil

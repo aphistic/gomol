@@ -14,7 +14,7 @@ func (s *GomolSuite) TestNewAttrsFromMap(c *C) {
 
 func (s *GomolSuite) TestAttrsMergeNilAttrs(c *C) {
 	attrs := NewAttrs()
-	attrs.mergeAttrs(nil)
+	attrs.MergeAttrs(nil)
 }
 
 func (s *GomolSuite) TestAttrsChaining(c *C) {
