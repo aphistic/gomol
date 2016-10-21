@@ -106,6 +106,9 @@ func getAttrHash(attr string) uint32 {
 }
 
 func getHashAttr(hash uint32) (string, error) {
+	hashMutex.RLock()
+	defer hashMutex.RUnlock()
+
 	if attr, ok := hashAttrs[hash]; ok {
 		return attr, nil
 	}
