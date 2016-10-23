@@ -5,7 +5,9 @@ gomol
 [![Build Status](https://img.shields.io/travis/aphistic/gomol.svg)](https://travis-ci.org/aphistic/gomol)
 [![Code Coverage](https://img.shields.io/codecov/c/github/aphistic/gomol.svg)](http://codecov.io/github/aphistic/gomol?branch=master)
 
-Gomol (Go Multi-Output Logger) is an MIT-licensed Go logging library.  The documentation at this point is thin but will be improving over time.
+Gomol (Go Multi-Output Logger) is an MIT-licensed structured logging library for Go.  Gomol grew
+from a desire to have a structured logging library that could write to any number of outputs
+while also keeping a small in-band footprint.
 
 Features
 ========
