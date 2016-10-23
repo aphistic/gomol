@@ -7,6 +7,7 @@ import (
 	"sync"
 )
 
+// Attrs represents a collection of key/value attributes
 type Attrs struct {
 	attrs map[uint32]interface{}
 }
@@ -45,20 +46,26 @@ func (a *Attrs) clone() *Attrs {
 	return attrs
 }
 
+// SetAttr will set key to the provided value.  If the attribute already exists the value will
+// be replaced with the new value.
 func (a *Attrs) SetAttr(key string, value interface{}) *Attrs {
 	hash := getAttrHash(key)
 	a.attrs[hash] = value
 	return a
 }
 
+// GetAttr gets the value of the attribute with the provided name.  If the attribute does not
+// exist, nil will be returned
 func (a *Attrs) GetAttr(key string) interface{} {
 	return a.attrs[getAttrHash(key)]
 }
 
+// RemoveAttr will remove the attribute with the provided name.
 func (a *Attrs) RemoveAttr(key string) {
 	delete(a.attrs, getAttrHash(key))
 }
 
+// Attrs will return a map of the attributes added to the struct.
 func (a *Attrs) Attrs() map[string]interface{} {
 	attrs := make(map[string]interface{})
 	for hash, val := range a.attrs {
