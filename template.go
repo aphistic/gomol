@@ -47,6 +47,23 @@ func tplJSON(data interface{}) (string, error) {
 	return string(json), nil
 }
 
+/*
+Template represents a Go template (See text/template) that can be used when
+logging messages.  Template includes a few useful template functions:
+
+	title
+		Title cases a string
+	lcase
+		Lower cases a string
+	ucase
+		Upper cases a string
+	json
+		JSON marshals an object
+	color
+		Changes the color of any text after it to the log level's color
+	reset
+		Resets the current color to the default color
+*/
 type Template struct {
 	tpls map[LogLevel]*template.Template
 }
@@ -78,6 +95,7 @@ func getFuncMap(level LogLevel) template.FuncMap {
 	return fMap
 }
 
+// NewTemplate creates a new Template from the given string. An error is returned if the template fails to compile.
 func NewTemplate(tpl string) (*Template, error) {
 	var levels = []LogLevel{LevelNone, LevelDebug, LevelInfo, LevelWarning, LevelError, LevelFatal}
 	tpls := make(map[LogLevel]*template.Template, 0)
@@ -107,6 +125,8 @@ func (t *Template) executeInternalMsg(msg *message, colorize bool) (string, erro
 	return t.Execute(tplMsg, colorize)
 }
 
+// Execute takes a TemplateMsg and applies it to the Go template.  If colorize is true the template
+// will insert ANSI color codes within the resulting string.
 func (t *Template) Execute(msg *TemplateMsg, colorize bool) (string, error) {
 	tplLevel := msg.Level
 	if !colorize {
@@ -125,6 +145,7 @@ func (t *Template) Execute(msg *TemplateMsg, colorize bool) (string, error) {
 	return buf.String(), nil
 }
 
+// TemplateMsg represents the parts of a message required to render a template
 type TemplateMsg struct {
 	Timestamp time.Time              `json:"timestamp"`
 	Level     LogLevel               `json:"level"`
@@ -133,6 +154,7 @@ type TemplateMsg struct {
 	Attrs     map[string]interface{} `json:"attrs"`
 }
 
+// NewTemplateMsg will create a new TemplateMsg with values from the given parameters
 func NewTemplateMsg(timestamp time.Time, level LogLevel, m map[string]interface{}, msg string) *TemplateMsg {
 	msgAttrs := m
 	if msgAttrs == nil {

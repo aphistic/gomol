@@ -17,6 +17,17 @@ func (s *GomolSuite) TestAttrsMergeNilAttrs(c *C) {
 	attrs.MergeAttrs(nil)
 }
 
+func (s *GomolSuite) TestAttrsGetMissing(c *C) {
+	attrs := NewAttrs()
+	c.Check(attrs.GetAttr("not an attr"), IsNil)
+}
+
+func (s *GomolSuite) TestAttrsRemoveMissing(c *C) {
+	attrs := NewAttrs()
+	// Just run it to make sure it doesn't panic
+	attrs.RemoveAttr("not an attr")
+}
+
 func (s *GomolSuite) TestAttrsChaining(c *C) {
 	attrs := NewAttrs().
 		SetAttr("attr1", "val1").

@@ -7,6 +7,7 @@ import (
 	"sync"
 )
 
+// Attrs represents a collection of key/value attributes
 type Attrs struct {
 	attrs     map[uint32]interface{}
 	attrsLock sync.RWMutex
@@ -48,6 +49,8 @@ func (a *Attrs) clone() *Attrs {
 	return attrs
 }
 
+// SetAttr will set key to the provided value.  If the attribute already exists the value will
+// be replaced with the new value.
 func (a *Attrs) SetAttr(key string, value interface{}) *Attrs {
 	a.attrsLock.Lock()
 	defer a.attrsLock.Unlock()
@@ -57,6 +60,8 @@ func (a *Attrs) SetAttr(key string, value interface{}) *Attrs {
 	return a
 }
 
+// GetAttr gets the value of the attribute with the provided name.  If the attribute does not
+// exist, nil will be returned
 func (a *Attrs) GetAttr(key string) interface{} {
 	a.attrsLock.RLock()
 	defer a.attrsLock.RUnlock()
@@ -64,6 +69,7 @@ func (a *Attrs) GetAttr(key string) interface{} {
 	return a.attrs[getAttrHash(key)]
 }
 
+// RemoveAttr will remove the attribute with the provided name.
 func (a *Attrs) RemoveAttr(key string) {
 	a.attrsLock.Lock()
 	defer a.attrsLock.Unlock()
@@ -71,6 +77,7 @@ func (a *Attrs) RemoveAttr(key string) {
 	delete(a.attrs, getAttrHash(key))
 }
 
+// Attrs will return a map of the attributes added to the struct.
 func (a *Attrs) Attrs() map[string]interface{} {
 	a.attrsLock.RLock()
 	defer a.attrsLock.RUnlock()

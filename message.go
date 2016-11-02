@@ -7,15 +7,22 @@ import (
 	"time"
 )
 
+// LogLevel represents the level a message is logged at.
 type LogLevel int
 
 const (
-	LevelDebug   LogLevel = 7
-	LevelInfo    LogLevel = 6
+	// LevelDebug designates messages that are most useful when debugging applications.
+	LevelDebug LogLevel = 7
+	// LevelInfo designates messages that show application progression
+	LevelInfo LogLevel = 6
+	// LevelWarning designates messages that could potentially cause problems
 	LevelWarning LogLevel = 4
-	LevelError   LogLevel = 3
-	LevelFatal   LogLevel = 2
-	LevelNone    LogLevel = math.MinInt64
+	// LevelError designates error messages that don't stop the application from running
+	LevelError LogLevel = 3
+	// LevelFatal designates messages for severe errors where the application cannot continue
+	LevelFatal LogLevel = 2
+	// LevelNone is used when configuring log levels to disable all log levels
+	LevelNone LogLevel = math.MinInt64
 )
 
 // ToLogLevel will take a string and return the appropriate log level for

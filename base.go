@@ -85,6 +85,26 @@ func (b *Base) AddLogger(logger Logger) error {
 }
 
 /*
+RemoveLogger will run ShutdownLogger on the given logger and then remove the given
+Logger from the list in Base
+*/
+func (b *Base) RemoveLogger(logger Logger) error {
+	for idx, rLogger := range b.loggers {
+		if rLogger == logger {
+			err := rLogger.ShutdownLogger()
+			if err != nil {
+				return err
+			}
+			b.loggers[idx] = b.loggers[len(b.loggers)-1]
+			b.loggers[len(b.loggers)-1] = nil
+			b.loggers = b.loggers[:len(b.loggers)-1]
+			return nil
+		}
+	}
+	return nil
+}
+
+/*
 ClearLoggers will shut down and remove any loggers added to the Base. If an
 error occurs while shutting down one of the loggers, the list will not be
 cleared but any loggers that have already been shut down before the error
@@ -123,26 +143,6 @@ func (b *Base) InitLoggers() error {
 	b.queue.startQueueWorkers()
 	b.isInitialized = true
 
-	return nil
-}
-
-/*
-RemoveLogger will run ShutdownLogger on the give logger and then remove the given
-Logger from the list in Base
-*/
-func (b *Base) RemoveLogger(logger Logger) error {
-	for idx, rLogger := range b.loggers {
-		if rLogger == logger {
-			err := rLogger.ShutdownLogger()
-			if err != nil {
-				return err
-			}
-			b.loggers[idx] = b.loggers[len(b.loggers)-1]
-			b.loggers[len(b.loggers)-1] = nil
-			b.loggers = b.loggers[:len(b.loggers)-1]
-			return nil
-		}
-	}
 	return nil
 }
 
@@ -199,6 +199,7 @@ func (b *Base) RemoveAttr(key string) {
 	b.BaseAttrs.RemoveAttr(key)
 }
 
+// Log will log a message at the provided level to all added loggers
 func (b *Base) Log(level LogLevel, m *Attrs, msg string, a ...interface{}) error {
 	if !b.shouldLog(level) {
 		return nil
@@ -331,45 +332,88 @@ func (b *Base) Warningm(m *Attrs, msg string, a ...interface{}) error {
 	return b.Log(LevelWarning, m, msg, a...)
 }
 
+// Err is a short-hand version of Error
 func (b *Base) Err(msg string) error {
 	return b.Error(msg)
 }
+
+// Errf is a short-hand version of Errorf
 func (b *Base) Errf(msg string, a ...interface{}) error {
 	return b.Errorf(msg, a...)
 }
+
+// Errm is a short-hand version of Errorm
 func (b *Base) Errm(m *Attrs, msg string, a ...interface{}) error {
 	return b.Errorm(m, msg, a...)
 }
+
+/*
+Error uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LevelError
+*/
 func (b *Base) Error(msg string) error {
 	return b.Log(LevelError, nil, msg)
 }
+
+/*
+Errorf uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LevelError
+*/
 func (b *Base) Errorf(msg string, a ...interface{}) error {
 	return b.Log(LevelError, nil, msg, a...)
 }
+
+/*
+Errorm uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LevelError. It will also
+merge all attributes passed in m with any attributes added to Base and include them
+with the message if the Logger supports it.
+*/
 func (b *Base) Errorm(m *Attrs, msg string, a ...interface{}) error {
 	return b.Log(LevelError, m, msg, a...)
 }
 
+/*
+Fatal uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LevelFatal
+*/
 func (b *Base) Fatal(msg string) error {
 	return b.Log(LevelFatal, nil, msg)
 }
+
+/*
+Fatalf uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LevelFatal
+*/
 func (b *Base) Fatalf(msg string, a ...interface{}) error {
 	return b.Log(LevelFatal, nil, msg, a...)
 }
+
+/*
+Fatalm uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LevelFatal. It will also
+merge all attributes passed in m with any attributes added to Base and include them
+with the message if the Logger supports it.
+*/
 func (b *Base) Fatalm(m *Attrs, msg string, a ...interface{}) error {
 	return b.Log(LevelFatal, m, msg, a...)
 }
 
+// Die will log a message using Fatal, call ShutdownLoggers and then exit the application with the provided exit code.
 func (b *Base) Die(exitCode int, msg string) {
 	b.Log(LevelFatal, nil, msg)
 	b.ShutdownLoggers()
 	curExiter.Exit(exitCode)
 }
+
+// Dief will log a message using Fatalf, call ShutdownLoggers and then exit the application with the provided exit code.
 func (b *Base) Dief(exitCode int, msg string, a ...interface{}) {
 	b.Log(LevelFatal, nil, msg, a...)
 	b.ShutdownLoggers()
 	curExiter.Exit(exitCode)
 }
+
+// Diem will log a message using Fatalm, call ShutdownLoggers and then exit the application with the provided exit code.
 func (b *Base) Diem(exitCode int, m *Attrs, msg string, a ...interface{}) {
 	b.Log(LevelFatal, m, msg, a...)
 	b.ShutdownLoggers()

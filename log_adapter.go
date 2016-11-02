@@ -42,6 +42,8 @@ func (la *LogAdapter) ClearAttrs() {
 	la.attrs = NewAttrs()
 }
 
+// Log will log a message at the provided level to all loggers added
+// to the Base associated with this LogAdapter
 func (la *LogAdapter) Log(level LogLevel, attrs *Attrs, msg string, a ...interface{}) error {
 	mergedAttrs := la.attrs.clone()
 	mergedAttrs.MergeAttrs(attrs)
@@ -150,45 +152,88 @@ func (la *LogAdapter) Warningm(m *Attrs, msg string, a ...interface{}) error {
 	return la.Log(LevelWarning, m, msg, a...)
 }
 
+// Err is a short-hand version of Error
 func (la *LogAdapter) Err(msg string) error {
 	return la.Error(msg)
 }
+
+// Errf is a short-hand version of Errorf
 func (la *LogAdapter) Errf(msg string, a ...interface{}) error {
 	return la.Errorf(msg, a...)
 }
+
+// Errm is a short-hand version of Errorm
 func (la *LogAdapter) Errm(m *Attrs, msg string, a ...interface{}) error {
 	return la.Errorm(m, msg, a...)
 }
+
+/*
+Error uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LevelError
+*/
 func (la *LogAdapter) Error(msg string) error {
 	return la.Log(LevelError, nil, msg)
 }
+
+/*
+Errorf uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LevelError
+*/
 func (la *LogAdapter) Errorf(msg string, a ...interface{}) error {
 	return la.Log(LevelError, nil, msg, a...)
 }
+
+/*
+Errorm uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LevelError. It will also
+merge all attributes passed in m with any attributes added to Base and include them
+with the message if the Logger supports it.
+*/
 func (la *LogAdapter) Errorm(m *Attrs, msg string, a ...interface{}) error {
 	return la.Log(LevelError, m, msg, a...)
 }
 
+/*
+Fatal uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LevelFatal
+*/
 func (la *LogAdapter) Fatal(msg string) error {
 	return la.Log(LevelFatal, nil, msg)
 }
+
+/*
+Fatalf uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LevelFatal
+*/
 func (la *LogAdapter) Fatalf(msg string, a ...interface{}) error {
 	return la.Log(LevelFatal, nil, msg, a...)
 }
+
+/*
+Fatalm uses msg as a format string with subsequent parameters as values and logs
+the resulting message to all added loggers at LogLevel.LevelFatal. It will also
+merge all attributes passed in m with any attributes added to Base and include them
+with the message if the Logger supports it.
+*/
 func (la *LogAdapter) Fatalm(m *Attrs, msg string, a ...interface{}) error {
 	return la.Log(LevelFatal, m, msg, a...)
 }
 
+// Die will log a message using Fatal, call ShutdownLoggers and then exit the application with the provided exit code.
 func (la *LogAdapter) Die(exitCode int, msg string) {
 	la.Log(LevelFatal, nil, msg)
 	la.base.ShutdownLoggers()
 	curExiter.Exit(exitCode)
 }
+
+// Dief will log a message using Fatalf, call ShutdownLoggers and then exit the application with the provided exit code.
 func (la *LogAdapter) Dief(exitCode int, msg string, a ...interface{}) {
 	la.Log(LevelFatal, nil, msg, a...)
 	la.base.ShutdownLoggers()
 	curExiter.Exit(exitCode)
 }
+
+// Diem will log a message using Fatalm, call ShutdownLoggers and then exit the application with the provided exit code.
 func (la *LogAdapter) Diem(exitCode int, m *Attrs, msg string, a ...interface{}) {
 	la.Log(LevelFatal, m, msg, a...)
 	la.base.ShutdownLoggers()
