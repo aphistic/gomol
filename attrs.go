@@ -8,7 +8,8 @@ import (
 )
 
 type Attrs struct {
-	attrs map[uint32]interface{}
+	attrs     map[uint32]interface{}
+	attrsLock sync.RWMutex
 }
 
 // NewAttrs will create a new Attrs struct with an empty set of attributes.
@@ -32,6 +33,8 @@ func (a *Attrs) MergeAttrs(attrs *Attrs) {
 	if attrs == nil {
 		return
 	}
+	a.attrsLock.Lock()
+	defer a.attrsLock.Unlock()
 	for hash, val := range attrs.attrs {
 		a.attrs[hash] = val
 	}
@@ -46,20 +49,32 @@ func (a *Attrs) clone() *Attrs {
 }
 
 func (a *Attrs) SetAttr(key string, value interface{}) *Attrs {
+	a.attrsLock.Lock()
+	defer a.attrsLock.Unlock()
+
 	hash := getAttrHash(key)
 	a.attrs[hash] = value
 	return a
 }
 
 func (a *Attrs) GetAttr(key string) interface{} {
+	a.attrsLock.RLock()
+	defer a.attrsLock.RUnlock()
+
 	return a.attrs[getAttrHash(key)]
 }
 
 func (a *Attrs) RemoveAttr(key string) {
+	a.attrsLock.Lock()
+	defer a.attrsLock.Unlock()
+
 	delete(a.attrs, getAttrHash(key))
 }
 
 func (a *Attrs) Attrs() map[string]interface{} {
+	a.attrsLock.RLock()
+	defer a.attrsLock.RUnlock()
+
 	attrs := make(map[string]interface{})
 	for hash, val := range a.attrs {
 		key, _ := getHashAttr(hash)
