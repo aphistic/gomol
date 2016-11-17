@@ -146,6 +146,12 @@ func (b *Base) InitLoggers() error {
 	return nil
 }
 
+// Flush will wait until all messages currently queued are distributed to
+// all initialized loggers
+func (b *Base) Flush() {
+	b.queue.Flush()
+}
+
 /*
 ShutdownLoggers will run ShutdownLogger on each Logger in Base.  If an error occurs
 while shutting down a Logger, the error will be returned and all the loggers that

@@ -46,6 +46,12 @@ func InitLoggers() error {
 	return curDefault.InitLoggers()
 }
 
+// Flush will wait until all messages currently queued are distributed to
+// all initialized loggers
+func Flush() {
+	curDefault.Flush()
+}
+
 // ShutdownLoggers executes the same function on the default Base instance
 func ShutdownLoggers() error {
 	return curDefault.ShutdownLoggers()

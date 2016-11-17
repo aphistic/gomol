@@ -3,6 +3,7 @@ package gomol
 import (
 	"errors"
 	"sync"
+	"time"
 )
 
 type queue struct {
@@ -16,7 +17,7 @@ type queue struct {
 
 	queue        []*message
 	msgAddedChan chan bool
-	queueMut     sync.Mutex
+	queueMut     sync.RWMutex
 }
 
 func newQueue() *queue {
@@ -121,6 +122,18 @@ func (queue *queue) senderWorker(exiting bool) {
 		}
 	}
 	queue.workersDone.Done()
+}
+
+func (queue *queue) Flush() {
+	for {
+		queue.queueMut.RLock()
+		if len(queue.queue) == 0 {
+			queue.queueMut.RUnlock()
+			return
+		}
+		queue.queueMut.RUnlock()
+		<-time.After(1*time.Millisecond)
+	}
 }
 
 func (queue *queue) IsActive() bool {
