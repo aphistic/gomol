@@ -2,6 +2,7 @@ package gomol
 
 import "os"
 import "sync/atomic"
+import "time"
 
 /*
 Base holds an instance of all information needed for logging.  It is possible
@@ -205,8 +206,9 @@ func (b *Base) RemoveAttr(key string) {
 	b.BaseAttrs.RemoveAttr(key)
 }
 
-// Log will log a message at the provided level to all added loggers
-func (b *Base) Log(level LogLevel, m *Attrs, msg string, a ...interface{}) error {
+// LogWithTime will log a message at the provided level to all added loggers with the timestamp set to the
+// value of ts.
+func (b *Base) LogWithTime(level LogLevel, ts time.Time, m *Attrs, msg string, a ...interface{}) error {
 	if !b.shouldLog(level) {
 		return nil
 	}
@@ -232,8 +234,14 @@ func (b *Base) Log(level LogLevel, m *Attrs, msg string, a ...interface{}) error
 		m.SetAttr(b.config.SequenceAttr, seq)
 	}
 
-	nm := newMessage(clock().Now(), b, level, m, msg, a...)
+	nm := newMessage(ts, b, level, m, msg, a...)
 	return b.queue.QueueMessage(nm)
+}
+
+// Log will log a message at the provided level to all added loggers with the timestamp set to the time
+// Log was called.
+func (b *Base) Log(level LogLevel, m *Attrs, msg string, a ...interface{}) error {
+	return b.LogWithTime(level, clock().Now(), m, msg, a...)
 }
 
 // Dbg is a short-hand version of Debug

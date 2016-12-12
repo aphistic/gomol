@@ -1,5 +1,7 @@
 package gomol
 
+import "time"
+
 /*
 LogAdapter provides a way to easily override certain log attributes without
 modifying the base attributes or specifying them for every log message.
@@ -40,6 +42,15 @@ func (la *LogAdapter) RemoveAttr(key string) {
 // ClearAttrs removes all attributes for this LogAdapter only
 func (la *LogAdapter) ClearAttrs() {
 	la.attrs = NewAttrs()
+}
+
+// LogWithTime will log a message at the provided level to all loggers added
+// to the Base associated with this LogAdapter. It is similar to Log except
+// the timestamp will be set to the value of ts.
+func (la *LogAdapter) LogWithTime(level LogLevel, ts time.Time, attrs *Attrs, msg string, a ...interface{}) error {
+	mergedAttrs := la.attrs.clone()
+	mergedAttrs.MergeAttrs(attrs)
+	return la.base.LogWithTime(level, ts, mergedAttrs, msg, a...)
 }
 
 // Log will log a message at the provided level to all loggers added

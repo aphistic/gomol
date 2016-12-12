@@ -1,6 +1,10 @@
 package gomol
 
-import . "gopkg.in/check.v1"
+import (
+	"time"
+
+	. "gopkg.in/check.v1"
+)
 
 func (s *GomolSuite) TestNewLogAdapterEmpty(c *C) {
 	b := NewBase()
@@ -65,6 +69,32 @@ func (s *GomolSuite) TestLogAdapterClearAttrs(c *C) {
 	la.ClearAttrs()
 	c.Check(la.attrs.GetAttr("foo"), IsNil)
 	c.Check(la.attrs.GetAttr("baz"), IsNil)
+}
+
+func (s *GomolSuite) TestLogAdapterLogWithTime(c *C) {
+	b := NewBase()
+	ml := newDefaultMemLogger()
+	b.AddLogger(ml)
+	b.InitLoggers()
+
+	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
+	c.Check(len(ml.Messages), Equals, 0)
+
+	ts := time.Now()
+
+	la.LogWithTime(LevelDebug, ts, NewAttrs().SetAttr("foo", "newBar"), "MessageM %d", 2)
+
+	b.ShutdownLoggers()
+
+	c.Assert(len(ml.Messages), Equals, 1)
+	c.Check(ml.Messages[0], DeepEquals, &memMessage{
+		Timestamp: ts,
+		Level:     LevelDebug,
+		Message:   "MessageM 2",
+		Attrs: map[string]interface{}{
+			"foo": "newBar",
+		},
+	})
 }
 
 func (s *GomolSuite) TestLogAdapterDebug(c *C) {
