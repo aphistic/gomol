@@ -1,56 +1,58 @@
 package gomol
 
 import (
-	. "gopkg.in/check.v1"
+	"testing"
+
+	. "github.com/onsi/gomega"
 )
 
-func (s *GomolSuite) TestDefaultSetConfig(c *C) {
+func (s *GomolSuite) TestDefaultSetConfig(t *testing.T) {
 	cfg := NewConfig()
 
-	c.Check(curDefault.config, DeepEquals, cfg)
+	Expect(curDefault.config).To(Equal(cfg))
 
 	cfg.FilenameAttr = "file"
 	cfg.LineNumberAttr = "line"
 	cfg.SequenceAttr = "seq"
 	SetConfig(cfg)
 
-	c.Check(curDefault.config, Equals, cfg)
-	c.Check(curDefault.config, DeepEquals, cfg)
+	Expect(curDefault.config).To(Equal(cfg))
+	Expect(curDefault.config).To(Equal(cfg))
 }
 
-func (s *GomolSuite) TestDefaultInitLogger(c *C) {
+func (s *GomolSuite) TestDefaultInitLogger(t *testing.T) {
 	curDefault = NewBase()
-	c.Check(IsInitialized(), Equals, false)
+	Expect(IsInitialized()).To(Equal(false))
 	AddLogger(newDefaultMemLogger())
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Check(defLogger.IsInitialized(), Equals, false)
+	Expect(defLogger.IsInitialized()).To(Equal(false))
 	InitLoggers()
-	c.Check(IsInitialized(), Equals, true)
-	c.Check(defLogger.IsInitialized(), Equals, true)
+	Expect(IsInitialized()).To(Equal(true))
+	Expect(defLogger.IsInitialized()).To(Equal(true))
 	ShutdownLoggers()
 }
 
-func (s *GomolSuite) TestDefaultShutdownLogger(c *C) {
+func (s *GomolSuite) TestDefaultShutdownLogger(t *testing.T) {
 	curDefault = NewBase()
-	c.Check(IsInitialized(), Equals, false)
+	Expect(IsInitialized()).To(Equal(false))
 	AddLogger(newDefaultMemLogger())
 	InitLoggers()
-	c.Check(IsInitialized(), Equals, true)
+	Expect(IsInitialized()).To(Equal(true))
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Check(defLogger.isShutdown, Equals, false)
+	Expect(defLogger.isShutdown).To(Equal(false))
 	ShutdownLoggers()
-	c.Check(defLogger.isShutdown, Equals, true)
-	c.Check(IsInitialized(), Equals, false)
+	Expect(defLogger.isShutdown).To(Equal(true))
+	Expect(IsInitialized()).To(Equal(false))
 }
 
-func (s *GomolSuite) TestDefaultAddLogger(c *C) {
+func (s *GomolSuite) TestDefaultAddLogger(t *testing.T) {
 	curDefault = NewBase()
-	c.Check(curDefault.loggers, HasLen, 0)
+	Expect(curDefault.loggers).To(HaveLen(0))
 	AddLogger(newDefaultMemLogger())
-	c.Check(curDefault.loggers, HasLen, 1)
+	Expect(curDefault.loggers).To(HaveLen(1))
 }
 
-func (s *GomolSuite) TestDefaultRemoveLogger(c *C) {
+func (s *GomolSuite) TestDefaultRemoveLogger(t *testing.T) {
 	curDefault = NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -62,20 +64,20 @@ func (s *GomolSuite) TestDefaultRemoveLogger(c *C) {
 
 	InitLoggers()
 
-	c.Check(ml1.IsInitialized(), Equals, true)
-	c.Check(ml2.IsInitialized(), Equals, true)
-	c.Check(ml3.IsInitialized(), Equals, true)
-	c.Check(curDefault.loggers, HasLen, 3)
+	Expect(ml1.IsInitialized()).To(Equal(true))
+	Expect(ml2.IsInitialized()).To(Equal(true))
+	Expect(ml3.IsInitialized()).To(Equal(true))
+	Expect(curDefault.loggers).To(HaveLen(3))
 
 	err := RemoveLogger(ml2)
-	c.Assert(err, IsNil)
-	c.Check(ml1.IsInitialized(), Equals, true)
-	c.Check(ml2.IsInitialized(), Equals, false)
-	c.Check(ml3.IsInitialized(), Equals, true)
-	c.Check(curDefault.loggers, HasLen, 2)
+	Expect(err).To(BeNil())
+	Expect(ml1.IsInitialized()).To(Equal(true))
+	Expect(ml2.IsInitialized()).To(Equal(false))
+	Expect(ml3.IsInitialized()).To(Equal(true))
+	Expect(curDefault.loggers).To(HaveLen(2))
 }
 
-func (s *GomolSuite) TestDefaultClearLoggers(c *C) {
+func (s *GomolSuite) TestDefaultClearLoggers(t *testing.T) {
 	curDefault = NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -87,20 +89,20 @@ func (s *GomolSuite) TestDefaultClearLoggers(c *C) {
 
 	InitLoggers()
 
-	c.Check(ml1.IsInitialized(), Equals, true)
-	c.Check(ml2.IsInitialized(), Equals, true)
-	c.Check(ml3.IsInitialized(), Equals, true)
-	c.Check(curDefault.loggers, HasLen, 3)
+	Expect(ml1.IsInitialized()).To(Equal(true))
+	Expect(ml2.IsInitialized()).To(Equal(true))
+	Expect(ml3.IsInitialized()).To(Equal(true))
+	Expect(curDefault.loggers).To(HaveLen(3))
 
 	err := ClearLoggers()
-	c.Assert(err, IsNil)
-	c.Check(ml1.IsInitialized(), Equals, false)
-	c.Check(ml2.IsInitialized(), Equals, false)
-	c.Check(ml3.IsInitialized(), Equals, false)
-	c.Check(curDefault.loggers, HasLen, 0)
+	Expect(err).To(BeNil())
+	Expect(ml1.IsInitialized()).To(Equal(false))
+	Expect(ml2.IsInitialized()).To(Equal(false))
+	Expect(ml3.IsInitialized()).To(Equal(false))
+	Expect(curDefault.loggers).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestDefaultSetLogLevel(c *C) {
+func (s *GomolSuite) TestDefaultSetLogLevel(t *testing.T) {
 	curDefault = NewBase()
 	InitLoggers()
 	ml := newDefaultMemLogger()
@@ -113,50 +115,50 @@ func (s *GomolSuite) TestDefaultSetLogLevel(c *C) {
 	Err("test")
 	Fatal("test")
 	ShutdownLoggers()
-	c.Check(ml.Messages, HasLen, 3)
+	Expect(ml.Messages).To(HaveLen(3))
 }
 
-func (s *GomolSuite) TestDefaultSetAttr(c *C) {
+func (s *GomolSuite) TestDefaultSetAttr(t *testing.T) {
 	curDefault = NewBase()
-	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 0)
+	Expect(curDefault.BaseAttrs.Attrs()).To(HaveLen(0))
 	SetAttr("attr", 1234)
-	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 1)
-	c.Check(curDefault.BaseAttrs.GetAttr("attr"), Equals, 1234)
+	Expect(curDefault.BaseAttrs.Attrs()).To(HaveLen(1))
+	Expect(curDefault.BaseAttrs.GetAttr("attr")).To(Equal(1234))
 }
 
-func (s *GomolSuite) TestDefaultGetAttr(c *C) {
+func (s *GomolSuite) TestDefaultGetAttr(t *testing.T) {
 	curDefault = NewBase()
 	SetAttr("attr1", 1)
 	SetAttr("attr2", "val2")
 
-	c.Check(GetAttr("attr2"), Equals, "val2")
-	c.Check(GetAttr("notakey"), IsNil)
+	Expect(GetAttr("attr2")).To(Equal("val2"))
+	Expect(GetAttr("notakey")).To(BeNil())
 }
 
-func (s *GomolSuite) TestDefaultRemoveAttr(c *C) {
+func (s *GomolSuite) TestDefaultRemoveAttr(t *testing.T) {
 	curDefault = NewBase()
-	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 0)
+	Expect(curDefault.BaseAttrs.Attrs()).To(HaveLen(0))
 	SetAttr("attr", 1234)
-	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 1)
-	c.Check(curDefault.BaseAttrs.GetAttr("attr"), Equals, 1234)
+	Expect(curDefault.BaseAttrs.Attrs()).To(HaveLen(1))
+	Expect(curDefault.BaseAttrs.GetAttr("attr")).To(Equal(1234))
 	RemoveAttr("attr")
-	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 0)
+	Expect(curDefault.BaseAttrs.Attrs()).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestDefaultClearAttrs(c *C) {
+func (s *GomolSuite) TestDefaultClearAttrs(t *testing.T) {
 	curDefault = NewBase()
-	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 0)
+	Expect(curDefault.BaseAttrs.Attrs()).To(HaveLen(0))
 	SetAttr("attr", 1234)
-	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 1)
-	c.Check(curDefault.BaseAttrs.GetAttr("attr"), Equals, 1234)
+	Expect(curDefault.BaseAttrs.Attrs()).To(HaveLen(1))
+	Expect(curDefault.BaseAttrs.GetAttr("attr")).To(Equal(1234))
 	SetAttr("attr2", 1234)
-	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 2)
-	c.Check(curDefault.BaseAttrs.GetAttr("attr2"), Equals, 1234)
+	Expect(curDefault.BaseAttrs.Attrs()).To(HaveLen(2))
+	Expect(curDefault.BaseAttrs.GetAttr("attr2")).To(Equal(1234))
 	ClearAttrs()
-	c.Check(curDefault.BaseAttrs.Attrs(), HasLen, 0)
+	Expect(curDefault.BaseAttrs.Attrs()).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestDefaultNewLogAdapter(c *C) {
+func (s *GomolSuite) TestDefaultNewLogAdapter(t *testing.T) {
 	la := NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
 	defLogger := curDefault.loggers[0].(*memLogger)
 
@@ -164,8 +166,8 @@ func (s *GomolSuite) TestDefaultNewLogAdapter(c *C) {
 
 	ShutdownLoggers()
 
-	c.Assert(len(defLogger.Messages), Equals, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(len(defLogger.Messages)).To(Equal(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelDebug,
 		Message:   "test",
@@ -173,279 +175,279 @@ func (s *GomolSuite) TestDefaultNewLogAdapter(c *C) {
 			"foo":  "bar",
 			"attr": "val",
 		},
-	})
+	}))
 }
 
-func (s *GomolSuite) TestDefaultDbg(c *C) {
+func (s *GomolSuite) TestDefaultDbg(t *testing.T) {
 	Dbg("test")
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelDebug,
 		Message:   "test",
 		Attrs:     map[string]interface{}{},
-	})
+	}))
 }
 
-func (s *GomolSuite) TestDefaultDbgf(c *C) {
+func (s *GomolSuite) TestDefaultDbgf(t *testing.T) {
 	Dbgf("test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelDebug,
 		Message:   "test 1234",
 		Attrs:     map[string]interface{}{},
-	})
+	}))
 }
 
-func (s *GomolSuite) TestDefaultDbgm(c *C) {
+func (s *GomolSuite) TestDefaultDbgm(t *testing.T) {
 	Dbgm(
 		NewAttrs().SetAttr("attr1", 4321),
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelDebug,
 		Message:   "test 1234",
 		Attrs: map[string]interface{}{
 			"attr1": 4321,
 		},
-	})
+	}))
 }
 
-func (s *GomolSuite) TestDefaultInfo(c *C) {
+func (s *GomolSuite) TestDefaultInfo(t *testing.T) {
 	Info("test")
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelInfo,
 		Message:   "test",
 		Attrs:     map[string]interface{}{},
-	})
+	}))
 }
 
-func (s *GomolSuite) TestDefaultInfof(c *C) {
+func (s *GomolSuite) TestDefaultInfof(t *testing.T) {
 	Infof("test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelInfo,
 		Message:   "test 1234",
 		Attrs:     map[string]interface{}{},
-	})
+	}))
 }
 
-func (s *GomolSuite) TestDefaultInfom(c *C) {
+func (s *GomolSuite) TestDefaultInfom(t *testing.T) {
 	Infom(
 		NewAttrs().SetAttr("attr1", 4321),
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelInfo,
 		Message:   "test 1234",
 		Attrs: map[string]interface{}{
 			"attr1": 4321,
 		},
-	})
+	}))
 }
 
-func (s *GomolSuite) TestDefaultWarn(c *C) {
+func (s *GomolSuite) TestDefaultWarn(t *testing.T) {
 	Warn("test")
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelWarning,
 		Message:   "test",
 		Attrs:     map[string]interface{}{},
-	})
+	}))
 }
 
-func (s *GomolSuite) TestDefaultWarnf(c *C) {
+func (s *GomolSuite) TestDefaultWarnf(t *testing.T) {
 	Warnf("test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelWarning,
 		Message:   "test 1234",
 		Attrs:     map[string]interface{}{},
-	})
+	}))
 }
 
-func (s *GomolSuite) TestDefaultWarnm(c *C) {
+func (s *GomolSuite) TestDefaultWarnm(t *testing.T) {
 	Warnm(
 		NewAttrs().SetAttr("attr1", 4321),
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelWarning,
 		Message:   "test 1234",
 		Attrs: map[string]interface{}{
 			"attr1": 4321,
 		},
-	})
+	}))
 }
 
-func (s *GomolSuite) TestDefaultErr(c *C) {
+func (s *GomolSuite) TestDefaultErr(t *testing.T) {
 	Err("test")
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelError,
 		Message:   "test",
 		Attrs:     map[string]interface{}{},
-	})
+	}))
 }
 
-func (s *GomolSuite) TestDefaultErrf(c *C) {
+func (s *GomolSuite) TestDefaultErrf(t *testing.T) {
 	Errf("test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelError,
 		Message:   "test 1234",
 		Attrs:     map[string]interface{}{},
-	})
+	}))
 }
 
-func (s *GomolSuite) TestDefaultErrm(c *C) {
+func (s *GomolSuite) TestDefaultErrm(t *testing.T) {
 	Errm(
 		NewAttrs().SetAttr("attr1", 4321),
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelError,
 		Message:   "test 1234",
 		Attrs: map[string]interface{}{
 			"attr1": 4321,
 		},
-	})
+	}))
 }
 
-func (s *GomolSuite) TestDefaultFatal(c *C) {
+func (s *GomolSuite) TestDefaultFatal(t *testing.T) {
 	Fatal("test")
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelFatal,
 		Message:   "test",
 		Attrs:     map[string]interface{}{},
-	})
+	}))
 }
 
-func (s *GomolSuite) TestDefaultFatalf(c *C) {
+func (s *GomolSuite) TestDefaultFatalf(t *testing.T) {
 	Fatalf("test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelFatal,
 		Message:   "test 1234",
 		Attrs:     map[string]interface{}{},
-	})
+	}))
 }
 
-func (s *GomolSuite) TestDefaultFatalm(c *C) {
+func (s *GomolSuite) TestDefaultFatalm(t *testing.T) {
 	Fatalm(
 		NewAttrs().SetAttr("attr1", 4321),
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelFatal,
 		Message:   "test 1234",
 		Attrs: map[string]interface{}{
 			"attr1": 4321,
 		},
-	})
+	}))
 }
 
-func (s *GomolSuite) TestDefaultDie(c *C) {
+func (s *GomolSuite) TestDefaultDie(t *testing.T) {
 	Die(1234, "test")
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelFatal,
 		Message:   "test",
 		Attrs:     map[string]interface{}{},
-	})
+	}))
 
-	c.Check(curDefault.isInitialized, Equals, false)
-	c.Check(curTestExiter.exited, Equals, true)
-	c.Check(curTestExiter.code, Equals, 1234)
+	Expect(curDefault.isInitialized).To(Equal(false))
+	Expect(curTestExiter.exited).To(Equal(true))
+	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *GomolSuite) TestDefaultDief(c *C) {
+func (s *GomolSuite) TestDefaultDief(t *testing.T) {
 	Dief(1234, "test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelFatal,
 		Message:   "test 1234",
 		Attrs:     map[string]interface{}{},
-	})
-	c.Check(defLogger.Messages[0].Level, Equals, LevelFatal)
-	c.Check(defLogger.Messages[0].Message, Equals, "test 1234")
-	c.Check(defLogger.Messages[0].Attrs, HasLen, 0)
+	}))
+	Expect(defLogger.Messages[0].Level).To(Equal(LevelFatal))
+	Expect(defLogger.Messages[0].Message).To(Equal("test 1234"))
+	Expect(defLogger.Messages[0].Attrs).To(HaveLen(0))
 
-	c.Check(curDefault.isInitialized, Equals, false)
-	c.Check(curTestExiter.exited, Equals, true)
-	c.Check(curTestExiter.code, Equals, 1234)
+	Expect(curDefault.isInitialized).To(Equal(false))
+	Expect(curTestExiter.exited).To(Equal(true))
+	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *GomolSuite) TestDefaultDiem(c *C) {
+func (s *GomolSuite) TestDefaultDiem(t *testing.T) {
 	Diem(
 		1234,
 		NewAttrs().SetAttr("attr1", 4321),
 		"test %v", 1234)
 	curDefault.queue.stopQueueWorkers()
 	defLogger := curDefault.loggers[0].(*memLogger)
-	c.Assert(defLogger.Messages, HasLen, 1)
-	c.Check(defLogger.Messages[0], DeepEquals, &memMessage{
+	Expect(defLogger.Messages).To(HaveLen(1))
+	Expect(defLogger.Messages[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelFatal,
 		Message:   "test 1234",
 		Attrs: map[string]interface{}{
 			"attr1": 4321,
 		},
-	})
+	}))
 
-	c.Check(curDefault.isInitialized, Equals, false)
-	c.Check(curTestExiter.exited, Equals, true)
-	c.Check(curTestExiter.code, Equals, 1234)
+	Expect(curDefault.isInitialized).To(Equal(false))
+	Expect(curTestExiter.exited).To(Equal(true))
+	Expect(curTestExiter.code).To(Equal(1234))
 }

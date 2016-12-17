@@ -1,6 +1,10 @@
 package gomol
 
-import . "gopkg.in/check.v1"
+import (
+	"testing"
+
+	. "github.com/onsi/gomega"
+)
 
 /*
 This is in its own file so the line numbers don't change.
@@ -8,48 +12,48 @@ These tests are testing calling locations so putting them in their own
 file will limit the number of changes to that data.
 */
 
-func (s *GomolSuite) TestIsGomolCaller(c *C) {
+func (s *GomolSuite) TestIsGomolCaller(t *testing.T) {
 	res, file := isGomolCaller("/home/gomoltest/some/sub/dir/that/is/long/filename.go")
-	c.Check(res, Equals, false)
-	c.Check(file, Equals, "filename.go")
+	Expect(res).To(Equal(false))
+	Expect(file).To(Equal("filename.go"))
 }
 
-func (s *GomolSuite) TestIsGomolCallerCached(c *C) {
-	c.Check(len(gomolFiles), Equals, 0)
+func (s *GomolSuite) TestIsGomolCallerCached(t *testing.T) {
+	Expect(len(gomolFiles)).To(Equal(0))
 
 	res, file := isGomolCaller("/home/gomoltest/some/sub/dir/that/is/long/filename.go")
-	c.Check(len(gomolFiles), Equals, 1)
-	c.Check(res, Equals, false)
-	c.Check(file, Equals, "filename.go")
+	Expect(len(gomolFiles)).To(Equal(1))
+	Expect(res).To(Equal(false))
+	Expect(file).To(Equal("filename.go"))
 
 	res, file = isGomolCaller("/home/gomoltest/some/sub/dir/that/is/long/filename.go")
-	c.Check(gomolFiles, HasLen, 1)
-	c.Check(res, Equals, false)
-	c.Check(file, Equals, "filename.go")
+	Expect(gomolFiles).To(HaveLen(1))
+	Expect(res).To(Equal(false))
+	Expect(file).To(Equal("filename.go"))
 }
 
-func (s *GomolSuite) TestIsGomolCallerDirTooShort(c *C) {
+func (s *GomolSuite) TestIsGomolCallerDirTooShort(t *testing.T) {
 	res, file := isGomolCaller("1234/thiscanbesuperlong.go")
-	c.Check(len(gomolFiles), Equals, 1)
-	c.Check(res, Equals, false)
-	c.Check(file, Equals, "thiscanbesuperlong.go")
+	Expect(len(gomolFiles)).To(Equal(1))
+	Expect(res).To(Equal(false))
+	Expect(file).To(Equal("thiscanbesuperlong.go"))
 }
 
-func (s *GomolSuite) TestIsGomolCallerFileShort(c *C) {
+func (s *GomolSuite) TestIsGomolCallerFileShort(t *testing.T) {
 	res, file := isGomolCaller("gomol/s.go")
-	c.Check(len(gomolFiles), Equals, 1)
-	c.Check(res, Equals, true)
-	c.Check(file, Equals, "s.go")
+	Expect(len(gomolFiles)).To(Equal(1))
+	Expect(res).To(Equal(true))
+	Expect(file).To(Equal("s.go"))
 }
 
-func (s *GomolSuite) TestIsGomolCallerFileTest(c *C) {
+func (s *GomolSuite) TestIsGomolCallerFileTest(t *testing.T) {
 	res, file := isGomolCaller("gomol/s_test.go")
-	c.Check(len(gomolFiles), Equals, 1)
-	c.Check(res, Equals, false)
-	c.Check(file, Equals, "s_test.go")
+	Expect(len(gomolFiles)).To(Equal(1))
+	Expect(res).To(Equal(false))
+	Expect(file).To(Equal("s_test.go"))
 }
 
-func (s *GomolSuite) TestLogWithRuntimeInfo(c *C) {
+func (s *GomolSuite) TestLogWithRuntimeInfo(t *testing.T) {
 	setFakeCallerInfo("fakefile.go", 1234)
 
 	b := NewBase()
@@ -64,10 +68,10 @@ func (s *GomolSuite) TestLogWithRuntimeInfo(c *C) {
 	b.Info("test")
 	b.ShutdownLoggers()
 
-	c.Assert(l.Messages, HasLen, 1)
-	c.Check(l.Messages[0].Message, Equals, "test")
-	c.Check(l.Messages[0].Attrs, HasLen, 2)
-	c.Check(l.Messages[0].Attrs["filename"], Equals, "fakefile.go")
-	c.Check(l.Messages[0].Attrs["line"], Equals, 1234)
-	c.Check(l.Messages[0].Level, Equals, LevelInfo)
+	Expect(l.Messages).To(HaveLen(1))
+	Expect(l.Messages[0].Message).To(Equal("test"))
+	Expect(l.Messages[0].Attrs).To(HaveLen(2))
+	Expect(l.Messages[0].Attrs["filename"]).To(Equal("fakefile.go"))
+	Expect(l.Messages[0].Attrs["line"]).To(Equal(1234))
+	Expect(l.Messages[0].Level).To(Equal(LevelInfo))
 }

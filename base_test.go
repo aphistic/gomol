@@ -4,14 +4,20 @@ import (
 	"testing"
 	"time"
 
-	. "gopkg.in/check.v1"
-)
+	. "github.com/onsi/gomega"
 
-func Test(t *testing.T) { TestingT(t) }
+	"github.com/aphistic/sweet"
+)
 
 type GomolSuite struct{}
 
-var _ = Suite(&GomolSuite{})
+func Test(t *testing.T) {
+	sweet.SetUpAllTests(func(st *testing.T) {
+		RegisterTestingT(st)
+	})
+
+	sweet.RunSuite(t, &GomolSuite{})
+}
 
 var testBase *Base
 
@@ -27,7 +33,7 @@ func (exiter *testExiter) Exit(code int) {
 
 var curTestExiter *testExiter
 
-func (s *GomolSuite) SetUpTest(c *C) {
+func (s *GomolSuite) SetUpTest(t *testing.T) {
 	setFakeCallerInfo("", 0)
 	setClock(newTestClock(time.Now()))
 	gomolFiles = map[string]fileRecord{}
@@ -44,66 +50,66 @@ func (s *GomolSuite) SetUpTest(c *C) {
 	curDefault.InitLoggers()
 }
 
-func (s *GomolSuite) TearDownTest(c *C) {
+func (s *GomolSuite) TearDownTest(t *testing.T) {
 	curDefault.ShutdownLoggers()
 
 	testBase.ShutdownLoggers()
 }
 
-func (s *GomolSuite) TestShouldLog(c *C) {
+func (s *GomolSuite) TestShouldLog(t *testing.T) {
 	b := NewBase()
 	b.SetLogLevel(LevelInfo)
-	c.Check(b.shouldLog(LevelDebug), Equals, false)
-	c.Check(b.shouldLog(LevelInfo), Equals, true)
-	c.Check(b.shouldLog(LevelWarning), Equals, true)
-	c.Check(b.shouldLog(LevelError), Equals, true)
-	c.Check(b.shouldLog(LevelFatal), Equals, true)
+	Expect(b.shouldLog(LevelDebug)).To(Equal(false))
+	Expect(b.shouldLog(LevelInfo)).To(Equal(true))
+	Expect(b.shouldLog(LevelWarning)).To(Equal(true))
+	Expect(b.shouldLog(LevelError)).To(Equal(true))
+	Expect(b.shouldLog(LevelFatal)).To(Equal(true))
 
 	b.SetLogLevel(LevelFatal)
-	c.Check(b.shouldLog(LevelDebug), Equals, false)
-	c.Check(b.shouldLog(LevelInfo), Equals, false)
-	c.Check(b.shouldLog(LevelWarning), Equals, false)
-	c.Check(b.shouldLog(LevelError), Equals, false)
-	c.Check(b.shouldLog(LevelFatal), Equals, true)
+	Expect(b.shouldLog(LevelDebug)).To(Equal(false))
+	Expect(b.shouldLog(LevelInfo)).To(Equal(false))
+	Expect(b.shouldLog(LevelWarning)).To(Equal(false))
+	Expect(b.shouldLog(LevelError)).To(Equal(false))
+	Expect(b.shouldLog(LevelFatal)).To(Equal(true))
 
 	b.SetLogLevel(LevelNone)
-	c.Check(b.shouldLog(LevelDebug), Equals, false)
-	c.Check(b.shouldLog(LevelInfo), Equals, false)
-	c.Check(b.shouldLog(LevelWarning), Equals, false)
-	c.Check(b.shouldLog(LevelError), Equals, false)
-	c.Check(b.shouldLog(LevelFatal), Equals, false)
+	Expect(b.shouldLog(LevelDebug)).To(Equal(false))
+	Expect(b.shouldLog(LevelInfo)).To(Equal(false))
+	Expect(b.shouldLog(LevelWarning)).To(Equal(false))
+	Expect(b.shouldLog(LevelError)).To(Equal(false))
+	Expect(b.shouldLog(LevelFatal)).To(Equal(false))
 }
 
-func (s *GomolSuite) TestNewBase(c *C) {
+func (s *GomolSuite) TestNewBase(t *testing.T) {
 	b := NewBase()
-	c.Check(b.isInitialized, Equals, false)
-	c.Assert(b.config, NotNil)
-	c.Check(b.config.FilenameAttr, Equals, "")
-	c.Check(b.config.LineNumberAttr, Equals, "")
-	c.Assert(b.queue, NotNil)
-	c.Check(b.logLevel, Equals, LevelDebug)
-	c.Check(b.loggers, HasLen, 0)
-	c.Check(b.BaseAttrs.Attrs(), HasLen, 0)
+	Expect(b.isInitialized).To(Equal(false))
+	Expect(b.config).ToNot(BeNil())
+	Expect(b.config.FilenameAttr).To(Equal(""))
+	Expect(b.config.LineNumberAttr).To(Equal(""))
+	Expect(b.queue).ToNot(BeNil())
+	Expect(b.logLevel).To(Equal(LevelDebug))
+	Expect(b.loggers).To(HaveLen(0))
+	Expect(b.BaseAttrs.Attrs()).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestSetConfig(c *C) {
+func (s *GomolSuite) TestSetConfig(t *testing.T) {
 	b := NewBase()
 
-	c.Assert(b.config, NotNil)
-	c.Check(b.config.FilenameAttr, Equals, "")
-	c.Check(b.config.LineNumberAttr, Equals, "")
+	Expect(b.config).ToNot(BeNil())
+	Expect(b.config.FilenameAttr).To(Equal(""))
+	Expect(b.config.LineNumberAttr).To(Equal(""))
 
 	cfg := NewConfig()
 	cfg.FilenameAttr = "filename"
 	cfg.LineNumberAttr = "line_number"
 
 	b.SetConfig(cfg)
-	c.Assert(b.config, NotNil)
-	c.Check(b.config.FilenameAttr, Equals, "filename")
-	c.Check(b.config.LineNumberAttr, Equals, "line_number")
+	Expect(b.config).ToNot(BeNil())
+	Expect(b.config.FilenameAttr).To(Equal("filename"))
+	Expect(b.config.LineNumberAttr).To(Equal("line_number"))
 }
 
-func (s *GomolSuite) TestSetLogLevel(c *C) {
+func (s *GomolSuite) TestSetLogLevel(t *testing.T) {
 	b := NewBase()
 	b.InitLoggers()
 	ml := newDefaultMemLogger()
@@ -116,86 +122,86 @@ func (s *GomolSuite) TestSetLogLevel(c *C) {
 	b.Err("test")
 	b.Fatal("test")
 	b.ShutdownLoggers()
-	c.Check(ml.Messages, HasLen, 3)
+	Expect(ml.Messages).To(HaveLen(3))
 }
 
-func (s *GomolSuite) TestAddLogger(c *C) {
+func (s *GomolSuite) TestAddLogger(t *testing.T) {
 	b := NewBase()
 	b.InitLoggers()
-	c.Check(b.loggers, HasLen, 0)
+	Expect(b.loggers).To(HaveLen(0))
 
 	ml := newDefaultMemLogger()
-	c.Check(ml.IsInitialized(), Equals, false)
-	c.Check(ml.base, IsNil)
+	Expect(ml.IsInitialized()).To(Equal(false))
+	Expect(ml.base).To(BeNil())
 
 	b.AddLogger(ml)
-	c.Check(b.IsInitialized(), Equals, true)
-	c.Assert(b.loggers, HasLen, 1)
-	c.Check(b.loggers[0].IsInitialized(), Equals, true)
-	c.Check(ml.base, Equals, b)
+	Expect(b.IsInitialized()).To(Equal(true))
+	Expect(b.loggers).To(HaveLen(1))
+	Expect(b.loggers[0].IsInitialized()).To(Equal(true))
+	Expect(ml.base).To(Equal(b))
 }
 
-func (s *GomolSuite) TestAddLoggerAfterInit(c *C) {
+func (s *GomolSuite) TestAddLoggerAfterInit(t *testing.T) {
 	b := NewBase()
 	b.InitLoggers()
 
 	ml := newDefaultMemLogger()
-	c.Check(ml.IsInitialized(), Equals, false)
+	Expect(ml.IsInitialized()).To(Equal(false))
 
 	ret := b.AddLogger(ml)
-	c.Check(ret, IsNil)
-	c.Check(ml.IsInitialized(), Equals, true)
+	Expect(ret).To(BeNil())
+	Expect(ml.IsInitialized()).To(Equal(true))
 }
 
-func (s *GomolSuite) TestAddLoggerAfterShutdown(c *C) {
+func (s *GomolSuite) TestAddLoggerAfterShutdown(t *testing.T) {
 	b := NewBase()
 
 	ml := newDefaultMemLogger()
-	c.Check(ml.IsInitialized(), Equals, false)
+	Expect(ml.IsInitialized()).To(Equal(false))
 	ml.InitLogger()
-	c.Check(ml.IsInitialized(), Equals, true)
+	Expect(ml.IsInitialized()).To(Equal(true))
 
 	ret := b.AddLogger(ml)
-	c.Check(ret, IsNil)
-	c.Check(ml.IsInitialized(), Equals, false)
+	Expect(ret).To(BeNil())
+	Expect(ml.IsInitialized()).To(Equal(false))
 }
 
-func (s *GomolSuite) TestAddLoggerAfterInitFail(c *C) {
+func (s *GomolSuite) TestAddLoggerAfterInitFail(t *testing.T) {
 	b := NewBase()
 	b.InitLoggers()
 
 	mlCfg := newMemLoggerConfig()
 	mlCfg.FailInit = true
 	ml, err := newMemLogger(mlCfg)
-	c.Check(err, IsNil)
-	c.Check(ml.IsInitialized(), Equals, false)
+	Expect(err).To(BeNil())
+	Expect(ml.IsInitialized()).To(Equal(false))
 
 	ret := b.AddLogger(ml)
-	c.Check(ret, NotNil)
-	c.Check(ret.Error(), Equals, "Init failed")
-	c.Check(ml.IsInitialized(), Equals, false)
-	c.Check(b.loggers, HasLen, 0)
+	Expect(ret).ToNot(BeNil())
+	Expect(ret.Error()).To(Equal("Init failed"))
+	Expect(ml.IsInitialized()).To(Equal(false))
+	Expect(b.loggers).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestAddLoggerAfterShutdownFail(c *C) {
+func (s *GomolSuite) TestAddLoggerAfterShutdownFail(t *testing.T) {
 	b := NewBase()
 
 	mlCfg := newMemLoggerConfig()
 	mlCfg.FailShutdown = true
 	ml, err := newMemLogger(mlCfg)
-	c.Check(err, IsNil)
-	c.Check(ml.IsInitialized(), Equals, false)
+	Expect(err).To(BeNil())
+	Expect(ml.IsInitialized()).To(Equal(false))
 	ml.InitLogger()
-	c.Check(ml.IsInitialized(), Equals, true)
+	Expect(ml.IsInitialized()).To(Equal(true))
 
 	ret := b.AddLogger(ml)
-	c.Check(ret, NotNil)
-	c.Check(ret.Error(), Equals, "Shutdown failed")
-	c.Check(ml.IsInitialized(), Equals, true)
-	c.Check(b.loggers, HasLen, 0)
+	Expect(ret).ToNot(BeNil())
+	Expect(ret.Error()).To(Equal("Shutdown failed"))
+	Expect(ml.IsInitialized()).To(Equal(true))
+	Expect(b.loggers).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestBaseRemoveLogger(c *C) {
+func (s *GomolSuite) TestBaseRemoveLogger(t *testing.T) {
 	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -207,20 +213,20 @@ func (s *GomolSuite) TestBaseRemoveLogger(c *C) {
 
 	b.InitLoggers()
 
-	c.Check(ml1.IsInitialized(), Equals, true)
-	c.Check(ml2.IsInitialized(), Equals, true)
-	c.Check(ml3.IsInitialized(), Equals, true)
-	c.Check(b.loggers, HasLen, 3)
+	Expect(ml1.IsInitialized()).To(Equal(true))
+	Expect(ml2.IsInitialized()).To(Equal(true))
+	Expect(ml3.IsInitialized()).To(Equal(true))
+	Expect(b.loggers).To(HaveLen(3))
 
 	err := b.RemoveLogger(ml2)
-	c.Assert(err, IsNil)
-	c.Check(ml1.IsInitialized(), Equals, true)
-	c.Check(ml2.IsInitialized(), Equals, false)
-	c.Check(ml3.IsInitialized(), Equals, true)
-	c.Check(b.loggers, HasLen, 2)
+	Expect(err).To(BeNil())
+	Expect(ml1.IsInitialized()).To(Equal(true))
+	Expect(ml2.IsInitialized()).To(Equal(false))
+	Expect(ml3.IsInitialized()).To(Equal(true))
+	Expect(b.loggers).To(HaveLen(2))
 }
 
-func (s *GomolSuite) TestBaseRemoveLoggerNonExistent(c *C) {
+func (s *GomolSuite) TestBaseRemoveLoggerNonExistent(t *testing.T) {
 	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -229,14 +235,14 @@ func (s *GomolSuite) TestBaseRemoveLoggerNonExistent(c *C) {
 
 	b.InitLoggers()
 
-	c.Check(ml1.IsInitialized(), Equals, true)
-	c.Check(b.loggers, HasLen, 1)
+	Expect(ml1.IsInitialized()).To(Equal(true))
+	Expect(b.loggers).To(HaveLen(1))
 
 	err := b.RemoveLogger(ml2)
-	c.Assert(err, IsNil)
+	Expect(err).To(BeNil())
 }
 
-func (s *GomolSuite) TestBaseClearLoggers(c *C) {
+func (s *GomolSuite) TestBaseClearLoggers(t *testing.T) {
 	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -248,22 +254,22 @@ func (s *GomolSuite) TestBaseClearLoggers(c *C) {
 
 	b.InitLoggers()
 
-	c.Check(ml1.IsInitialized(), Equals, true)
-	c.Check(ml2.IsInitialized(), Equals, true)
-	c.Check(ml3.IsInitialized(), Equals, true)
-	c.Check(b.loggers, HasLen, 3)
+	Expect(ml1.IsInitialized()).To(Equal(true))
+	Expect(ml2.IsInitialized()).To(Equal(true))
+	Expect(ml3.IsInitialized()).To(Equal(true))
+	Expect(b.loggers).To(HaveLen(3))
 
 	err := b.ClearLoggers()
-	c.Assert(err, IsNil)
-	c.Check(ml1.IsInitialized(), Equals, false)
-	c.Check(ml2.IsInitialized(), Equals, false)
-	c.Check(ml3.IsInitialized(), Equals, false)
-	c.Check(b.loggers, HasLen, 0)
+	Expect(err).To(BeNil())
+	Expect(ml1.IsInitialized()).To(Equal(false))
+	Expect(ml2.IsInitialized()).To(Equal(false))
+	Expect(ml3.IsInitialized()).To(Equal(false))
+	Expect(b.loggers).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestInitLoggers(c *C) {
+func (s *GomolSuite) TestInitLoggers(t *testing.T) {
 	b := NewBase()
-	c.Check(b.IsInitialized(), Equals, false)
+	Expect(b.IsInitialized()).To(Equal(false))
 
 	ml1 := newDefaultMemLogger()
 	ml2 := newDefaultMemLogger()
@@ -273,14 +279,14 @@ func (s *GomolSuite) TestInitLoggers(c *C) {
 
 	b.InitLoggers()
 
-	c.Check(b.IsInitialized(), Equals, true)
-	c.Check(ml1.IsInitialized(), Equals, true)
-	c.Check(ml2.IsInitialized(), Equals, true)
+	Expect(b.IsInitialized()).To(Equal(true))
+	Expect(ml1.IsInitialized()).To(Equal(true))
+	Expect(ml2.IsInitialized()).To(Equal(true))
 }
 
-func (s *GomolSuite) TestInitLoggersTwice(c *C) {
+func (s *GomolSuite) TestInitLoggersTwice(t *testing.T) {
 	b := NewBase()
-	c.Check(b.IsInitialized(), Equals, false)
+	Expect(b.IsInitialized()).To(Equal(false))
 
 	ml1 := newDefaultMemLogger()
 	ml2 := newDefaultMemLogger()
@@ -291,34 +297,34 @@ func (s *GomolSuite) TestInitLoggersTwice(c *C) {
 	b.InitLoggers()
 	b.InitLoggers()
 
-	c.Check(b.IsInitialized(), Equals, true)
-	c.Check(ml1.IsInitialized(), Equals, true)
-	c.Check(ml2.IsInitialized(), Equals, true)
+	Expect(b.IsInitialized()).To(Equal(true))
+	Expect(ml1.IsInitialized()).To(Equal(true))
+	Expect(ml2.IsInitialized()).To(Equal(true))
 }
 
-func (s *GomolSuite) TestInitLoggersFail(c *C) {
+func (s *GomolSuite) TestInitLoggersFail(t *testing.T) {
 	b := NewBase()
 
 	mlCfg := newMemLoggerConfig()
 	mlCfg.FailInit = true
 	ml1, err := newMemLogger(mlCfg)
-	c.Check(err, IsNil)
+	Expect(err).To(BeNil())
 	ml2, err := newMemLogger(mlCfg)
-	c.Check(err, IsNil)
+	Expect(err).To(BeNil())
 
 	b.AddLogger(ml1)
 	b.AddLogger(ml2)
 
 	err = b.InitLoggers()
-	c.Check(err, NotNil)
-	c.Check(err.Error(), Equals, "Init failed")
+	Expect(err).ToNot(BeNil())
+	Expect(err.Error()).To(Equal("Init failed"))
 
-	c.Check(b.IsInitialized(), Equals, false)
-	c.Check(ml1.IsInitialized(), Equals, false)
-	c.Check(ml2.IsInitialized(), Equals, false)
+	Expect(b.IsInitialized()).To(Equal(false))
+	Expect(ml1.IsInitialized()).To(Equal(false))
+	Expect(ml2.IsInitialized()).To(Equal(false))
 }
 
-func (s *GomolSuite) TestShutdownLoggers(c *C) {
+func (s *GomolSuite) TestShutdownLoggers(t *testing.T) {
 	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -330,33 +336,33 @@ func (s *GomolSuite) TestShutdownLoggers(c *C) {
 	b.InitLoggers()
 	b.ShutdownLoggers()
 
-	c.Check(ml1.isShutdown, Equals, true)
-	c.Check(ml2.isShutdown, Equals, true)
+	Expect(ml1.isShutdown).To(Equal(true))
+	Expect(ml2.isShutdown).To(Equal(true))
 }
 
-func (s *GomolSuite) TestShutdownLoggersFail(c *C) {
+func (s *GomolSuite) TestShutdownLoggersFail(t *testing.T) {
 	b := NewBase()
 
 	mlCfg := newMemLoggerConfig()
 	mlCfg.FailShutdown = true
 	ml1, err := newMemLogger(mlCfg)
-	c.Check(err, IsNil)
+	Expect(err).To(BeNil())
 	ml2, err := newMemLogger(mlCfg)
-	c.Check(err, IsNil)
+	Expect(err).To(BeNil())
 
 	b.AddLogger(ml1)
 	b.AddLogger(ml2)
 
 	b.InitLoggers()
 	err = b.ShutdownLoggers()
-	c.Check(err, NotNil)
-	c.Check(err.Error(), Equals, "Shutdown failed")
+	Expect(err).ToNot(BeNil())
+	Expect(err.Error()).To(Equal("Shutdown failed"))
 
-	c.Check(ml1.isShutdown, Equals, false)
-	c.Check(ml2.isShutdown, Equals, false)
+	Expect(ml1.isShutdown).To(Equal(false))
+	Expect(ml2.isShutdown).To(Equal(false))
 }
 
-func (s *GomolSuite) TestShutdownLoggersTwice(c *C) {
+func (s *GomolSuite) TestShutdownLoggersTwice(t *testing.T) {
 	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -369,68 +375,68 @@ func (s *GomolSuite) TestShutdownLoggersTwice(c *C) {
 	b.ShutdownLoggers()
 	b.ShutdownLoggers()
 
-	c.Check(ml1.isShutdown, Equals, true)
-	c.Check(ml2.isShutdown, Equals, true)
+	Expect(ml1.isShutdown).To(Equal(true))
+	Expect(ml2.isShutdown).To(Equal(true))
 }
 
-func (s *GomolSuite) TestSetAttr(c *C) {
+func (s *GomolSuite) TestSetAttr(t *testing.T) {
 	b := NewBase()
 
 	b.SetAttr("attr1", 1)
-	c.Check(b.BaseAttrs.Attrs(), HasLen, 1)
-	c.Check(b.BaseAttrs.GetAttr("attr1"), Equals, 1)
+	Expect(b.BaseAttrs.Attrs()).To(HaveLen(1))
+	Expect(b.BaseAttrs.GetAttr("attr1")).To(Equal(1))
 	b.SetAttr("attr2", "val2")
-	c.Check(b.BaseAttrs.Attrs(), HasLen, 2)
-	c.Check(b.BaseAttrs.GetAttr("attr2"), Equals, "val2")
+	Expect(b.BaseAttrs.Attrs()).To(HaveLen(2))
+	Expect(b.BaseAttrs.GetAttr("attr2")).To(Equal("val2"))
 }
 
-func (s *GomolSuite) TestGetAttr(c *C) {
+func (s *GomolSuite) TestGetAttr(t *testing.T) {
 	b := NewBase()
 
 	b.SetAttr("attr1", 1)
 	b.SetAttr("attr2", "val2")
 
-	c.Check(b.GetAttr("attr2"), Equals, "val2")
-	c.Check(b.GetAttr("notakey"), IsNil)
+	Expect(b.GetAttr("attr2")).To(Equal("val2"))
+	Expect(b.GetAttr("notakey")).To(BeNil())
 }
 
-func (s *GomolSuite) TestRemoveAttr(c *C) {
+func (s *GomolSuite) TestRemoveAttr(t *testing.T) {
 	b := NewBase()
 
 	b.SetAttr("attr1", 1)
-	c.Check(b.BaseAttrs.Attrs(), HasLen, 1)
-	c.Check(b.BaseAttrs.GetAttr("attr1"), Equals, 1)
+	Expect(b.BaseAttrs.Attrs()).To(HaveLen(1))
+	Expect(b.BaseAttrs.GetAttr("attr1")).To(Equal(1))
 
 	b.RemoveAttr("attr1")
-	c.Check(b.BaseAttrs.Attrs(), HasLen, 0)
+	Expect(b.BaseAttrs.Attrs()).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestClearAttrs(c *C) {
+func (s *GomolSuite) TestClearAttrs(t *testing.T) {
 	b := NewBase()
 
 	b.SetAttr("attr1", 1)
 	b.SetAttr("attr2", "val2")
-	c.Check(b.BaseAttrs.Attrs(), HasLen, 2)
+	Expect(b.BaseAttrs.Attrs()).To(HaveLen(2))
 
 	b.ClearAttrs()
-	c.Check(b.BaseAttrs.Attrs(), HasLen, 0)
+	Expect(b.BaseAttrs.Attrs()).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestSequenceDisabled(c *C) {
+func (s *GomolSuite) TestSequenceDisabled(t *testing.T) {
 	b := NewBase()
 
 	b.InitLoggers()
 
-	c.Check(b.sequence, Equals, uint64(0))
+	Expect(b.sequence).To(Equal(uint64(0)))
 	b.Dbg("test")
-	c.Check(b.sequence, Equals, uint64(0))
+	Expect(b.sequence).To(Equal(uint64(0)))
 	b.Dbg("test")
-	c.Check(b.sequence, Equals, uint64(0))
+	Expect(b.sequence).To(Equal(uint64(0)))
 
 	b.ShutdownLoggers()
 }
 
-func (s *GomolSuite) TestSequence(c *C) {
+func (s *GomolSuite) TestSequence(t *testing.T) {
 	b := NewBase()
 	b.config.SequenceAttr = "seq"
 
@@ -439,28 +445,27 @@ func (s *GomolSuite) TestSequence(c *C) {
 
 	b.InitLoggers()
 
-	c.Check(b.sequence, Equals, uint64(0))
+	Expect(b.sequence).To(Equal(uint64(0)))
 	b.Dbg("test")
-	c.Check(b.sequence, Equals, uint64(1))
+	Expect(b.sequence).To(Equal(uint64(1)))
 	b.Dbg("test")
-	c.Check(b.sequence, Equals, uint64(2))
+	Expect(b.sequence).To(Equal(uint64(2)))
 
 	b.ShutdownLoggers()
 
-	c.Assert(l.Messages, HasLen, 2)
-	c.Check(l.Messages[0].Message, Equals, "test")
-	c.Check(l.Messages[0].Attrs, HasLen, 1)
-	c.Check(l.Messages[0].Attrs["seq"], Equals, uint64(1))
-	c.Check(l.Messages[0].Level, Equals, LevelDebug)
-	c.Check(l.Messages[1].Message, Equals, "test")
-	c.Check(l.Messages[1].Attrs, HasLen, 1)
-	c.Check(l.Messages[1].Attrs["seq"], Equals, uint64(2))
-	c.Check(l.Messages[1].Level, Equals, LevelDebug)
+	Expect(l.Messages).To(HaveLen(2))
+	Expect(l.Messages[0].Message).To(Equal("test"))
+	Expect(l.Messages[0].Attrs).To(HaveLen(1))
+	Expect(l.Messages[0].Attrs["seq"]).To(Equal(uint64(1)))
+	Expect(l.Messages[0].Level).To(Equal(LevelDebug))
+	Expect(l.Messages[1].Message).To(Equal("test"))
+	Expect(l.Messages[1].Attrs).To(HaveLen(1))
+	Expect(l.Messages[1].Attrs["seq"]).To(Equal(uint64(2)))
+	Expect(l.Messages[1].Level).To(Equal(LevelDebug))
 }
 
 // Base func tests
-
-func (s *GomolSuite) TestBaseDbgfWithFormattingParams(c *C) {
+func (s *GomolSuite) TestBaseDbgfWithFormattingParams(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -471,13 +476,13 @@ func (s *GomolSuite) TestBaseDbgfWithFormattingParams(c *C) {
 	b.Dbgf("LOG %s", "%2b")
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "LOG %2b")
-	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, LevelDebug)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("LOG %2b"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l1.Messages[0].Level).To(Equal(LevelDebug))
 }
 
-func (s *GomolSuite) TestBaseDbg(c *C) {
+func (s *GomolSuite) TestBaseDbg(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -490,18 +495,18 @@ func (s *GomolSuite) TestBaseDbg(c *C) {
 	b.Dbg("test")
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test")
-	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, LevelDebug)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l1.Messages[0].Level).To(Equal(LevelDebug))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test")
-	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, LevelDebug)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l2.Messages[0].Level).To(Equal(LevelDebug))
 }
 
-func (s *GomolSuite) TestBaseDbgf(c *C) {
+func (s *GomolSuite) TestBaseDbgf(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -514,18 +519,18 @@ func (s *GomolSuite) TestBaseDbgf(c *C) {
 	b.Dbgf("test %v", 1234)
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test 1234")
-	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, LevelDebug)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l1.Messages[0].Level).To(Equal(LevelDebug))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test 1234")
-	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, LevelDebug)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l2.Messages[0].Level).To(Equal(LevelDebug))
 }
 
-func (s *GomolSuite) TestBaseDbgm(c *C) {
+func (s *GomolSuite) TestBaseDbgm(t *testing.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -544,24 +549,24 @@ func (s *GomolSuite) TestBaseDbgm(c *C) {
 		1234)
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test 1234")
-	c.Assert(l1.Messages[0].Attrs, HasLen, 3)
-	c.Check(l1.Messages[0].Attrs["attr1"], Equals, 1234)
-	c.Check(l1.Messages[0].Attrs["attr2"], Equals, 4321)
-	c.Check(l1.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l1.Messages[0].Level, Equals, LevelDebug)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(3))
+	Expect(l1.Messages[0].Attrs["attr1"]).To(Equal(1234))
+	Expect(l1.Messages[0].Attrs["attr2"]).To(Equal(4321))
+	Expect(l1.Messages[0].Attrs["attr3"]).To(Equal("val3"))
+	Expect(l1.Messages[0].Level).To(Equal(LevelDebug))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test 1234")
-	c.Assert(l2.Messages[0].Attrs, HasLen, 3)
-	c.Check(l2.Messages[0].Attrs["attr1"], Equals, 1234)
-	c.Check(l2.Messages[0].Attrs["attr2"], Equals, 4321)
-	c.Check(l2.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l2.Messages[0].Level, Equals, LevelDebug)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(3))
+	Expect(l2.Messages[0].Attrs["attr1"]).To(Equal(1234))
+	Expect(l2.Messages[0].Attrs["attr2"]).To(Equal(4321))
+	Expect(l2.Messages[0].Attrs["attr3"]).To(Equal("val3"))
+	Expect(l2.Messages[0].Level).To(Equal(LevelDebug))
 }
 
-func (s *GomolSuite) TestBaseInfo(c *C) {
+func (s *GomolSuite) TestBaseInfo(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -574,18 +579,18 @@ func (s *GomolSuite) TestBaseInfo(c *C) {
 	b.Info("test")
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test")
-	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, LevelInfo)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l1.Messages[0].Level).To(Equal(LevelInfo))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test")
-	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, LevelInfo)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l2.Messages[0].Level).To(Equal(LevelInfo))
 }
 
-func (s *GomolSuite) TestBaseInfof(c *C) {
+func (s *GomolSuite) TestBaseInfof(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -598,18 +603,18 @@ func (s *GomolSuite) TestBaseInfof(c *C) {
 	b.Infof("test %v", 1234)
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test 1234")
-	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, LevelInfo)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l1.Messages[0].Level).To(Equal(LevelInfo))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test 1234")
-	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, LevelInfo)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l2.Messages[0].Level).To(Equal(LevelInfo))
 }
 
-func (s *GomolSuite) TestBaseInfom(c *C) {
+func (s *GomolSuite) TestBaseInfom(t *testing.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -628,24 +633,24 @@ func (s *GomolSuite) TestBaseInfom(c *C) {
 		1234)
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test 1234")
-	c.Assert(l1.Messages[0].Attrs, HasLen, 3)
-	c.Check(l1.Messages[0].Attrs["attr1"], Equals, 1234)
-	c.Check(l1.Messages[0].Attrs["attr2"], Equals, 4321)
-	c.Check(l1.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l1.Messages[0].Level, Equals, LevelInfo)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(3))
+	Expect(l1.Messages[0].Attrs["attr1"]).To(Equal(1234))
+	Expect(l1.Messages[0].Attrs["attr2"]).To(Equal(4321))
+	Expect(l1.Messages[0].Attrs["attr3"]).To(Equal("val3"))
+	Expect(l1.Messages[0].Level).To(Equal(LevelInfo))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test 1234")
-	c.Assert(l2.Messages[0].Attrs, HasLen, 3)
-	c.Check(l2.Messages[0].Attrs["attr1"], Equals, 1234)
-	c.Check(l2.Messages[0].Attrs["attr2"], Equals, 4321)
-	c.Check(l2.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l2.Messages[0].Level, Equals, LevelInfo)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(3))
+	Expect(l2.Messages[0].Attrs["attr1"]).To(Equal(1234))
+	Expect(l2.Messages[0].Attrs["attr2"]).To(Equal(4321))
+	Expect(l2.Messages[0].Attrs["attr3"]).To(Equal("val3"))
+	Expect(l2.Messages[0].Level).To(Equal(LevelInfo))
 }
 
-func (s *GomolSuite) TestBaseWarn(c *C) {
+func (s *GomolSuite) TestBaseWarn(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -658,18 +663,18 @@ func (s *GomolSuite) TestBaseWarn(c *C) {
 	b.Warn("test")
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test")
-	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, LevelWarning)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l1.Messages[0].Level).To(Equal(LevelWarning))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test")
-	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, LevelWarning)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l2.Messages[0].Level).To(Equal(LevelWarning))
 }
 
-func (s *GomolSuite) TestBaseWarnf(c *C) {
+func (s *GomolSuite) TestBaseWarnf(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -682,18 +687,18 @@ func (s *GomolSuite) TestBaseWarnf(c *C) {
 	b.Warnf("test %v", 1234)
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test 1234")
-	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, LevelWarning)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l1.Messages[0].Level).To(Equal(LevelWarning))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test 1234")
-	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, LevelWarning)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l2.Messages[0].Level).To(Equal(LevelWarning))
 }
 
-func (s *GomolSuite) TestBaseWarnm(c *C) {
+func (s *GomolSuite) TestBaseWarnm(t *testing.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -712,24 +717,24 @@ func (s *GomolSuite) TestBaseWarnm(c *C) {
 		1234)
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test 1234")
-	c.Assert(l1.Messages[0].Attrs, HasLen, 3)
-	c.Check(l1.Messages[0].Attrs["attr1"], Equals, 1234)
-	c.Check(l1.Messages[0].Attrs["attr2"], Equals, 4321)
-	c.Check(l1.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l1.Messages[0].Level, Equals, LevelWarning)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(3))
+	Expect(l1.Messages[0].Attrs["attr1"]).To(Equal(1234))
+	Expect(l1.Messages[0].Attrs["attr2"]).To(Equal(4321))
+	Expect(l1.Messages[0].Attrs["attr3"]).To(Equal("val3"))
+	Expect(l1.Messages[0].Level).To(Equal(LevelWarning))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test 1234")
-	c.Assert(l2.Messages[0].Attrs, HasLen, 3)
-	c.Check(l2.Messages[0].Attrs["attr1"], Equals, 1234)
-	c.Check(l2.Messages[0].Attrs["attr2"], Equals, 4321)
-	c.Check(l2.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l2.Messages[0].Level, Equals, LevelWarning)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(3))
+	Expect(l2.Messages[0].Attrs["attr1"]).To(Equal(1234))
+	Expect(l2.Messages[0].Attrs["attr2"]).To(Equal(4321))
+	Expect(l2.Messages[0].Attrs["attr3"]).To(Equal("val3"))
+	Expect(l2.Messages[0].Level).To(Equal(LevelWarning))
 }
 
-func (s *GomolSuite) TestBaseErr(c *C) {
+func (s *GomolSuite) TestBaseErr(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -742,18 +747,18 @@ func (s *GomolSuite) TestBaseErr(c *C) {
 	b.Err("test")
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test")
-	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, LevelError)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l1.Messages[0].Level).To(Equal(LevelError))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test")
-	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, LevelError)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l2.Messages[0].Level).To(Equal(LevelError))
 }
 
-func (s *GomolSuite) TestBaseErrf(c *C) {
+func (s *GomolSuite) TestBaseErrf(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -766,18 +771,18 @@ func (s *GomolSuite) TestBaseErrf(c *C) {
 	b.Errf("test %v", 1234)
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test 1234")
-	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, LevelError)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l1.Messages[0].Level).To(Equal(LevelError))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test 1234")
-	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, LevelError)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l2.Messages[0].Level).To(Equal(LevelError))
 }
 
-func (s *GomolSuite) TestBaseErrm(c *C) {
+func (s *GomolSuite) TestBaseErrm(t *testing.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -796,24 +801,24 @@ func (s *GomolSuite) TestBaseErrm(c *C) {
 		1234)
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test 1234")
-	c.Assert(l1.Messages[0].Attrs, HasLen, 3)
-	c.Check(l1.Messages[0].Attrs["attr1"], Equals, 1234)
-	c.Check(l1.Messages[0].Attrs["attr2"], Equals, 4321)
-	c.Check(l1.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l1.Messages[0].Level, Equals, LevelError)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(3))
+	Expect(l1.Messages[0].Attrs["attr1"]).To(Equal(1234))
+	Expect(l1.Messages[0].Attrs["attr2"]).To(Equal(4321))
+	Expect(l1.Messages[0].Attrs["attr3"]).To(Equal("val3"))
+	Expect(l1.Messages[0].Level).To(Equal(LevelError))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test 1234")
-	c.Assert(l2.Messages[0].Attrs, HasLen, 3)
-	c.Check(l2.Messages[0].Attrs["attr1"], Equals, 1234)
-	c.Check(l2.Messages[0].Attrs["attr2"], Equals, 4321)
-	c.Check(l2.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l2.Messages[0].Level, Equals, LevelError)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(3))
+	Expect(l2.Messages[0].Attrs["attr1"]).To(Equal(1234))
+	Expect(l2.Messages[0].Attrs["attr2"]).To(Equal(4321))
+	Expect(l2.Messages[0].Attrs["attr3"]).To(Equal("val3"))
+	Expect(l2.Messages[0].Level).To(Equal(LevelError))
 }
 
-func (s *GomolSuite) TestBaseFatal(c *C) {
+func (s *GomolSuite) TestBaseFatal(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -826,18 +831,18 @@ func (s *GomolSuite) TestBaseFatal(c *C) {
 	b.Fatal("test")
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test")
-	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, LevelFatal)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l1.Messages[0].Level).To(Equal(LevelFatal))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test")
-	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, LevelFatal)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
 }
 
-func (s *GomolSuite) TestBaseFatalf(c *C) {
+func (s *GomolSuite) TestBaseFatalf(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -850,18 +855,18 @@ func (s *GomolSuite) TestBaseFatalf(c *C) {
 	b.Fatalf("test %v", 1234)
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test 1234")
-	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, LevelFatal)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l1.Messages[0].Level).To(Equal(LevelFatal))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test 1234")
-	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, LevelFatal)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
 }
 
-func (s *GomolSuite) TestBaseFatalm(c *C) {
+func (s *GomolSuite) TestBaseFatalm(t *testing.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -880,24 +885,24 @@ func (s *GomolSuite) TestBaseFatalm(c *C) {
 		1234)
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test 1234")
-	c.Assert(l1.Messages[0].Attrs, HasLen, 3)
-	c.Check(l1.Messages[0].Attrs["attr1"], Equals, 1234)
-	c.Check(l1.Messages[0].Attrs["attr2"], Equals, 4321)
-	c.Check(l1.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l1.Messages[0].Level, Equals, LevelFatal)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(3))
+	Expect(l1.Messages[0].Attrs["attr1"]).To(Equal(1234))
+	Expect(l1.Messages[0].Attrs["attr2"]).To(Equal(4321))
+	Expect(l1.Messages[0].Attrs["attr3"]).To(Equal("val3"))
+	Expect(l1.Messages[0].Level).To(Equal(LevelFatal))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test 1234")
-	c.Assert(l2.Messages[0].Attrs, HasLen, 3)
-	c.Check(l2.Messages[0].Attrs["attr1"], Equals, 1234)
-	c.Check(l2.Messages[0].Attrs["attr2"], Equals, 4321)
-	c.Check(l2.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l2.Messages[0].Level, Equals, LevelFatal)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(3))
+	Expect(l2.Messages[0].Attrs["attr1"]).To(Equal(1234))
+	Expect(l2.Messages[0].Attrs["attr2"]).To(Equal(4321))
+	Expect(l2.Messages[0].Attrs["attr3"]).To(Equal("val3"))
+	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
 }
 
-func (s *GomolSuite) TestBaseDie(c *C) {
+func (s *GomolSuite) TestBaseDie(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -909,22 +914,22 @@ func (s *GomolSuite) TestBaseDie(c *C) {
 	b.InitLoggers()
 	b.Die(1234, "test")
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test")
-	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, LevelFatal)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l1.Messages[0].Level).To(Equal(LevelFatal))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test")
-	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, LevelFatal)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
 
-	c.Check(b.isInitialized, Equals, false)
-	c.Check(curTestExiter.exited, Equals, true)
-	c.Check(curTestExiter.code, Equals, 1234)
+	Expect(b.isInitialized).To(Equal(false))
+	Expect(curTestExiter.exited).To(Equal(true))
+	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *GomolSuite) TestBaseDief(c *C) {
+func (s *GomolSuite) TestBaseDief(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -936,22 +941,22 @@ func (s *GomolSuite) TestBaseDief(c *C) {
 	b.InitLoggers()
 	b.Dief(1234, "test %v", 1234)
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test 1234")
-	c.Check(l1.Messages[0].Attrs, HasLen, 0)
-	c.Check(l1.Messages[0].Level, Equals, LevelFatal)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l1.Messages[0].Level).To(Equal(LevelFatal))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test 1234")
-	c.Check(l2.Messages[0].Attrs, HasLen, 0)
-	c.Check(l2.Messages[0].Level, Equals, LevelFatal)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
+	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
 
-	c.Check(b.isInitialized, Equals, false)
-	c.Check(curTestExiter.exited, Equals, true)
-	c.Check(curTestExiter.code, Equals, 1234)
+	Expect(b.isInitialized).To(Equal(false))
+	Expect(curTestExiter.exited).To(Equal(true))
+	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *GomolSuite) TestBaseDiem(c *C) {
+func (s *GomolSuite) TestBaseDiem(t *testing.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -971,28 +976,28 @@ func (s *GomolSuite) TestBaseDiem(c *C) {
 		1234)
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 1)
-	c.Check(l1.Messages[0].Message, Equals, "test 1234")
-	c.Assert(l1.Messages[0].Attrs, HasLen, 3)
-	c.Check(l1.Messages[0].Attrs["attr1"], Equals, 1234)
-	c.Check(l1.Messages[0].Attrs["attr2"], Equals, 4321)
-	c.Check(l1.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l1.Messages[0].Level, Equals, LevelFatal)
+	Expect(l1.Messages).To(HaveLen(1))
+	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(3))
+	Expect(l1.Messages[0].Attrs["attr1"]).To(Equal(1234))
+	Expect(l1.Messages[0].Attrs["attr2"]).To(Equal(4321))
+	Expect(l1.Messages[0].Attrs["attr3"]).To(Equal("val3"))
+	Expect(l1.Messages[0].Level).To(Equal(LevelFatal))
 
-	c.Assert(l2.Messages, HasLen, 1)
-	c.Check(l2.Messages[0].Message, Equals, "test 1234")
-	c.Assert(l2.Messages[0].Attrs, HasLen, 3)
-	c.Check(l2.Messages[0].Attrs["attr1"], Equals, 1234)
-	c.Check(l2.Messages[0].Attrs["attr2"], Equals, 4321)
-	c.Check(l2.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l2.Messages[0].Level, Equals, LevelFatal)
+	Expect(l2.Messages).To(HaveLen(1))
+	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(3))
+	Expect(l2.Messages[0].Attrs["attr1"]).To(Equal(1234))
+	Expect(l2.Messages[0].Attrs["attr2"]).To(Equal(4321))
+	Expect(l2.Messages[0].Attrs["attr3"]).To(Equal("val3"))
+	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
 
-	c.Check(b.isInitialized, Equals, false)
-	c.Check(curTestExiter.exited, Equals, true)
-	c.Check(curTestExiter.code, Equals, 1234)
+	Expect(b.isInitialized).To(Equal(false))
+	Expect(curTestExiter.exited).To(Equal(true))
+	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *GomolSuite) TestBaseOrdering(c *C) {
+func (s *GomolSuite) TestBaseOrdering(t *testing.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -1017,31 +1022,31 @@ func (s *GomolSuite) TestBaseOrdering(c *C) {
 		4321)
 	b.ShutdownLoggers()
 
-	c.Assert(l1.Messages, HasLen, 2)
-	c.Check(l1.Messages[0].Message, Equals, "test 1234")
-	c.Assert(l1.Messages[0].Attrs, HasLen, 3)
-	c.Check(l1.Messages[0].Attrs["attr1"], Equals, 1234)
-	c.Check(l1.Messages[0].Attrs["attr2"], Equals, 4321)
-	c.Check(l1.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l1.Messages[0].Level, Equals, LevelFatal)
-	c.Check(l1.Messages[1].Message, Equals, "test 4321")
-	c.Assert(l1.Messages[1].Attrs, HasLen, 3)
-	c.Check(l1.Messages[1].Attrs["attr1"], Equals, 1234)
-	c.Check(l1.Messages[1].Attrs["attr4"], Equals, 4321)
-	c.Check(l1.Messages[1].Attrs["attr5"], Equals, "val3")
-	c.Check(l1.Messages[1].Level, Equals, LevelFatal)
+	Expect(l1.Messages).To(HaveLen(2))
+	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l1.Messages[0].Attrs).To(HaveLen(3))
+	Expect(l1.Messages[0].Attrs["attr1"]).To(Equal(1234))
+	Expect(l1.Messages[0].Attrs["attr2"]).To(Equal(4321))
+	Expect(l1.Messages[0].Attrs["attr3"]).To(Equal("val3"))
+	Expect(l1.Messages[0].Level).To(Equal(LevelFatal))
+	Expect(l1.Messages[1].Message).To(Equal("test 4321"))
+	Expect(l1.Messages[1].Attrs).To(HaveLen(3))
+	Expect(l1.Messages[1].Attrs["attr1"]).To(Equal(1234))
+	Expect(l1.Messages[1].Attrs["attr4"]).To(Equal(4321))
+	Expect(l1.Messages[1].Attrs["attr5"]).To(Equal("val3"))
+	Expect(l1.Messages[1].Level).To(Equal(LevelFatal))
 
-	c.Assert(l2.Messages, HasLen, 2)
-	c.Check(l2.Messages[0].Message, Equals, "test 1234")
-	c.Assert(l2.Messages[0].Attrs, HasLen, 3)
-	c.Check(l2.Messages[0].Attrs["attr1"], Equals, 1234)
-	c.Check(l2.Messages[0].Attrs["attr2"], Equals, 4321)
-	c.Check(l2.Messages[0].Attrs["attr3"], Equals, "val3")
-	c.Check(l2.Messages[0].Level, Equals, LevelFatal)
-	c.Check(l2.Messages[1].Message, Equals, "test 4321")
-	c.Assert(l2.Messages[1].Attrs, HasLen, 3)
-	c.Check(l2.Messages[1].Attrs["attr1"], Equals, 1234)
-	c.Check(l2.Messages[1].Attrs["attr4"], Equals, 4321)
-	c.Check(l2.Messages[1].Attrs["attr5"], Equals, "val3")
-	c.Check(l2.Messages[1].Level, Equals, LevelFatal)
+	Expect(l2.Messages).To(HaveLen(2))
+	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
+	Expect(l2.Messages[0].Attrs).To(HaveLen(3))
+	Expect(l2.Messages[0].Attrs["attr1"]).To(Equal(1234))
+	Expect(l2.Messages[0].Attrs["attr2"]).To(Equal(4321))
+	Expect(l2.Messages[0].Attrs["attr3"]).To(Equal("val3"))
+	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
+	Expect(l2.Messages[1].Message).To(Equal("test 4321"))
+	Expect(l2.Messages[1].Attrs).To(HaveLen(3))
+	Expect(l2.Messages[1].Attrs["attr1"]).To(Equal(1234))
+	Expect(l2.Messages[1].Attrs["attr4"]).To(Equal(4321))
+	Expect(l2.Messages[1].Attrs["attr5"]).To(Equal("val3"))
+	Expect(l2.Messages[1].Level).To(Equal(LevelFatal))
 }

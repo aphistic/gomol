@@ -1,9 +1,10 @@
 package gomol
 
 import (
+	"testing"
 	"time"
 
-	. "gopkg.in/check.v1"
+	. "github.com/onsi/gomega"
 )
 
 func newDefaultMemLogger() *memLogger {
@@ -12,63 +13,63 @@ func newDefaultMemLogger() *memLogger {
 	return l
 }
 
-func (s *GomolSuite) TestMemInitLogger(c *C) {
+func (s *GomolSuite) TestMemInitLogger(t *testing.T) {
 	ml := newDefaultMemLogger()
-	c.Check(ml.IsInitialized(), Equals, false)
+	Expect(ml.IsInitialized()).To(Equal(false))
 	ml.InitLogger()
-	c.Check(ml.IsInitialized(), Equals, true)
+	Expect(ml.IsInitialized()).To(Equal(true))
 }
 
-func (s *GomolSuite) TestMemInitLoggerFail(c *C) {
+func (s *GomolSuite) TestMemInitLoggerFail(t *testing.T) {
 	mlCfg := newMemLoggerConfig()
 	mlCfg.FailInit = true
 	ml, err := newMemLogger(mlCfg)
-	c.Check(err, IsNil)
-	c.Check(ml.IsInitialized(), Equals, false)
+	Expect(err).To(BeNil())
+	Expect(ml.IsInitialized()).To(Equal(false))
 	err = ml.InitLogger()
-	c.Check(ml.IsInitialized(), Equals, false)
-	c.Check(err, NotNil)
-	c.Check(err.Error(), Equals, "Init failed")
+	Expect(ml.IsInitialized()).To(Equal(false))
+	Expect(err).ToNot(BeNil())
+	Expect(err.Error()).To(Equal("Init failed"))
 }
 
-func (s *GomolSuite) TestMemShutdownLogger(c *C) {
+func (s *GomolSuite) TestMemShutdownLogger(t *testing.T) {
 	ml := newDefaultMemLogger()
-	c.Check(ml.isShutdown, Equals, false)
+	Expect(ml.isShutdown).To(Equal(false))
 	ml.ShutdownLogger()
-	c.Check(ml.isShutdown, Equals, true)
+	Expect(ml.isShutdown).To(Equal(true))
 }
 
-func (s *GomolSuite) TestMemShutdownLoggerFail(c *C) {
+func (s *GomolSuite) TestMemShutdownLoggerFail(t *testing.T) {
 	mlCfg := newMemLoggerConfig()
 	mlCfg.FailShutdown = true
 	ml, err := newMemLogger(mlCfg)
-	c.Check(err, IsNil)
-	c.Check(ml.isShutdown, Equals, false)
+	Expect(err).To(BeNil())
+	Expect(ml.isShutdown).To(Equal(false))
 	err = ml.ShutdownLogger()
-	c.Check(ml.isShutdown, Equals, false)
-	c.Check(err, NotNil)
-	c.Check(err.Error(), Equals, "Shutdown failed")
+	Expect(ml.isShutdown).To(Equal(false))
+	Expect(err).ToNot(BeNil())
+	Expect(err.Error()).To(Equal("Shutdown failed"))
 }
 
-func (s *GomolSuite) TestMemClearMessages(c *C) {
+func (s *GomolSuite) TestMemClearMessages(t *testing.T) {
 	ml := newDefaultMemLogger()
-	c.Check(ml.Messages, HasLen, 0)
+	Expect(ml.Messages).To(HaveLen(0))
 	ml.Logm(time.Now(), LevelDebug, nil, "test")
-	c.Check(ml.Messages, HasLen, 1)
+	Expect(ml.Messages).To(HaveLen(1))
 	ml.ClearMessages()
-	c.Check(ml.Messages, HasLen, 0)
+	Expect(ml.Messages).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestMemLogmNoAttrs(c *C) {
+func (s *GomolSuite) TestMemLogmNoAttrs(t *testing.T) {
 	ml := newDefaultMemLogger()
 	ml.Logm(time.Now(), LevelDebug, nil, "test")
-	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Level, Equals, LevelDebug)
-	c.Check(ml.Messages[0].Message, Equals, "test")
-	c.Check(ml.Messages[0].Attrs, HasLen, 0)
+	Expect(ml.Messages).To(HaveLen(1))
+	Expect(ml.Messages[0].Level).To(Equal(LevelDebug))
+	Expect(ml.Messages[0].Message).To(Equal("test"))
+	Expect(ml.Messages[0].Attrs).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestMemLogmAttrs(c *C) {
+func (s *GomolSuite) TestMemLogmAttrs(t *testing.T) {
 	setClock(newTestClock(time.Now()))
 	ml := newDefaultMemLogger()
 	ml.Logm(
@@ -76,15 +77,15 @@ func (s *GomolSuite) TestMemLogmAttrs(c *C) {
 		LevelDebug,
 		map[string]interface{}{"attr1": 4321},
 		"test 1234")
-	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Timestamp, Equals, clock().Now())
-	c.Check(ml.Messages[0].Level, Equals, LevelDebug)
-	c.Check(ml.Messages[0].Message, Equals, "test 1234")
-	c.Assert(ml.Messages[0].Attrs, HasLen, 1)
-	c.Check(ml.Messages[0].Attrs["attr1"], Equals, 4321)
+	Expect(ml.Messages).To(HaveLen(1))
+	Expect(ml.Messages[0].Timestamp).To(Equal(clock().Now()))
+	Expect(ml.Messages[0].Level).To(Equal(LevelDebug))
+	Expect(ml.Messages[0].Message).To(Equal("test 1234"))
+	Expect(ml.Messages[0].Attrs).To(HaveLen(1))
+	Expect(ml.Messages[0].Attrs["attr1"]).To(Equal(4321))
 }
 
-func (s *GomolSuite) TestMemBaseAttrs(c *C) {
+func (s *GomolSuite) TestMemBaseAttrs(t *testing.T) {
 	setClock(newTestClock(time.Now()))
 
 	b := NewBase()
@@ -101,12 +102,12 @@ func (s *GomolSuite) TestMemBaseAttrs(c *C) {
 			"attr3": "val3",
 		},
 		"test 1234")
-	c.Assert(ml.Messages, HasLen, 1)
-	c.Check(ml.Messages[0].Timestamp, Equals, clock().Now())
-	c.Check(ml.Messages[0].Level, Equals, LevelDebug)
-	c.Check(ml.Messages[0].Message, Equals, "test 1234")
-	c.Assert(ml.Messages[0].Attrs, HasLen, 3)
-	c.Check(ml.Messages[0].Attrs["attr1"], Equals, 4321)
-	c.Check(ml.Messages[0].Attrs["attr2"], Equals, "val2")
-	c.Check(ml.Messages[0].Attrs["attr3"], Equals, "val3")
+	Expect(ml.Messages).To(HaveLen(1))
+	Expect(ml.Messages[0].Timestamp).To(Equal(clock().Now()))
+	Expect(ml.Messages[0].Level).To(Equal(LevelDebug))
+	Expect(ml.Messages[0].Message).To(Equal("test 1234"))
+	Expect(ml.Messages[0].Attrs).To(HaveLen(3))
+	Expect(ml.Messages[0].Attrs["attr1"]).To(Equal(4321))
+	Expect(ml.Messages[0].Attrs["attr2"]).To(Equal("val2"))
+	Expect(ml.Messages[0].Attrs["attr3"]).To(Equal("val3"))
 }

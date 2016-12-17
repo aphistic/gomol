@@ -1,9 +1,13 @@
 package gomol
 
-import . "gopkg.in/check.v1"
+import (
+	"testing"
 
-func (s *GomolSuite) TestNewConfig(c *C) {
+	. "github.com/onsi/gomega"
+)
+
+func (s *GomolSuite) TestNewConfig(t *testing.T) {
 	cfg := NewConfig()
-	c.Check(cfg.FilenameAttr, Equals, "")
-	c.Check(cfg.LineNumberAttr, Equals, "")
+	Expect(cfg.FilenameAttr).To(Equal(""))
+	Expect(cfg.LineNumberAttr).To(Equal(""))
 }

@@ -1,90 +1,91 @@
 package gomol
 
 import (
+	"testing"
 	"time"
 
-	. "gopkg.in/check.v1"
+	. "github.com/onsi/gomega"
 )
 
-func (s *GomolSuite) TestLevelGetName(c *C) {
-	c.Check(getLevelName(LevelDebug), Equals, "debug")
-	c.Check(getLevelName(LevelInfo), Equals, "info")
-	c.Check(getLevelName(LevelWarning), Equals, "warn")
-	c.Check(getLevelName(LevelError), Equals, "error")
-	c.Check(getLevelName(LevelFatal), Equals, "fatal")
-	c.Check(getLevelName(LevelNone), Equals, "none")
+func (s *GomolSuite) TestLevelGetName(t *testing.T) {
+	Expect(getLevelName(LevelDebug)).To(Equal("debug"))
+	Expect(getLevelName(LevelInfo)).To(Equal("info"))
+	Expect(getLevelName(LevelWarning)).To(Equal("warn"))
+	Expect(getLevelName(LevelError)).To(Equal("error"))
+	Expect(getLevelName(LevelFatal)).To(Equal("fatal"))
+	Expect(getLevelName(LevelNone)).To(Equal("none"))
 
-	c.Check(getLevelName(LogLevel(-1234)), Equals, "unknown")
+	Expect(getLevelName(LogLevel(-1234))).To(Equal("unknown"))
 }
 
-func (s *GomolSuite) TestLevelString(c *C) {
-	c.Check(LevelDebug.String(), Equals, "debug")
-	c.Check(LevelInfo.String(), Equals, "info")
-	c.Check(LevelWarning.String(), Equals, "warn")
-	c.Check(LevelError.String(), Equals, "error")
-	c.Check(LevelFatal.String(), Equals, "fatal")
-	c.Check(LevelNone.String(), Equals, "none")
+func (s *GomolSuite) TestLevelString(t *testing.T) {
+	Expect(LevelDebug.String()).To(Equal("debug"))
+	Expect(LevelInfo.String()).To(Equal("info"))
+	Expect(LevelWarning.String()).To(Equal("warn"))
+	Expect(LevelError.String()).To(Equal("error"))
+	Expect(LevelFatal.String()).To(Equal("fatal"))
+	Expect(LevelNone.String()).To(Equal("none"))
 }
 
-func (s *GomolSuite) TestToLogLevel(c *C) {
+func (s *GomolSuite) TestToLogLevel(t *testing.T) {
 	var level LogLevel
 	var err error
 
 	level, err = ToLogLevel("dBg")
-	c.Check(level, Equals, LevelDebug)
-	c.Check(err, IsNil)
+	Expect(level).To(Equal(LevelDebug))
+	Expect(err).To(BeNil())
 	level, err = ToLogLevel("DebuG")
-	c.Check(level, Equals, LevelDebug)
-	c.Check(err, IsNil)
+	Expect(level).To(Equal(LevelDebug))
+	Expect(err).To(BeNil())
 
 	level, err = ToLogLevel("InFo")
-	c.Check(level, Equals, LevelInfo)
-	c.Check(err, IsNil)
+	Expect(level).To(Equal(LevelInfo))
+	Expect(err).To(BeNil())
 
 	level, err = ToLogLevel("wARn")
-	c.Check(level, Equals, LevelWarning)
-	c.Check(err, IsNil)
+	Expect(level).To(Equal(LevelWarning))
+	Expect(err).To(BeNil())
 	level, err = ToLogLevel("WaRNiNg")
-	c.Check(level, Equals, LevelWarning)
-	c.Check(err, IsNil)
+	Expect(level).To(Equal(LevelWarning))
+	Expect(err).To(BeNil())
 
 	level, err = ToLogLevel("ErR")
-	c.Check(level, Equals, LevelError)
-	c.Check(err, IsNil)
+	Expect(level).To(Equal(LevelError))
+	Expect(err).To(BeNil())
 	level, err = ToLogLevel("ERRoR")
-	c.Check(level, Equals, LevelError)
-	c.Check(err, IsNil)
+	Expect(level).To(Equal(LevelError))
+	Expect(err).To(BeNil())
 
 	level, err = ToLogLevel("FaTaL")
-	c.Check(level, Equals, LevelFatal)
-	c.Check(err, IsNil)
+	Expect(level).To(Equal(LevelFatal))
+	Expect(err).To(BeNil())
 
 	level, err = ToLogLevel("NonE")
-	c.Check(level, Equals, LevelNone)
-	c.Check(err, IsNil)
+	Expect(level).To(Equal(LevelNone))
+	Expect(err).To(BeNil())
 }
 
-func (s *GomolSuite) TestToLogLevelError(c *C) {
+func (s *GomolSuite) TestToLogLevelError(t *testing.T) {
 	var level LogLevel
 	var err error
 
 	level, err = ToLogLevel("asdf")
-	c.Check(level, Equals, LogLevel(0))
-	c.Check(err, Equals, ErrUnknownLevel)
+	Expect(level).To(Equal(LogLevel(0)))
+	Expect(err).To(Equal(ErrUnknownLevel))
 }
 
-func (s *GomolSuite) TestNewMessageAttrsNil(c *C) {
+func (s *GomolSuite) TestNewMessageAttrsNil(t *testing.T) {
 	setClock(newTestClock(time.Now()))
 	m := newMessage(clock().Now(), curDefault, LevelDebug, nil, "test")
-	c.Check(m.Base, DeepEquals, curDefault)
-	c.Check(m.Timestamp, Equals, clock().Now())
-	c.Check(m.Level, Equals, LevelDebug)
-	c.Check(m.Attrs, NotNil)
-	c.Check(m.Attrs.Attrs(), HasLen, 0)
-	c.Check(m.Msg, Equals, "test")
+	Expect(m.Base).To(Equal(curDefault))
+	Expect(m.Timestamp).To(Equal(clock().Now()))
+	Expect(m.Level).To(Equal(LevelDebug))
+	Expect(m.Attrs).ToNot(BeNil())
+	Expect(m.Attrs.Attrs()).To(HaveLen(0))
+	Expect(m.Msg).To(Equal("test"))
 }
 
-func (s *GomolSuite) TestNewMessageMsgAttrsNil(c *C) {
+func (s *GomolSuite) TestNewMessageMsgAttrsNil(t *testing.T) {
 	setClock(newTestClock(time.Now()))
 
 	ma := NewAttrs().
@@ -92,28 +93,28 @@ func (s *GomolSuite) TestNewMessageMsgAttrsNil(c *C) {
 		SetAttr("otherAttr", 4321)
 
 	m := newMessage(clock().Now(), curDefault, LevelDebug, ma, "test")
-	c.Check(m.Base, DeepEquals, curDefault)
-	c.Check(m.Timestamp, Equals, clock().Now())
-	c.Check(m.Level, Equals, LevelDebug)
-	c.Check(m.Attrs, NotNil)
-	c.Check(m.Attrs.Attrs(), HasLen, 2)
-	c.Check(m.Attrs.GetAttr("msgAttr"), Equals, "strVal")
-	c.Check(m.Attrs.GetAttr("otherAttr"), Equals, 4321)
-	c.Check(m.Msg, Equals, "test")
+	Expect(m.Base).To(Equal(curDefault))
+	Expect(m.Timestamp).To(Equal(clock().Now()))
+	Expect(m.Level).To(Equal(LevelDebug))
+	Expect(m.Attrs).ToNot(BeNil())
+	Expect(m.Attrs.Attrs()).To(HaveLen(2))
+	Expect(m.Attrs.GetAttr("msgAttr")).To(Equal("strVal"))
+	Expect(m.Attrs.GetAttr("otherAttr")).To(Equal(4321))
+	Expect(m.Msg).To(Equal("test"))
 }
 
-func (s *GomolSuite) TestNewMessageFormat(c *C) {
+func (s *GomolSuite) TestNewMessageFormat(t *testing.T) {
 	setClock(newTestClock(time.Now()))
 	m := newMessage(clock().Now(), curDefault, LevelDebug, nil, "test %v %v", "str", 1234)
-	c.Check(m.Base, DeepEquals, curDefault)
-	c.Check(m.Timestamp, Equals, clock().Now())
-	c.Check(m.Level, Equals, LevelDebug)
-	c.Check(m.Attrs, NotNil)
-	c.Check(m.Attrs.Attrs(), HasLen, 0)
-	c.Check(m.Msg, Equals, "test str 1234")
+	Expect(m.Base).To(Equal(curDefault))
+	Expect(m.Timestamp).To(Equal(clock().Now()))
+	Expect(m.Level).To(Equal(LevelDebug))
+	Expect(m.Attrs).ToNot(BeNil())
+	Expect(m.Attrs.Attrs()).To(HaveLen(0))
+	Expect(m.Msg).To(Equal("test str 1234"))
 }
 
-func (s *GomolSuite) TestNewMessageFormatWithAttrs(c *C) {
+func (s *GomolSuite) TestNewMessageFormatWithAttrs(t *testing.T) {
 	setClock(newTestClock(time.Now()))
 
 	ma := NewAttrs().
@@ -121,12 +122,12 @@ func (s *GomolSuite) TestNewMessageFormatWithAttrs(c *C) {
 		SetAttr("otherAttr", 4321)
 
 	m := newMessage(clock().Now(), curDefault, LevelDebug, ma, "test %v %v", "str", 1234)
-	c.Check(m.Base, DeepEquals, curDefault)
-	c.Check(m.Timestamp, Equals, clock().Now())
-	c.Check(m.Level, Equals, LevelDebug)
-	c.Check(m.Attrs, NotNil)
-	c.Check(m.Attrs.Attrs(), HasLen, 2)
-	c.Check(m.Attrs.GetAttr("msgAttr"), Equals, "strVal")
-	c.Check(m.Attrs.GetAttr("otherAttr"), Equals, 4321)
-	c.Check(m.Msg, Equals, "test str 1234")
+	Expect(m.Base).To(Equal(curDefault))
+	Expect(m.Timestamp).To(Equal(clock().Now()))
+	Expect(m.Level).To(Equal(LevelDebug))
+	Expect(m.Attrs).ToNot(BeNil())
+	Expect(m.Attrs.Attrs()).To(HaveLen(2))
+	Expect(m.Attrs.GetAttr("msgAttr")).To(Equal("strVal"))
+	Expect(m.Attrs.GetAttr("otherAttr")).To(Equal(4321))
+	Expect(m.Msg).To(Equal("test str 1234"))
 }
