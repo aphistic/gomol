@@ -99,6 +99,36 @@ func (s *GomolSuite) TestLogAdapterLogWithTime(t *testing.T) {
 	}))
 }
 
+func (s *GomolSuite) TestLogAdapterThing(t *testing.T) {
+	b := NewBase()
+	b.SetAttr("base_attr", "foo")
+	ml := newDefaultMemLogger()
+	b.AddLogger(ml)
+	b.InitLoggers()
+
+	la := b.NewLogAdapter(NewAttrsFromMap(map[string]interface{}{
+		"adapter_attr": "bar",
+	}))
+
+	la.Dbgm(NewAttrsFromMap(map[string]interface{}{
+		"log_attr": "baz",
+	}), "Message %d", 1)
+
+	b.ShutdownLoggers()
+
+	Expect(ml.Messages).To(HaveLen(1))
+	Expect(ml.Messages[0]).To(Equal(&memMessage{
+		Timestamp: clock().Now(),
+		Level:     LevelDebug,
+		Message:   "Message 1",
+		Attrs: map[string]interface{}{
+			"base_attr":    "foo",
+			"adapter_attr": "bar",
+			"log_attr":     "baz",
+		},
+	}))
+}
+
 func (s *GomolSuite) TestLogAdapterDebug(t *testing.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
