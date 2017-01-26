@@ -29,6 +29,16 @@ func NewAttrsFromMap(attrs map[string]interface{}) *Attrs {
 	return newAttrs
 }
 
+// NewAttrsFromAttrs is a convenience function that will accept zero or more existing Attrs, create
+// a new Attrs and then merge all the supplied Attrs values into the new Attrs instance.
+func NewAttrsFromAttrs(attrs ...*Attrs) *Attrs {
+	newAttrs := NewAttrs()
+	for _, attr := range attrs {
+		newAttrs.MergeAttrs(attr)
+	}
+	return newAttrs
+}
+
 // MergeAttrs accepts another existing Attrs and merges the attributes into its own.
 func (a *Attrs) MergeAttrs(attrs *Attrs) {
 	if attrs == nil {

@@ -21,6 +21,48 @@ func (s *GomolSuite) TestAttrsMergeNilAttrs(t *testing.T) {
 	attrs.MergeAttrs(nil)
 }
 
+func (s *GomolSuite) TestNewAttrsFromAttrsNone(t *testing.T) {
+	testAttrs := NewAttrsFromAttrs()
+	Expect(testAttrs).ToNot(BeNil())
+	Expect(testAttrs.Attrs()).To(HaveLen(0))
+}
+
+func (s *GomolSuite) TestNewAttrsFromAttrsSingle(t *testing.T) {
+	attrs1 := NewAttrsFromMap(map[string]interface{}{
+		"attr1": "val1",
+		"attr3": 1234,
+	})
+
+	testAttrs := NewAttrsFromAttrs(attrs1)
+	Expect(testAttrs).ToNot(BeNil())
+	Expect(testAttrs.GetAttr("attr1")).To(Equal("val1"))
+	Expect(testAttrs.GetAttr("attr3")).To(Equal(1234))
+}
+
+func (s *GomolSuite) TestNewAttrsFromAttrsMultiple(t *testing.T) {
+	attrs1 := NewAttrsFromMap(map[string]interface{}{
+		"attr1": "val1",
+		"attr3": 1234,
+	})
+	attrs2 := NewAttrsFromMap(map[string]interface{}{
+		"attr2": true,
+		"attr4": 1234.4321,
+	})
+
+	testAttrs := NewAttrsFromAttrs(attrs1, attrs2)
+	Expect(testAttrs).ToNot(BeNil())
+	Expect(testAttrs.GetAttr("attr1")).To(Equal("val1"))
+	Expect(testAttrs.GetAttr("attr2")).To(Equal(true))
+	Expect(testAttrs.GetAttr("attr3")).To(Equal(1234))
+	Expect(testAttrs.GetAttr("attr4")).To(Equal(1234.4321))
+}
+
+func (s *GomolSuite) TestNewAttrsFromAttrsNil(t *testing.T) {
+	testAttrs := NewAttrsFromAttrs(nil, nil, nil)
+	Expect(testAttrs).ToNot(BeNil())
+	Expect(testAttrs.Attrs()).To(HaveLen(0))
+}
+
 func (s *GomolSuite) TestAttrsGetMissing(t *testing.T) {
 	attrs := NewAttrs()
 	Expect(attrs.GetAttr("not an attr")).To(BeNil())
