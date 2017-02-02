@@ -7,8 +7,28 @@ LogAdapter provides a way to easily override certain log attributes without
 modifying the base attributes or specifying them for every log message.
 */
 type LogAdapter struct {
-	base  *Base
+	base  WrappableLogger
 	attrs *Attrs
+}
+
+/*
+WrappableLogger is an interface for a logger which can be wrapped by a LogAdapter.
+his interface is implemented by both Base and LogAdapter itself so that adapters
+can stack.
+*/
+type WrappableLogger interface {
+	// LogWithTime will log a message at the provided level to all added loggers with the
+	// timestamp set to the value of ts.
+	LogWithTime(level LogLevel, ts time.Time, m *Attrs, msg string, a ...interface{}) error
+
+	// Log will log a message at the provided level to all added loggers with the timestamp
+	// set to the time Log was called.
+	Log(level LogLevel, m *Attrs, msg string, a ...interface{}) error
+
+	// ShutdownLoggers will run ShutdownLogger on each Logger in Base.  If an error occurs
+	// while shutting down a Logger, the error will be returned and all the loggers that
+	//were already shut down will remain shut down.
+	ShutdownLoggers() error
 }
 
 func newLogAdapter(base *Base, attrs *Attrs) *LogAdapter {
@@ -249,4 +269,9 @@ func (la *LogAdapter) Diem(exitCode int, m *Attrs, msg string, a ...interface{})
 	la.Log(LevelFatal, m, msg, a...)
 	la.base.ShutdownLoggers()
 	curExiter.Exit(exitCode)
+}
+
+// ShutdownLoggers will call the wrapped logger's ShutdownLoggers method.
+func (la *LogAdapter) ShutdownLoggers() {
+	la.base.ShutdownLoggers()
 }
