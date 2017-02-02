@@ -1,6 +1,7 @@
 package gomol
 
 import (
+	"fmt"
 	"time"
 
 	"testing"
@@ -502,4 +503,23 @@ func (s *GomolSuite) TestLogAdapterDiem(t *testing.T) {
 	}))
 	Expect(curTestExiter.exited).To(Equal(true))
 	Expect(curTestExiter.code).To(Equal(1234))
+}
+
+type mockBase struct{}
+
+func (mb *mockBase) LogWithTime(level LogLevel, ts time.Time, m *Attrs, msg string, a ...interface{}) error {
+	return nil
+}
+
+func (mb *mockBase) Log(level LogLevel, m *Attrs, msg string, a ...interface{}) error {
+	return nil
+}
+
+func (mb *mockBase) ShutdownLoggers() error {
+	return fmt.Errorf("foo")
+}
+
+func (s *GomolSuite) TestLogAdapterShutdownLoggers(t *testing.T) {
+	la := NewLogAdapterFor(&mockBase{}, nil)
+	Expect(la.ShutdownLoggers()).To(MatchError("foo"))
 }
