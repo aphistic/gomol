@@ -21,8 +21,9 @@ const (
 	LevelError LogLevel = 3
 	// LevelFatal designates messages for severe errors where the application cannot continue
 	LevelFatal LogLevel = 2
+
 	// LevelNone is used when configuring log levels to disable all log levels
-	LevelNone LogLevel = math.MinInt64
+	LevelNone LogLevel = math.MinInt32
 )
 
 // ToLogLevel will take a string and return the appropriate log level for
