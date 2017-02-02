@@ -177,7 +177,7 @@ func (b *Base) ShutdownLoggers() error {
 NewLogAdapter creates a LogAdapter using Base to log messages
 */
 func (b *Base) NewLogAdapter(attrs *Attrs) *LogAdapter {
-	return newLogAdapter(b, attrs)
+	return NewLogAdapterFor(b, attrs)
 }
 
 // ClearAttrs will remove all the attributes added to Base

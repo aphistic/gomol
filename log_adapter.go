@@ -31,8 +31,8 @@ type WrappableLogger interface {
 	ShutdownLoggers() error
 }
 
-func newLogAdapter(base *Base, attrs *Attrs) *LogAdapter {
-	newAttrs := attrs
+// Create a LogAdapter that wraps the given loger with the given attributes.
+func NewLogAdapterFor(base WrappableLogger, attrs *Attrs) *LogAdapter {
 	if attrs == nil {
 		attrs = NewAttrs()
 	}
