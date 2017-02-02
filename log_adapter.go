@@ -34,12 +34,12 @@ type WrappableLogger interface {
 func newLogAdapter(base *Base, attrs *Attrs) *LogAdapter {
 	newAttrs := attrs
 	if attrs == nil {
-		newAttrs = NewAttrs()
+		attrs = NewAttrs()
 	}
 
 	return &LogAdapter{
 		base:  base,
-		attrs: newAttrs,
+		attrs: attrs,
 	}
 }
 
