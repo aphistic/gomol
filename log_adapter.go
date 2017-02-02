@@ -272,6 +272,6 @@ func (la *LogAdapter) Diem(exitCode int, m *Attrs, msg string, a ...interface{})
 }
 
 // ShutdownLoggers will call the wrapped logger's ShutdownLoggers method.
-func (la *LogAdapter) ShutdownLoggers() {
-	la.base.ShutdownLoggers()
+func (la *LogAdapter) ShutdownLoggers() error {
+	return la.base.ShutdownLoggers()
 }
