@@ -1,6 +1,7 @@
 package gomol
 
 import (
+	"fmt"
 	"time"
 
 	"testing"
@@ -95,6 +96,36 @@ func (s *GomolSuite) TestLogAdapterLogWithTime(t *testing.T) {
 		Message:   "MessageM 2",
 		Attrs: map[string]interface{}{
 			"foo": "newBar",
+		},
+	}))
+}
+
+func (s *GomolSuite) TestLogAdapterThing(t *testing.T) {
+	b := NewBase()
+	b.SetAttr("base_attr", "foo")
+	ml := newDefaultMemLogger()
+	b.AddLogger(ml)
+	b.InitLoggers()
+
+	la := b.NewLogAdapter(NewAttrsFromMap(map[string]interface{}{
+		"adapter_attr": "bar",
+	}))
+
+	la.Dbgm(NewAttrsFromMap(map[string]interface{}{
+		"log_attr": "baz",
+	}), "Message %d", 1)
+
+	b.ShutdownLoggers()
+
+	Expect(ml.Messages).To(HaveLen(1))
+	Expect(ml.Messages[0]).To(Equal(&memMessage{
+		Timestamp: clock().Now(),
+		Level:     LevelDebug,
+		Message:   "Message 1",
+		Attrs: map[string]interface{}{
+			"base_attr":    "foo",
+			"adapter_attr": "bar",
+			"log_attr":     "baz",
 		},
 	}))
 }
@@ -472,4 +503,23 @@ func (s *GomolSuite) TestLogAdapterDiem(t *testing.T) {
 	}))
 	Expect(curTestExiter.exited).To(Equal(true))
 	Expect(curTestExiter.code).To(Equal(1234))
+}
+
+type mockBase struct{}
+
+func (mb *mockBase) LogWithTime(level LogLevel, ts time.Time, m *Attrs, msg string, a ...interface{}) error {
+	return nil
+}
+
+func (mb *mockBase) Log(level LogLevel, m *Attrs, msg string, a ...interface{}) error {
+	return nil
+}
+
+func (mb *mockBase) ShutdownLoggers() error {
+	return fmt.Errorf("foo")
+}
+
+func (s *GomolSuite) TestLogAdapterShutdownLoggers(t *testing.T) {
+	la := NewLogAdapterFor(&mockBase{}, nil)
+	Expect(la.ShutdownLoggers()).To(MatchError("foo"))
 }
