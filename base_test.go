@@ -7,16 +7,19 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/aphistic/sweet"
+	"github.com/aphistic/sweet-junit"
 )
 
 type GomolSuite struct{}
 
 func Test(t *testing.T) {
-	sweet.SetUpAllTests(func(st *testing.T) {
-		RegisterTestingT(st)
-	})
+	RegisterFailHandler(sweet.GomegaFail)
 
-	sweet.RunSuite(t, &GomolSuite{})
+	sweet.T(func(s *sweet.S) {
+		s.RegisterPlugin(junit.NewPlugin())
+
+		s.RunSuite(t, &GomolSuite{})
+	})
 }
 
 var testBase *Base
