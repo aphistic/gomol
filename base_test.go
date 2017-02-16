@@ -19,6 +19,7 @@ func Test(t *testing.T) {
 		s.RegisterPlugin(junit.NewPlugin())
 
 		s.RunSuite(t, &GomolSuite{})
+		s.RunSuite(t, &LogAdapterSuite{})
 	})
 }
 
