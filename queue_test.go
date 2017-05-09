@@ -11,7 +11,7 @@ func (s *GomolSuite) TestQueueLenChan(t *testing.T) {
 	q := newQueue()
 
 	Expect(q.Length()).To(Equal(0))
-	q.queueChan <- &message{}
+	q.queueChan <- &Message{}
 	Expect(q.Length()).To(Equal(1))
 }
 
@@ -19,7 +19,7 @@ func (s *GomolSuite) TestQueueLenArray(t *testing.T) {
 	q := newQueue()
 
 	Expect(q.Length()).To(Equal(0))
-	q.queue = append(q.queue, &message{})
+	q.queue = append(q.queue, &Message{})
 	Expect(q.Length()).To(Equal(1))
 }
 
@@ -27,14 +27,14 @@ func (s *GomolSuite) TestQueueLen(t *testing.T) {
 	q := newQueue()
 
 	Expect(q.Length()).To(Equal(0))
-	q.queueChan <- &message{}
-	q.queue = append(q.queue, &message{})
+	q.queueChan <- &Message{}
+	q.queue = append(q.queue, &Message{})
 	Expect(q.Length()).To(Equal(2))
 }
 
 func (s *GomolSuite) TestQueueMessageWithoutWorkers(t *testing.T) {
 	q := newQueue()
-	err := q.QueueMessage(&message{})
+	err := q.QueueMessage(&Message{})
 	Expect(err).ToNot(BeNil())
 	Expect(err.Error()).To(Equal("The logging system is not running, has InitLoggers() been executed?"))
 }

@@ -13,9 +13,9 @@ type queue struct {
 	workersStart sync.WaitGroup
 	workersDone  sync.WaitGroup
 
-	queueChan chan *message
+	queueChan chan *Message
 
-	queue        []*message
+	queue        []*Message
 	msgAddedChan chan bool
 	queueMut     sync.RWMutex
 }
@@ -23,10 +23,10 @@ type queue struct {
 func newQueue() *queue {
 	return &queue{
 		running:      false,
-		queueChan:    make(chan *message, 500),
+		queueChan:    make(chan *Message, 500),
 		queueCtl:     make(chan bool, 1),
 		senderCtl:    make(chan bool, 1),
-		queue:        make([]*message, 0),
+		queue:        make([]*Message, 0),
 		msgAddedChan: make(chan bool, 1),
 	}
 }
@@ -116,7 +116,7 @@ func (queue *queue) senderWorker(exiting bool) {
 				break
 			}
 
-			for _, l := range msg.Base.loggers {
+			for _, l := range msg.base.loggers {
 				l.Logm(msg.Timestamp, msg.Level, msg.Attrs.Attrs(), msg.Msg)
 			}
 		}
@@ -132,7 +132,7 @@ func (queue *queue) Flush() {
 			return
 		}
 		queue.queueMut.RUnlock()
-		<-time.After(1*time.Millisecond)
+		<-time.After(1 * time.Millisecond)
 	}
 }
 
@@ -140,7 +140,7 @@ func (queue *queue) IsActive() bool {
 	return queue.running
 }
 
-func (queue *queue) QueueMessage(msg *message) error {
+func (queue *queue) QueueMessage(msg *Message) error {
 	if !queue.running {
 		return errors.New("The logging system is not running, has InitLoggers() been executed?")
 	}
@@ -148,8 +148,8 @@ func (queue *queue) QueueMessage(msg *message) error {
 	return nil
 }
 
-func (queue *queue) NextMessage() *message {
-	var msg *message
+func (queue *queue) NextMessage() *Message {
+	var msg *Message
 	queue.queueMut.Lock()
 	if len(queue.queue) > 0 {
 		msg, queue.queue = queue.queue[0], queue.queue[1:]

@@ -12,14 +12,14 @@ import (
 
 type GomolSuite struct{}
 
-func Test(t *testing.T) {
+func TestMain(m *testing.M) {
 	RegisterFailHandler(sweet.GomegaFail)
 
-	sweet.T(func(s *sweet.S) {
+	sweet.Run(m, func(s *sweet.S) {
 		s.RegisterPlugin(junit.NewPlugin())
 
-		s.RunSuite(t, &GomolSuite{})
-		s.RunSuite(t, &LogAdapterSuite{})
+		s.AddSuite(&GomolSuite{})
+		s.AddSuite(&LogAdapterSuite{})
 	})
 }
 

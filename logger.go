@@ -15,3 +15,7 @@ type Logger interface {
 
 	Logm(time.Time, LogLevel, map[string]interface{}, string) error
 }
+
+type PreQueueHook interface {
+	Logger
+}
