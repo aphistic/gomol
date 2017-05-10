@@ -6,7 +6,9 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func (s *GomolSuite) TestNewAttrsFromMap(t *testing.T) {
+type AttrsSuite struct{}
+
+func (s *AttrsSuite) TestNewAttrsFromMap(t *testing.T) {
 	attrs := NewAttrsFromMap(map[string]interface{}{
 		"attr1": "val1",
 		"attr2": 1234,
@@ -16,18 +18,18 @@ func (s *GomolSuite) TestNewAttrsFromMap(t *testing.T) {
 	Expect(attrs.attrs[getAttrHash("attr2")]).To(Equal(1234))
 }
 
-func (s *GomolSuite) TestAttrsMergeNilAttrs(t *testing.T) {
+func (s *AttrsSuite) TestAttrsMergeNilAttrs(t *testing.T) {
 	attrs := NewAttrs()
 	attrs.MergeAttrs(nil)
 }
 
-func (s *GomolSuite) TestNewAttrsFromAttrsNone(t *testing.T) {
+func (s *AttrsSuite) TestNewAttrsFromAttrsNone(t *testing.T) {
 	testAttrs := NewAttrsFromAttrs()
 	Expect(testAttrs).ToNot(BeNil())
 	Expect(testAttrs.Attrs()).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestNewAttrsFromAttrsSingle(t *testing.T) {
+func (s *AttrsSuite) TestNewAttrsFromAttrsSingle(t *testing.T) {
 	attrs1 := NewAttrsFromMap(map[string]interface{}{
 		"attr1": "val1",
 		"attr3": 1234,
@@ -39,7 +41,7 @@ func (s *GomolSuite) TestNewAttrsFromAttrsSingle(t *testing.T) {
 	Expect(testAttrs.GetAttr("attr3")).To(Equal(1234))
 }
 
-func (s *GomolSuite) TestNewAttrsFromAttrsMultiple(t *testing.T) {
+func (s *AttrsSuite) TestNewAttrsFromAttrsMultiple(t *testing.T) {
 	attrs1 := NewAttrsFromMap(map[string]interface{}{
 		"attr1": "val1",
 		"attr3": 1234,
@@ -57,24 +59,24 @@ func (s *GomolSuite) TestNewAttrsFromAttrsMultiple(t *testing.T) {
 	Expect(testAttrs.GetAttr("attr4")).To(Equal(1234.4321))
 }
 
-func (s *GomolSuite) TestNewAttrsFromAttrsNil(t *testing.T) {
+func (s *AttrsSuite) TestNewAttrsFromAttrsNil(t *testing.T) {
 	testAttrs := NewAttrsFromAttrs(nil, nil, nil)
 	Expect(testAttrs).ToNot(BeNil())
 	Expect(testAttrs.Attrs()).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestAttrsGetMissing(t *testing.T) {
+func (s *AttrsSuite) TestAttrsGetMissing(t *testing.T) {
 	attrs := NewAttrs()
 	Expect(attrs.GetAttr("not an attr")).To(BeNil())
 }
 
-func (s *GomolSuite) TestAttrsRemoveMissing(t *testing.T) {
+func (s *AttrsSuite) TestAttrsRemoveMissing(t *testing.T) {
 	attrs := NewAttrs()
 	// Just run it to make sure it doesn't panic
 	attrs.RemoveAttr("not an attr")
 }
 
-func (s *GomolSuite) TestAttrsChaining(t *testing.T) {
+func (s *AttrsSuite) TestAttrsChaining(t *testing.T) {
 	attrs := NewAttrs().
 		SetAttr("attr1", "val1").
 		SetAttr("attr2", "val2").
@@ -87,7 +89,7 @@ func (s *GomolSuite) TestAttrsChaining(t *testing.T) {
 	Expect(attrs.attrs[getAttrHash("attr4")]).To(Equal(4))
 }
 
-func (s *GomolSuite) TestGetHashAttrMissing(t *testing.T) {
+func (s *AttrsSuite) TestGetHashAttrMissing(t *testing.T) {
 	res, err := getHashAttr(1234)
 
 	Expect(res).To(Equal(""))

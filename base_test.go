@@ -5,23 +5,9 @@ import (
 	"time"
 
 	. "github.com/onsi/gomega"
-
-	"github.com/aphistic/sweet"
-	"github.com/aphistic/sweet-junit"
 )
 
-type GomolSuite struct{}
-
-func TestMain(m *testing.M) {
-	RegisterFailHandler(sweet.GomegaFail)
-
-	sweet.Run(m, func(s *sweet.S) {
-		s.RegisterPlugin(junit.NewPlugin())
-
-		s.AddSuite(&GomolSuite{})
-		s.AddSuite(&LogAdapterSuite{})
-	})
-}
+type BaseSuite struct{}
 
 var testBase *Base
 
@@ -37,7 +23,7 @@ func (exiter *testExiter) Exit(code int) {
 
 var curTestExiter *testExiter
 
-func (s *GomolSuite) SetUpTest(t *testing.T) {
+func (s *BaseSuite) SetUpTest(t *testing.T) {
 	setFakeCallerInfo("", 0)
 	setClock(newTestClock(time.Now()))
 	gomolFiles = map[string]fileRecord{}
@@ -54,13 +40,13 @@ func (s *GomolSuite) SetUpTest(t *testing.T) {
 	curDefault.InitLoggers()
 }
 
-func (s *GomolSuite) TearDownTest(t *testing.T) {
+func (s *BaseSuite) TearDownTest(t *testing.T) {
 	curDefault.ShutdownLoggers()
 
 	testBase.ShutdownLoggers()
 }
 
-func (s *GomolSuite) TestShouldLog(t *testing.T) {
+func (s *BaseSuite) TestShouldLog(t *testing.T) {
 	b := NewBase()
 	b.SetLogLevel(LevelInfo)
 	Expect(b.shouldLog(LevelDebug)).To(Equal(false))
@@ -84,7 +70,7 @@ func (s *GomolSuite) TestShouldLog(t *testing.T) {
 	Expect(b.shouldLog(LevelFatal)).To(Equal(false))
 }
 
-func (s *GomolSuite) TestNewBase(t *testing.T) {
+func (s *BaseSuite) TestNewBase(t *testing.T) {
 	b := NewBase()
 	Expect(b.isInitialized).To(Equal(false))
 	Expect(b.config).ToNot(BeNil())
@@ -96,7 +82,7 @@ func (s *GomolSuite) TestNewBase(t *testing.T) {
 	Expect(b.BaseAttrs.Attrs()).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestSetConfig(t *testing.T) {
+func (s *BaseSuite) TestSetConfig(t *testing.T) {
 	b := NewBase()
 
 	Expect(b.config).ToNot(BeNil())
@@ -113,7 +99,7 @@ func (s *GomolSuite) TestSetConfig(t *testing.T) {
 	Expect(b.config.LineNumberAttr).To(Equal("line_number"))
 }
 
-func (s *GomolSuite) TestSetLogLevel(t *testing.T) {
+func (s *BaseSuite) TestSetLogLevel(t *testing.T) {
 	b := NewBase()
 	b.InitLoggers()
 	ml := newDefaultMemLogger()
@@ -129,7 +115,7 @@ func (s *GomolSuite) TestSetLogLevel(t *testing.T) {
 	Expect(ml.Messages).To(HaveLen(3))
 }
 
-func (s *GomolSuite) TestAddLogger(t *testing.T) {
+func (s *BaseSuite) TestAddLogger(t *testing.T) {
 	b := NewBase()
 	b.InitLoggers()
 	Expect(b.loggers).To(HaveLen(0))
@@ -145,7 +131,7 @@ func (s *GomolSuite) TestAddLogger(t *testing.T) {
 	Expect(ml.base).To(Equal(b))
 }
 
-func (s *GomolSuite) TestAddLoggerAfterInit(t *testing.T) {
+func (s *BaseSuite) TestAddLoggerAfterInit(t *testing.T) {
 	b := NewBase()
 	b.InitLoggers()
 
@@ -157,7 +143,7 @@ func (s *GomolSuite) TestAddLoggerAfterInit(t *testing.T) {
 	Expect(ml.IsInitialized()).To(Equal(true))
 }
 
-func (s *GomolSuite) TestAddLoggerAfterShutdown(t *testing.T) {
+func (s *BaseSuite) TestAddLoggerAfterShutdown(t *testing.T) {
 	b := NewBase()
 
 	ml := newDefaultMemLogger()
@@ -170,7 +156,7 @@ func (s *GomolSuite) TestAddLoggerAfterShutdown(t *testing.T) {
 	Expect(ml.IsInitialized()).To(Equal(false))
 }
 
-func (s *GomolSuite) TestAddLoggerAfterInitFail(t *testing.T) {
+func (s *BaseSuite) TestAddLoggerAfterInitFail(t *testing.T) {
 	b := NewBase()
 	b.InitLoggers()
 
@@ -187,7 +173,7 @@ func (s *GomolSuite) TestAddLoggerAfterInitFail(t *testing.T) {
 	Expect(b.loggers).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestAddLoggerAfterShutdownFail(t *testing.T) {
+func (s *BaseSuite) TestAddLoggerAfterShutdownFail(t *testing.T) {
 	b := NewBase()
 
 	mlCfg := newMemLoggerConfig()
@@ -205,7 +191,7 @@ func (s *GomolSuite) TestAddLoggerAfterShutdownFail(t *testing.T) {
 	Expect(b.loggers).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestBaseRemoveLogger(t *testing.T) {
+func (s *BaseSuite) TestBaseRemoveLogger(t *testing.T) {
 	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -230,7 +216,7 @@ func (s *GomolSuite) TestBaseRemoveLogger(t *testing.T) {
 	Expect(b.loggers).To(HaveLen(2))
 }
 
-func (s *GomolSuite) TestBaseRemoveLoggerNonExistent(t *testing.T) {
+func (s *BaseSuite) TestBaseRemoveLoggerNonExistent(t *testing.T) {
 	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -246,7 +232,7 @@ func (s *GomolSuite) TestBaseRemoveLoggerNonExistent(t *testing.T) {
 	Expect(err).To(BeNil())
 }
 
-func (s *GomolSuite) TestBaseClearLoggers(t *testing.T) {
+func (s *BaseSuite) TestBaseClearLoggers(t *testing.T) {
 	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -271,7 +257,7 @@ func (s *GomolSuite) TestBaseClearLoggers(t *testing.T) {
 	Expect(b.loggers).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestInitLoggers(t *testing.T) {
+func (s *BaseSuite) TestInitLoggers(t *testing.T) {
 	b := NewBase()
 	Expect(b.IsInitialized()).To(Equal(false))
 
@@ -288,7 +274,7 @@ func (s *GomolSuite) TestInitLoggers(t *testing.T) {
 	Expect(ml2.IsInitialized()).To(Equal(true))
 }
 
-func (s *GomolSuite) TestInitLoggersTwice(t *testing.T) {
+func (s *BaseSuite) TestInitLoggersTwice(t *testing.T) {
 	b := NewBase()
 	Expect(b.IsInitialized()).To(Equal(false))
 
@@ -306,7 +292,7 @@ func (s *GomolSuite) TestInitLoggersTwice(t *testing.T) {
 	Expect(ml2.IsInitialized()).To(Equal(true))
 }
 
-func (s *GomolSuite) TestInitLoggersFail(t *testing.T) {
+func (s *BaseSuite) TestInitLoggersFail(t *testing.T) {
 	b := NewBase()
 
 	mlCfg := newMemLoggerConfig()
@@ -328,7 +314,7 @@ func (s *GomolSuite) TestInitLoggersFail(t *testing.T) {
 	Expect(ml2.IsInitialized()).To(Equal(false))
 }
 
-func (s *GomolSuite) TestShutdownLoggers(t *testing.T) {
+func (s *BaseSuite) TestShutdownLoggers(t *testing.T) {
 	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -344,7 +330,7 @@ func (s *GomolSuite) TestShutdownLoggers(t *testing.T) {
 	Expect(ml2.isShutdown).To(Equal(true))
 }
 
-func (s *GomolSuite) TestShutdownLoggersFail(t *testing.T) {
+func (s *BaseSuite) TestShutdownLoggersFail(t *testing.T) {
 	b := NewBase()
 
 	mlCfg := newMemLoggerConfig()
@@ -366,7 +352,7 @@ func (s *GomolSuite) TestShutdownLoggersFail(t *testing.T) {
 	Expect(ml2.isShutdown).To(Equal(false))
 }
 
-func (s *GomolSuite) TestShutdownLoggersTwice(t *testing.T) {
+func (s *BaseSuite) TestShutdownLoggersTwice(t *testing.T) {
 	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -383,7 +369,7 @@ func (s *GomolSuite) TestShutdownLoggersTwice(t *testing.T) {
 	Expect(ml2.isShutdown).To(Equal(true))
 }
 
-func (s *GomolSuite) TestSetAttr(t *testing.T) {
+func (s *BaseSuite) TestSetAttr(t *testing.T) {
 	b := NewBase()
 
 	b.SetAttr("attr1", 1)
@@ -394,7 +380,7 @@ func (s *GomolSuite) TestSetAttr(t *testing.T) {
 	Expect(b.BaseAttrs.GetAttr("attr2")).To(Equal("val2"))
 }
 
-func (s *GomolSuite) TestGetAttr(t *testing.T) {
+func (s *BaseSuite) TestGetAttr(t *testing.T) {
 	b := NewBase()
 
 	b.SetAttr("attr1", 1)
@@ -404,7 +390,7 @@ func (s *GomolSuite) TestGetAttr(t *testing.T) {
 	Expect(b.GetAttr("notakey")).To(BeNil())
 }
 
-func (s *GomolSuite) TestRemoveAttr(t *testing.T) {
+func (s *BaseSuite) TestRemoveAttr(t *testing.T) {
 	b := NewBase()
 
 	b.SetAttr("attr1", 1)
@@ -415,7 +401,7 @@ func (s *GomolSuite) TestRemoveAttr(t *testing.T) {
 	Expect(b.BaseAttrs.Attrs()).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestClearAttrs(t *testing.T) {
+func (s *BaseSuite) TestClearAttrs(t *testing.T) {
 	b := NewBase()
 
 	b.SetAttr("attr1", 1)
@@ -426,7 +412,7 @@ func (s *GomolSuite) TestClearAttrs(t *testing.T) {
 	Expect(b.BaseAttrs.Attrs()).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestSequenceDisabled(t *testing.T) {
+func (s *BaseSuite) TestSequenceDisabled(t *testing.T) {
 	b := NewBase()
 
 	b.InitLoggers()
@@ -440,7 +426,7 @@ func (s *GomolSuite) TestSequenceDisabled(t *testing.T) {
 	b.ShutdownLoggers()
 }
 
-func (s *GomolSuite) TestSequence(t *testing.T) {
+func (s *BaseSuite) TestSequence(t *testing.T) {
 	b := NewBase()
 	b.config.SequenceAttr = "seq"
 
@@ -469,7 +455,7 @@ func (s *GomolSuite) TestSequence(t *testing.T) {
 }
 
 // Base func tests
-func (s *GomolSuite) TestBaseDbgfWithFormattingParams(t *testing.T) {
+func (s *BaseSuite) TestBaseDbgfWithFormattingParams(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -486,7 +472,7 @@ func (s *GomolSuite) TestBaseDbgfWithFormattingParams(t *testing.T) {
 	Expect(l1.Messages[0].Level).To(Equal(LevelDebug))
 }
 
-func (s *GomolSuite) TestBaseDbg(t *testing.T) {
+func (s *BaseSuite) TestBaseDbg(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -510,7 +496,7 @@ func (s *GomolSuite) TestBaseDbg(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelDebug))
 }
 
-func (s *GomolSuite) TestBaseDbgf(t *testing.T) {
+func (s *BaseSuite) TestBaseDbgf(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -534,7 +520,7 @@ func (s *GomolSuite) TestBaseDbgf(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelDebug))
 }
 
-func (s *GomolSuite) TestBaseDbgm(t *testing.T) {
+func (s *BaseSuite) TestBaseDbgm(t *testing.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -570,7 +556,7 @@ func (s *GomolSuite) TestBaseDbgm(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelDebug))
 }
 
-func (s *GomolSuite) TestBaseInfo(t *testing.T) {
+func (s *BaseSuite) TestBaseInfo(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -594,7 +580,7 @@ func (s *GomolSuite) TestBaseInfo(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelInfo))
 }
 
-func (s *GomolSuite) TestBaseInfof(t *testing.T) {
+func (s *BaseSuite) TestBaseInfof(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -618,7 +604,7 @@ func (s *GomolSuite) TestBaseInfof(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelInfo))
 }
 
-func (s *GomolSuite) TestBaseInfom(t *testing.T) {
+func (s *BaseSuite) TestBaseInfom(t *testing.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -654,7 +640,7 @@ func (s *GomolSuite) TestBaseInfom(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelInfo))
 }
 
-func (s *GomolSuite) TestBaseWarn(t *testing.T) {
+func (s *BaseSuite) TestBaseWarn(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -678,7 +664,7 @@ func (s *GomolSuite) TestBaseWarn(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelWarning))
 }
 
-func (s *GomolSuite) TestBaseWarnf(t *testing.T) {
+func (s *BaseSuite) TestBaseWarnf(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -702,7 +688,7 @@ func (s *GomolSuite) TestBaseWarnf(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelWarning))
 }
 
-func (s *GomolSuite) TestBaseWarnm(t *testing.T) {
+func (s *BaseSuite) TestBaseWarnm(t *testing.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -738,7 +724,7 @@ func (s *GomolSuite) TestBaseWarnm(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelWarning))
 }
 
-func (s *GomolSuite) TestBaseErr(t *testing.T) {
+func (s *BaseSuite) TestBaseErr(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -762,7 +748,7 @@ func (s *GomolSuite) TestBaseErr(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelError))
 }
 
-func (s *GomolSuite) TestBaseErrf(t *testing.T) {
+func (s *BaseSuite) TestBaseErrf(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -786,7 +772,7 @@ func (s *GomolSuite) TestBaseErrf(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelError))
 }
 
-func (s *GomolSuite) TestBaseErrm(t *testing.T) {
+func (s *BaseSuite) TestBaseErrm(t *testing.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -822,7 +808,7 @@ func (s *GomolSuite) TestBaseErrm(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelError))
 }
 
-func (s *GomolSuite) TestBaseFatal(t *testing.T) {
+func (s *BaseSuite) TestBaseFatal(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -846,7 +832,7 @@ func (s *GomolSuite) TestBaseFatal(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
 }
 
-func (s *GomolSuite) TestBaseFatalf(t *testing.T) {
+func (s *BaseSuite) TestBaseFatalf(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -870,7 +856,7 @@ func (s *GomolSuite) TestBaseFatalf(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
 }
 
-func (s *GomolSuite) TestBaseFatalm(t *testing.T) {
+func (s *BaseSuite) TestBaseFatalm(t *testing.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -906,7 +892,7 @@ func (s *GomolSuite) TestBaseFatalm(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
 }
 
-func (s *GomolSuite) TestBaseDie(t *testing.T) {
+func (s *BaseSuite) TestBaseDie(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -933,7 +919,7 @@ func (s *GomolSuite) TestBaseDie(t *testing.T) {
 	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *GomolSuite) TestBaseDief(t *testing.T) {
+func (s *BaseSuite) TestBaseDief(t *testing.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -960,7 +946,7 @@ func (s *GomolSuite) TestBaseDief(t *testing.T) {
 	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *GomolSuite) TestBaseDiem(t *testing.T) {
+func (s *BaseSuite) TestBaseDiem(t *testing.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -1001,7 +987,7 @@ func (s *GomolSuite) TestBaseDiem(t *testing.T) {
 	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *GomolSuite) TestBaseOrdering(t *testing.T) {
+func (s *BaseSuite) TestBaseOrdering(t *testing.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
