@@ -15,3 +15,11 @@ type Logger interface {
 
 	Logm(time.Time, LogLevel, map[string]interface{}, string) error
 }
+
+// HookPreQueue is an interface a Logger can implement to be able to inspect
+// and modify a Message before it is added to the queue
+type HookPreQueue interface {
+	Logger
+
+	PreQueue(msg *Message) error
+}

@@ -14,20 +14,23 @@ type Base struct {
 	config        *Config
 	queue         *queue
 	logLevel      LogLevel
-	loggers       []Logger
 	sequence      uint64
 	BaseAttrs     *Attrs
+
+	loggers      []Logger
+	hookPreQueue []HookPreQueue
 }
 
 // NewBase creates a new instance of Base with default values set.
 func NewBase() *Base {
 	b := &Base{
-		config:    NewConfig(),
-		queue:     newQueue(),
-		logLevel:  LevelDebug,
-		loggers:   make([]Logger, 0),
-		sequence:  0,
-		BaseAttrs: NewAttrs(),
+		config:       NewConfig(),
+		queue:        newQueue(),
+		logLevel:     LevelDebug,
+		sequence:     0,
+		BaseAttrs:    NewAttrs(),
+		loggers:      make([]Logger, 0),
+		hookPreQueue: make([]HookPreQueue, 0),
 	}
 	return b
 }
@@ -81,6 +84,11 @@ func (b *Base) AddLogger(logger Logger) error {
 		}
 	}
 	b.loggers = append(b.loggers, logger)
+
+	if hook, ok := logger.(HookPreQueue); ok {
+		b.hookPreQueue = append(b.hookPreQueue, hook)
+	}
+
 	logger.SetBase(b)
 	return nil
 }
@@ -102,6 +110,16 @@ func (b *Base) RemoveLogger(logger Logger) error {
 			return nil
 		}
 	}
+
+	// Remove any hook instances the logger has
+	for idx, hookLogger := range b.hookPreQueue {
+		if hookLogger == logger {
+			b.hookPreQueue[idx] = b.hookPreQueue[len(b.hookPreQueue)-1]
+			b.hookPreQueue[len(b.hookPreQueue)-1] = nil
+			b.hookPreQueue = b.hookPreQueue[:len(b.hookPreQueue)-1]
+		}
+	}
+
 	return nil
 }
 
@@ -119,6 +137,7 @@ func (b *Base) ClearLoggers() error {
 		}
 	}
 	b.loggers = make([]Logger, 0)
+	b.hookPreQueue = make([]HookPreQueue, 0)
 
 	return nil
 }
@@ -235,6 +254,14 @@ func (b *Base) LogWithTime(level LogLevel, ts time.Time, m *Attrs, msg string, a
 	}
 
 	nm := newMessage(ts, b, level, m, msg, a...)
+
+	for _, hook := range b.hookPreQueue {
+		err := hook.PreQueue(nm)
+		if err != nil {
+			return err
+		}
+	}
+
 	return b.queue.QueueMessage(nm)
 }
 

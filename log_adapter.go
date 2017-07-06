@@ -7,8 +7,9 @@ LogAdapter provides a way to easily override certain log attributes without
 modifying the base attributes or specifying them for every log message.
 */
 type LogAdapter struct {
-	base  WrappableLogger
-	attrs *Attrs
+	base     WrappableLogger
+	logLevel *LogLevel
+	attrs    *Attrs
 }
 
 /*
@@ -31,7 +32,8 @@ type WrappableLogger interface {
 	ShutdownLoggers() error
 }
 
-// Create a LogAdapter that wraps the given loger with the given attributes.
+// NewLogAdapterFor creates a LogAdapter that wraps the given loger with the
+// given attributes.
 func NewLogAdapterFor(base WrappableLogger, attrs *Attrs) *LogAdapter {
 	if attrs == nil {
 		attrs = NewAttrs()
@@ -41,6 +43,14 @@ func NewLogAdapterFor(base WrappableLogger, attrs *Attrs) *LogAdapter {
 		base:  base,
 		attrs: attrs,
 	}
+}
+
+// SetLogLevel sets the level the current LogAdapter will log at.  The level is still filtered
+// at the parent level, though, so if a LogAdapter is set to log at Debug while the parent is set
+// to log at Info, the Debug message will not be logged because it will be filtered by the parent
+// logger.
+func (la *LogAdapter) SetLogLevel(level LogLevel) {
+	la.logLevel = &level
 }
 
 // SetAttr sets the attribute key to value for this LogAdapter only
@@ -68,6 +78,10 @@ func (la *LogAdapter) ClearAttrs() {
 // to the Base associated with this LogAdapter. It is similar to Log except
 // the timestamp will be set to the value of ts.
 func (la *LogAdapter) LogWithTime(level LogLevel, ts time.Time, attrs *Attrs, msg string, a ...interface{}) error {
+	if la.logLevel != nil && level > *la.logLevel {
+		return nil
+	}
+
 	mergedAttrs := la.attrs.clone()
 	mergedAttrs.MergeAttrs(attrs)
 	return la.base.LogWithTime(level, ts, mergedAttrs, msg, a...)
@@ -76,6 +90,10 @@ func (la *LogAdapter) LogWithTime(level LogLevel, ts time.Time, attrs *Attrs, ms
 // Log will log a message at the provided level to all loggers added
 // to the Base associated with this LogAdapter
 func (la *LogAdapter) Log(level LogLevel, attrs *Attrs, msg string, a ...interface{}) error {
+	if la.logLevel != nil && level > *la.logLevel {
+		return nil
+	}
+
 	mergedAttrs := la.attrs.clone()
 	mergedAttrs.MergeAttrs(attrs)
 	return la.base.Log(level, mergedAttrs, msg, a...)

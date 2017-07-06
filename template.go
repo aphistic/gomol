@@ -116,7 +116,7 @@ func NewTemplate(tpl string) (*Template, error) {
 	return newTpl, nil
 }
 
-func (t *Template) executeInternalMsg(msg *message, colorize bool) (string, error) {
+func (t *Template) executeInternalMsg(msg *Message, colorize bool) (string, error) {
 	tplMsg, err := newTemplateMsgFromMessage(msg)
 	if err != nil {
 		return "", err
@@ -170,7 +170,7 @@ func NewTemplateMsg(timestamp time.Time, level LogLevel, m map[string]interface{
 	return tplMsg
 }
 
-func newTemplateMsgFromMessage(msg *message) (*TemplateMsg, error) {
+func newTemplateMsgFromMessage(msg *Message) (*TemplateMsg, error) {
 	if msg == nil {
 		return nil, errors.New("msg cannot be nil")
 	}
@@ -184,8 +184,8 @@ func newTemplateMsgFromMessage(msg *message) (*TemplateMsg, error) {
 	tplMsg.LevelName = getLevelName(msg.Level)
 
 	tplAttrs := NewAttrs()
-	if msg.Base != nil {
-		tplAttrs.MergeAttrs(msg.Base.BaseAttrs)
+	if msg.base != nil {
+		tplAttrs.MergeAttrs(msg.base.BaseAttrs)
 	}
 	tplAttrs.MergeAttrs(msg.Attrs)
 	tplMsg.Attrs = tplAttrs.Attrs()

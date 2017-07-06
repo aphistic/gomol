@@ -270,8 +270,7 @@ func (s *GomolSuite) TestTplAttrTemplate(t *testing.T) {
 
 func (s *GomolSuite) TestTplJSONError(t *testing.T) {
 	data, err := tplJSON(map[string]interface{}{
-		"attr1": s.SetUpTest,
-		"attr2": s.TearDownTest,
+		"attr1": s.TestTplJSONError,
 	})
 	Expect(data).To(Equal(""))
 	Expect(err).ToNot(BeNil())

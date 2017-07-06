@@ -9,7 +9,9 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func (s *GomolSuite) TestNewLogAdapterEmpty(t *testing.T) {
+type LogAdapterSuite struct{}
+
+func (s *LogAdapterSuite) TestNewLogAdapterEmpty(t *testing.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(nil)
@@ -19,7 +21,7 @@ func (s *GomolSuite) TestNewLogAdapterEmpty(t *testing.T) {
 	Expect(la.attrs).ToNot(BeNil())
 }
 
-func (s *GomolSuite) TestNewLogAdapter(t *testing.T) {
+func (s *LogAdapterSuite) TestNewLogAdapter(t *testing.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(NewAttrs().
@@ -33,7 +35,7 @@ func (s *GomolSuite) TestNewLogAdapter(t *testing.T) {
 	Expect(la.attrs.GetAttr("testStr")).To(Equal("foo"))
 }
 
-func (s *GomolSuite) TestLogAdapterSetAttr(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterSetAttr(t *testing.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(nil)
@@ -41,7 +43,7 @@ func (s *GomolSuite) TestLogAdapterSetAttr(t *testing.T) {
 	Expect(la.attrs.GetAttr("foo")).To(Equal("bar"))
 }
 
-func (s *GomolSuite) TestLogAdapterGetAttr(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterGetAttr(t *testing.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(nil)
@@ -52,7 +54,7 @@ func (s *GomolSuite) TestLogAdapterGetAttr(t *testing.T) {
 	Expect(la.GetAttr("notakey")).To(BeNil())
 }
 
-func (s *GomolSuite) TestLogAdapterRemoveAttr(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterRemoveAttr(t *testing.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
@@ -61,7 +63,7 @@ func (s *GomolSuite) TestLogAdapterRemoveAttr(t *testing.T) {
 	Expect(la.attrs.GetAttr("foo")).To(BeNil())
 }
 
-func (s *GomolSuite) TestLogAdapterClearAttrs(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterClearAttrs(t *testing.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(NewAttrs().
@@ -74,7 +76,7 @@ func (s *GomolSuite) TestLogAdapterClearAttrs(t *testing.T) {
 	Expect(la.attrs.GetAttr("baz")).To(BeNil())
 }
 
-func (s *GomolSuite) TestLogAdapterLogWithTime(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterLogWithTime(t *testing.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -100,7 +102,81 @@ func (s *GomolSuite) TestLogAdapterLogWithTime(t *testing.T) {
 	}))
 }
 
-func (s *GomolSuite) TestLogAdapterThing(t *testing.T) {
+func (s *LogAdapterSuite) TestLogLevelLogWithTime(t *testing.T) {
+	b := NewBase()
+	b.SetLogLevel(LevelInfo)
+	ml := newDefaultMemLogger()
+	b.AddLogger(ml)
+	b.InitLoggers()
+
+	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
+	la.SetLogLevel(LevelError)
+	Expect(len(ml.Messages)).To(Equal(0))
+
+	ts := time.Now()
+
+	la.LogWithTime(LevelFatal, ts, NewAttrs().SetAttr("foo", "newBar"), "MessageM %d", LevelFatal)
+	la.LogWithTime(LevelError, ts, NewAttrs().SetAttr("foo", "newBar"), "MessageM %d", LevelError)
+	la.LogWithTime(LevelWarning, ts, NewAttrs().SetAttr("foo", "newBar"), "MessageM %d", LevelWarning)
+
+	b.ShutdownLoggers()
+
+	Expect(len(ml.Messages)).To(Equal(2))
+	Expect(ml.Messages[0]).To(Equal(&memMessage{
+		Timestamp: ts,
+		Level:     LevelFatal,
+		Message:   "MessageM 2",
+		Attrs: map[string]interface{}{
+			"foo": "newBar",
+		},
+	}))
+	Expect(ml.Messages[1]).To(Equal(&memMessage{
+		Timestamp: ts,
+		Level:     LevelError,
+		Message:   "MessageM 3",
+		Attrs: map[string]interface{}{
+			"foo": "newBar",
+		},
+	}))
+}
+
+func (s *LogAdapterSuite) TestLogLevelLog(t *testing.T) {
+	b := NewBase()
+	b.SetLogLevel(LevelInfo)
+	ml := newDefaultMemLogger()
+	b.AddLogger(ml)
+	b.InitLoggers()
+
+	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
+	la.SetLogLevel(LevelError)
+	Expect(len(ml.Messages)).To(Equal(0))
+
+	la.Log(LevelFatal, NewAttrs().SetAttr("foo", "newBar"), "MessageM %d", LevelFatal)
+	la.Log(LevelError, NewAttrs().SetAttr("foo", "newBar"), "MessageM %d", LevelError)
+	la.Log(LevelWarning, NewAttrs().SetAttr("foo", "newBar"), "MessageM %d", LevelWarning)
+
+	b.ShutdownLoggers()
+
+	Expect(len(ml.Messages)).To(Equal(2))
+	Expect(ml.Messages[0]).To(Equal(&memMessage{
+		Timestamp: ml.Messages[0].Timestamp,
+		Level:     LevelFatal,
+		Message:   "MessageM 2",
+		Attrs: map[string]interface{}{
+			"foo": "newBar",
+		},
+	}))
+	Expect(ml.Messages[1]).To(Equal(&memMessage{
+		Timestamp: ml.Messages[1].Timestamp,
+		Level:     LevelError,
+		Message:   "MessageM 3",
+		Attrs: map[string]interface{}{
+			"foo": "newBar",
+		},
+	}))
+}
+
+func (s *LogAdapterSuite) TestLogAdapterThing(t *testing.T) {
 	b := NewBase()
 	b.SetAttr("base_attr", "foo")
 	ml := newDefaultMemLogger()
@@ -130,7 +206,7 @@ func (s *GomolSuite) TestLogAdapterThing(t *testing.T) {
 	}))
 }
 
-func (s *GomolSuite) TestLogAdapterDebug(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterDebug(t *testing.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -200,7 +276,7 @@ func (s *GomolSuite) TestLogAdapterDebug(t *testing.T) {
 	}))
 }
 
-func (s *GomolSuite) TestLogAdapterInfo(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterInfo(t *testing.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -243,7 +319,7 @@ func (s *GomolSuite) TestLogAdapterInfo(t *testing.T) {
 	}))
 }
 
-func (s *GomolSuite) TestLogAdapterWarn(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterWarn(t *testing.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -313,7 +389,7 @@ func (s *GomolSuite) TestLogAdapterWarn(t *testing.T) {
 	}))
 }
 
-func (s *GomolSuite) TestLogAdapterError(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterError(t *testing.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -383,7 +459,7 @@ func (s *GomolSuite) TestLogAdapterError(t *testing.T) {
 	}))
 }
 
-func (s *GomolSuite) TestLogAdapterFatal(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterFatal(t *testing.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -426,7 +502,7 @@ func (s *GomolSuite) TestLogAdapterFatal(t *testing.T) {
 	}))
 }
 
-func (s *GomolSuite) TestLogAdapterDie(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterDie(t *testing.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -452,7 +528,7 @@ func (s *GomolSuite) TestLogAdapterDie(t *testing.T) {
 	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *GomolSuite) TestLogAdapterDief(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterDief(t *testing.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -478,7 +554,7 @@ func (s *GomolSuite) TestLogAdapterDief(t *testing.T) {
 	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *GomolSuite) TestLogAdapterDiem(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterDiem(t *testing.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -519,7 +595,7 @@ func (mb *mockBase) ShutdownLoggers() error {
 	return fmt.Errorf("foo")
 }
 
-func (s *GomolSuite) TestLogAdapterShutdownLoggers(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterShutdownLoggers(t *testing.T) {
 	la := NewLogAdapterFor(&mockBase{}, nil)
 	Expect(la.ShutdownLoggers()).To(MatchError("foo"))
 }

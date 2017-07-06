@@ -71,6 +71,9 @@ func main() {
 	// Add a console logger
 	consoleCfg := gc.NewConsoleLoggerConfig()
 	consoleLogger, _ := gc.NewConsoleLogger(consoleCfg)
+	// Set the template to display the full message, including
+	// attributes.
+	consoleLogger.SetTemplate(gc.NewTemplateFull())
 	gomol.AddLogger(consoleLogger)
 
 	// Add a GELF logger
@@ -85,6 +88,16 @@ func main() {
 	gomol.SetAttr("facility", "gomol.example")
 	gomol.SetAttr("another_attr", 1234)
 
+	// Configure gomol to add the filename and line number that the
+	// log was generated from as well as the internal sequence number
+	// to help with ordering events if your log system doesn't support
+	// a small enough sub-second resolution.
+	cfg := gomol.NewConfig()
+	cfg.FilenameAttr = "filename"
+	cfg.LineNumberAttr = "line"
+	cfg.SequenceAttr = "sequence"
+	gomol.SetConfig(cfg)
+
 	// Initialize the loggers
 	gomol.InitLoggers()
 	defer gomol.ShutdownLoggers()
@@ -92,9 +105,9 @@ func main() {
 	// Log some debug messages with message-level attrs
 	// that will be sent only with that message
 	for idx := 1; idx <= 10; idx++ {
-		gomol.Dbgm(map[string]interface{}{
+		gomol.Dbgm(gomol.NewAttrsFromMap(map[string]interface{}{
 			"msg_attr1": 4321,
-		}, "Test message %v", idx)
+		}), "Test message %v", idx)
 	}
 }
 ```

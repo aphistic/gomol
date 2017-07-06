@@ -77,7 +77,7 @@ func (s *GomolSuite) TestToLogLevelError(t *testing.T) {
 func (s *GomolSuite) TestNewMessageAttrsNil(t *testing.T) {
 	setClock(newTestClock(time.Now()))
 	m := newMessage(clock().Now(), curDefault, LevelDebug, nil, "test")
-	Expect(m.Base).To(Equal(curDefault))
+	Expect(m.base).To(Equal(curDefault))
 	Expect(m.Timestamp).To(Equal(clock().Now()))
 	Expect(m.Level).To(Equal(LevelDebug))
 	Expect(m.Attrs).ToNot(BeNil())
@@ -93,7 +93,7 @@ func (s *GomolSuite) TestNewMessageMsgAttrsNil(t *testing.T) {
 		SetAttr("otherAttr", 4321)
 
 	m := newMessage(clock().Now(), curDefault, LevelDebug, ma, "test")
-	Expect(m.Base).To(Equal(curDefault))
+	Expect(m.base).To(Equal(curDefault))
 	Expect(m.Timestamp).To(Equal(clock().Now()))
 	Expect(m.Level).To(Equal(LevelDebug))
 	Expect(m.Attrs).ToNot(BeNil())
@@ -106,7 +106,7 @@ func (s *GomolSuite) TestNewMessageMsgAttrsNil(t *testing.T) {
 func (s *GomolSuite) TestNewMessageFormat(t *testing.T) {
 	setClock(newTestClock(time.Now()))
 	m := newMessage(clock().Now(), curDefault, LevelDebug, nil, "test %v %v", "str", 1234)
-	Expect(m.Base).To(Equal(curDefault))
+	Expect(m.base).To(Equal(curDefault))
 	Expect(m.Timestamp).To(Equal(clock().Now()))
 	Expect(m.Level).To(Equal(LevelDebug))
 	Expect(m.Attrs).ToNot(BeNil())
@@ -122,7 +122,7 @@ func (s *GomolSuite) TestNewMessageFormatWithAttrs(t *testing.T) {
 		SetAttr("otherAttr", 4321)
 
 	m := newMessage(clock().Now(), curDefault, LevelDebug, ma, "test %v %v", "str", 1234)
-	Expect(m.Base).To(Equal(curDefault))
+	Expect(m.base).To(Equal(curDefault))
 	Expect(m.Timestamp).To(Equal(clock().Now()))
 	Expect(m.Level).To(Equal(LevelDebug))
 	Expect(m.Attrs).ToNot(BeNil())

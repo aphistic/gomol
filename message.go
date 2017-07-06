@@ -21,8 +21,9 @@ const (
 	LevelError LogLevel = 3
 	// LevelFatal designates messages for severe errors where the application cannot continue
 	LevelFatal LogLevel = 2
+
 	// LevelNone is used when configuring log levels to disable all log levels
-	LevelNone LogLevel = math.MinInt64
+	LevelNone LogLevel = math.MinInt32
 )
 
 // ToLogLevel will take a string and return the appropriate log level for
@@ -78,8 +79,9 @@ func getLevelName(level LogLevel) string {
 	}
 }
 
-type message struct {
-	Base      *Base
+// Message holds the information for a log message
+type Message struct {
+	base      *Base
 	Level     LogLevel
 	Timestamp time.Time
 	Attrs     *Attrs
@@ -90,7 +92,7 @@ func newMessage(timestamp time.Time,
 	base *Base,
 	level LogLevel,
 	msgAttrs *Attrs,
-	format string, va ...interface{}) *message {
+	format string, va ...interface{}) *Message {
 
 	msgStr := format
 	if len(va) > 0 {
@@ -104,8 +106,8 @@ func newMessage(timestamp time.Time,
 		attrs = NewAttrs()
 	}
 
-	nm := &message{
-		Base:      base,
+	nm := &Message{
+		base:      base,
 		Level:     level,
 		Timestamp: timestamp,
 		Attrs:     attrs,
