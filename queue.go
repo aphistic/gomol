@@ -2,7 +2,7 @@ package gomol
 
 import "errors"
 
-const MaxQueueSize = 30000
+const MaxQueueSize = 10000
 
 type queue struct {
 	running   bool
@@ -64,7 +64,30 @@ func (queue *queue) queueMessage(msg *Message) error {
 		return errors.New("the logging system is not running - has InitLoggers() been executed?")
 	}
 
-	queue.queueChan <- msg
+loop:
+	for {
+		// Attempt to queue the message immediately to
+		// the channel.
+
+		select {
+		case queue.queueChan <- msg:
+			break loop
+		default:
+		}
+
+		// The queue was full. Try to read one message
+		// from it (which will be the oldest) to make room
+		// for another attempt to append. We do this in a
+		// loop in case there's some contention - we'll keep
+		// eating from the front until we finally make it in.
+
+		select {
+		case <-queue.queueChan:
+		// TODO - user should be informed somehow
+		default:
+		}
+	}
+
 	return nil
 }
 
