@@ -7,92 +7,67 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func (s *GomolSuite) TestQueueLenChan(t *testing.T) {
+func (s *GomolSuite) TestPressure(t *testing.T) {
 	q := newQueue()
-
-	Expect(q.Length()).To(Equal(0))
+	Expect(q.pressure()).To(Equal(0))
 	q.queueChan <- &Message{}
-	Expect(q.Length()).To(Equal(1))
-}
-
-func (s *GomolSuite) TestQueueLenArray(t *testing.T) {
-	q := newQueue()
-
-	Expect(q.Length()).To(Equal(0))
-	q.queue = append(q.queue, &Message{})
-	Expect(q.Length()).To(Equal(1))
-}
-
-func (s *GomolSuite) TestQueueLen(t *testing.T) {
-	q := newQueue()
-
-	Expect(q.Length()).To(Equal(0))
 	q.queueChan <- &Message{}
-	q.queue = append(q.queue, &Message{})
-	Expect(q.Length()).To(Equal(2))
+	Expect(q.pressure()).To(Equal(2))
 }
 
-func (s *GomolSuite) TestQueueMessageWithoutWorkers(t *testing.T) {
+func (s *GomolSuite) TestQueueMessageWithoutWorker(t *testing.T) {
 	q := newQueue()
-	err := q.QueueMessage(&Message{})
+	err := q.queueMessage(&Message{})
 	Expect(err).ToNot(BeNil())
-	Expect(err.Error()).To(Equal("The logging system is not running, has InitLoggers() been executed?"))
+	Expect(err.Error()).To(Equal("the logging system is not running - has InitLoggers() been executed?"))
 }
 
-func (s *GomolSuite) TestQueueStartWorkers(t *testing.T) {
+func (s *GomolSuite) TestQueueStartWorker(t *testing.T) {
 	q := newQueue()
-	q.startQueueWorkers()
-	Expect(q.IsActive()).To(Equal(true))
-	Expect(q.queue).To(HaveLen(0))
-	q.stopQueueWorkers()
+	q.startWorker()
+	Expect(q.pressure()).To(Equal(0))
+	q.stopWorker()
 }
 
-func (s *GomolSuite) TestQueueStartWorkersTwice(t *testing.T) {
+func (s *GomolSuite) TestQueueStartWorkerTwice(t *testing.T) {
 	q := newQueue()
-	err := q.startQueueWorkers()
+	err := q.startWorker()
 	Expect(err).To(BeNil())
-	Expect(q.IsActive()).To(Equal(true))
-	Expect(q.queue).To(HaveLen(0))
-	err = q.startQueueWorkers()
+	Expect(q.pressure()).To(Equal(0))
+	err = q.startWorker()
 	Expect(err).ToNot(BeNil())
-	Expect(err.Error()).To(Equal("Workers are already running"))
-	q.stopQueueWorkers()
+	Expect(err.Error()).To(Equal("workers are already running"))
+	q.stopWorker()
 }
 
-func (s *GomolSuite) TestQueueStopWorkers(t *testing.T) {
+func (s *GomolSuite) TestQueueStopWorker(t *testing.T) {
 	q := newQueue()
-	q.startQueueWorkers()
+	q.startWorker()
 
-	q.stopQueueWorkers()
-	Expect(q.IsActive()).To(Equal(false))
-	Expect(q.queue).To(HaveLen(0))
-	Expect(len(q.queueChan)).To(Equal(0))
+	q.stopWorker()
+	Expect(q.pressure()).To(Equal(0))
 }
 
-func (s *GomolSuite) TestQueueStopWorkersTwice(t *testing.T) {
+func (s *GomolSuite) TestQueueStopWorkerTwice(t *testing.T) {
 	q := newQueue()
-	q.startQueueWorkers()
+	q.startWorker()
 
-	err := q.stopQueueWorkers()
+	err := q.stopWorker()
 	Expect(err).To(BeNil())
-	Expect(q.IsActive()).To(Equal(false))
-	Expect(q.queue).To(HaveLen(0))
-	Expect(len(q.queueChan)).To(Equal(0))
-	err = q.stopQueueWorkers()
+	Expect(q.pressure()).To(Equal(0))
+	err = q.stopWorker()
 	Expect(err).ToNot(BeNil())
-	Expect(err.Error()).To(Equal("Workers are not running"))
+	Expect(err.Error()).To(Equal("workers are not running"))
 }
 
 func (s *GomolSuite) TestQueueFlushMessages(t *testing.T) {
 	q := newQueue()
-	q.startQueueWorkers()
+	q.startWorker()
 
 	for i := 0; i < 100; i++ {
-		q.QueueMessage(newMessage(time.Now(), testBase, LevelDebug, nil, "test"))
+		q.queueMessage(newMessage(time.Now(), testBase, LevelDebug, nil, "test"))
 	}
 
-	q.stopQueueWorkers()
-	Expect(q.IsActive()).To(Equal(false))
-	Expect(q.queue).To(HaveLen(0))
-	Expect(len(q.queueChan)).To(Equal(0))
+	q.stopWorker()
+	Expect(q.pressure()).To(Equal(0))
 }

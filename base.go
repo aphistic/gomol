@@ -160,7 +160,7 @@ func (b *Base) InitLoggers() error {
 		}
 	}
 
-	b.queue.startQueueWorkers()
+	b.queue.startWorker()
 	b.isInitialized = true
 
 	return nil
@@ -169,7 +169,7 @@ func (b *Base) InitLoggers() error {
 // Flush will wait until all messages currently queued are distributed to
 // all initialized loggers
 func (b *Base) Flush() {
-	b.queue.Flush()
+	b.queue.flush()
 }
 
 /*
@@ -178,7 +178,7 @@ while shutting down a Logger, the error will be returned and all the loggers tha
 were already shut down will remain shut down.
 */
 func (b *Base) ShutdownLoggers() error {
-	b.queue.stopQueueWorkers()
+	b.queue.stopWorker()
 
 	for _, logger := range b.loggers {
 		err := logger.ShutdownLogger()
@@ -262,7 +262,7 @@ func (b *Base) LogWithTime(level LogLevel, ts time.Time, m *Attrs, msg string, a
 		}
 	}
 
-	return b.queue.QueueMessage(nm)
+	return b.queue.queueMessage(nm)
 }
 
 // Log will log a message at the provided level to all added loggers with the timestamp set to the time
