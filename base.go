@@ -154,7 +154,7 @@ initialized will continue to be initialized.
 */
 func (b *Base) InitLoggers() error {
 	if b.queue == nil {
-		b.queue = newQueue(b.config.MaxQueueSize)
+		b.queue = newQueue(b, b.config.MaxQueueSize)
 	}
 
 	for _, logger := range b.loggers {

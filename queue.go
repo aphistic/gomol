@@ -3,13 +3,15 @@ package gomol
 import "errors"
 
 type queue struct {
+	base      *Base
 	running   bool
 	finished  chan struct{}
 	queueChan chan *Message
 }
 
-func newQueue(maxQueueSize uint) *queue {
+func newQueue(base *Base, maxQueueSize uint) *queue {
 	return &queue{
+		base:      base,
 		running:   false,
 		finished:  make(chan struct{}),
 		queueChan: make(chan *Message, maxQueueSize),
