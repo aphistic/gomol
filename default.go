@@ -16,6 +16,11 @@ func SetConfig(config *Config) {
 	curDefault.SetConfig(config)
 }
 
+// SetErrorChan executes the same function on the default Base instance
+func SetErrorChan(ch chan<- error) {
+	curDefault.SetErrorChan(ch)
+}
+
 // SetLogLevel executes the same function on the default Base instance
 func SetLogLevel(level LogLevel) {
 	curDefault.SetLogLevel(level)
