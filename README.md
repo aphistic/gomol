@@ -89,13 +89,15 @@ func main() {
 	gomol.SetAttr("another_attr", 1234)
 
 	// Configure gomol to add the filename and line number that the
-	// log was generated from as well as the internal sequence number
-	// to help with ordering events if your log system doesn't support
-	// a small enough sub-second resolution.
+	// log was generated from, the internal sequence number to help
+	// with ordering events if your log system doesn't support a
+	// small enough sub-second resolution, and set the size of the
+	// interal queue (default is 10k messages).
 	cfg := gomol.NewConfig()
 	cfg.FilenameAttr = "filename"
 	cfg.LineNumberAttr = "line"
 	cfg.SequenceAttr = "sequence"
+	cfg.MaxQueueSize = 50000
 	gomol.SetConfig(cfg)
 
 	// Initialize the loggers
