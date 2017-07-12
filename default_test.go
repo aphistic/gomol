@@ -20,6 +20,13 @@ func (s *GomolSuite) TestDefaultSetConfig(t *testing.T) {
 	Expect(curDefault.config).To(Equal(cfg))
 }
 
+func (s *GomolSuite) TestDefaultSetErrorChan(t *testing.T) {
+	ch := make(chan error)
+	Expect(curDefault.errorChan).To(BeNil())
+	SetErrorChan(ch)
+	Expect(curDefault.errorChan).To(Equal((chan<- error)(ch)))
+}
+
 func (s *GomolSuite) TestDefaultInitLogger(t *testing.T) {
 	curDefault = NewBase()
 	Expect(IsInitialized()).To(Equal(false))
