@@ -92,7 +92,7 @@ func main() {
 	// log was generated from, the internal sequence number to help
 	// with ordering events if your log system doesn't support a
 	// small enough sub-second resolution, and set the size of the
-	// interal queue (default is 10k messages).
+	// internal queue (default is 10k messages).
 	cfg := gomol.NewConfig()
 	cfg.FilenameAttr = "filename"
 	cfg.LineNumberAttr = "line"
@@ -103,6 +103,24 @@ func main() {
 	// Initialize the loggers
 	gomol.InitLoggers()
 	defer gomol.ShutdownLoggers()
+
+	// Create a channel on which to receive internal (asynchronous)
+	// logger errors. This is optional, but recommended in order to
+	// determine when logging may be dropping messages.
+	ch := make(chan error)
+
+	go func() {
+		// This consumer is expected to be efficient as writes to 
+		// the channel are blocking. If this handler is slow, the
+		// user should add a buffer to the channel, or manually
+		// queue and batch errors for processing.
+
+		for err := range ch {
+			fmt.Printf("[Internal Error] %s\n", err.Error())
+		}
+	}()
+
+	gomol.SetErrorChan(ch)
 
 	// Log some debug messages with message-level attrs
 	// that will be sent only with that message
