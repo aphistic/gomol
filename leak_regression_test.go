@@ -20,7 +20,7 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 	testBase.AddLogger(l2)
 	testBase.InitLoggers()
 
-	for i := 0; i < MaxQueueSize; i++ {
+	for i := 0; i < TestMaxQueueSize; i++ {
 		testBase.Infof("test %d", i)
 	}
 
@@ -34,7 +34,7 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 	// and the queue is full. This should NOT block the main
 	// app routine.
 
-	for i := MaxQueueSize; i < MaxQueueSize*3; i++ {
+	for i := TestMaxQueueSize; i < TestMaxQueueSize*3; i++ {
 		testBase.Infof("test %d", i)
 	}
 
@@ -46,7 +46,7 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 	close(blocker)
 	<-time.After(time.Second)
 
-	for i := MaxQueueSize * 3; i < MaxQueueSize*4; i++ {
+	for i := TestMaxQueueSize * 3; i < TestMaxQueueSize*4; i++ {
 		testBase.Infof("test %d", i)
 	}
 
@@ -59,12 +59,12 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 	// message we should see that wasn't dropped should be the
 	// first message in the third chunk.
 
-	Expect(l1.Messages).To(HaveLen(2*MaxQueueSize + 1))
+	Expect(l1.Messages).To(HaveLen(2*TestMaxQueueSize + 1))
 
 	// Skip checking "test 0" message
 
 	for i := 0; i < len(l1.Messages)-1; i++ {
-		Expect(l1.Messages[i+1].Message).To(Equal(fmt.Sprintf("test %d", i+2*MaxQueueSize)))
+		Expect(l1.Messages[i+1].Message).To(Equal(fmt.Sprintf("test %d", i+2*TestMaxQueueSize)))
 	}
 }
 

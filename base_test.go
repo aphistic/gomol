@@ -76,7 +76,6 @@ func (s *BaseSuite) TestNewBase(t *testing.T) {
 	Expect(b.config).ToNot(BeNil())
 	Expect(b.config.FilenameAttr).To(Equal(""))
 	Expect(b.config.LineNumberAttr).To(Equal(""))
-	Expect(b.queue).ToNot(BeNil())
 	Expect(b.logLevel).To(Equal(LevelDebug))
 	Expect(b.loggers).To(HaveLen(0))
 	Expect(b.BaseAttrs.Attrs()).To(HaveLen(0))
@@ -260,6 +259,7 @@ func (s *BaseSuite) TestBaseClearLoggers(t *testing.T) {
 func (s *BaseSuite) TestInitLoggers(t *testing.T) {
 	b := NewBase()
 	Expect(b.IsInitialized()).To(Equal(false))
+	Expect(b.queue).To(BeNil())
 
 	ml1 := newDefaultMemLogger()
 	ml2 := newDefaultMemLogger()
@@ -268,6 +268,7 @@ func (s *BaseSuite) TestInitLoggers(t *testing.T) {
 	b.AddLogger(ml2)
 
 	b.InitLoggers()
+	Expect(b.queue).ToNot(BeNil())
 
 	Expect(b.IsInitialized()).To(Equal(true))
 	Expect(ml1.IsInitialized()).To(Equal(true))

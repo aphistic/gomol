@@ -25,7 +25,6 @@ type Base struct {
 func NewBase() *Base {
 	b := &Base{
 		config:       NewConfig(),
-		queue:        newQueue(),
 		logLevel:     LevelDebug,
 		sequence:     0,
 		BaseAttrs:    NewAttrs(),
@@ -136,6 +135,7 @@ func (b *Base) ClearLoggers() error {
 			return err
 		}
 	}
+
 	b.loggers = make([]Logger, 0)
 	b.hookPreQueue = make([]HookPreQueue, 0)
 
@@ -153,6 +153,10 @@ If an error occurs in initializing a logger, the loggers that have already been
 initialized will continue to be initialized.
 */
 func (b *Base) InitLoggers() error {
+	if b.queue == nil {
+		b.queue = newQueue(b.config.MaxQueueSize)
+	}
+
 	for _, logger := range b.loggers {
 		err := logger.InitLogger()
 		if err != nil {
@@ -169,7 +173,9 @@ func (b *Base) InitLoggers() error {
 // Flush will wait until all messages currently queued are distributed to
 // all initialized loggers
 func (b *Base) Flush() {
-	b.queue.flush()
+	if b.queue != nil {
+		b.queue.flush()
+	}
 }
 
 /*
@@ -178,8 +184,6 @@ while shutting down a Logger, the error will be returned and all the loggers tha
 were already shut down will remain shut down.
 */
 func (b *Base) ShutdownLoggers() error {
-	b.queue.stopWorker()
-
 	for _, logger := range b.loggers {
 		err := logger.ShutdownLogger()
 		if err != nil {
@@ -187,8 +191,11 @@ func (b *Base) ShutdownLoggers() error {
 		}
 	}
 
-	b.isInitialized = false
+	if b.queue != nil {
+		b.queue.stopWorker()
+	}
 
+	b.isInitialized = false
 	return nil
 }
 

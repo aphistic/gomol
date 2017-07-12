@@ -2,19 +2,17 @@ package gomol
 
 import "errors"
 
-const MaxQueueSize = 10000
-
 type queue struct {
 	running   bool
 	finished  chan struct{}
 	queueChan chan *Message
 }
 
-func newQueue() *queue {
+func newQueue(maxQueueSize uint) *queue {
 	return &queue{
 		running:   false,
 		finished:  make(chan struct{}),
-		queueChan: make(chan *Message, MaxQueueSize),
+		queueChan: make(chan *Message, maxQueueSize),
 	}
 }
 
