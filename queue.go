@@ -83,7 +83,7 @@ loop:
 
 		select {
 		case <-queue.queueChan:
-		// TODO - user should be informed somehow
+			queue.base.report(ErrMessageDropped)
 		default:
 		}
 	}

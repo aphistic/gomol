@@ -12,6 +12,7 @@ are desired.
 type Base struct {
 	isInitialized bool
 	config        *Config
+	errorChan     chan<- error
 	queue         *queue
 	logLevel      LogLevel
 	sequence      uint64
@@ -52,6 +53,20 @@ func setExiter(exiter appExiter) {
 // SetConfig will set the configuration for the Base to the given Config
 func (b *Base) SetConfig(config *Config) {
 	b.config = config
+}
+
+// SetErrorChan will register a channel as the consumer of internal error
+// events.  This channel will be closed once ShutdownLoggers has finished.
+// The consumer of this channel is expected to be efficient as writing to
+// this channel will block.
+func (b *Base) SetErrorChan(ch chan<- error) {
+	b.errorChan = ch
+}
+
+func (b *Base) report(err error) {
+	if b.errorChan != nil {
+		b.errorChan <- err
+	}
 }
 
 /*
@@ -193,6 +208,11 @@ func (b *Base) ShutdownLoggers() error {
 
 	if b.queue != nil {
 		b.queue.stopWorker()
+	}
+
+	if b.errorChan != nil {
+		close(b.errorChan)
+		b.errorChan = nil
 	}
 
 	b.isInitialized = false

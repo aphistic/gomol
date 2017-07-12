@@ -1,6 +1,7 @@
 package gomol
 
 import (
+	"errors"
 	"testing"
 	"time"
 
@@ -96,6 +97,34 @@ func (s *BaseSuite) TestSetConfig(t *testing.T) {
 	Expect(b.config).ToNot(BeNil())
 	Expect(b.config.FilenameAttr).To(Equal("filename"))
 	Expect(b.config.LineNumberAttr).To(Equal("line_number"))
+}
+
+func (s *BaseSuite) TestErrorChannel(t *testing.T) {
+	ch := make(chan error)
+	received := make(chan error, 3)
+
+	b := NewBase()
+	b.SetErrorChan(ch)
+
+	go func() {
+		defer close(received)
+
+		for val := range ch {
+			received <- val
+		}
+	}()
+
+	b.report(errors.New("error1"))
+	b.report(errors.New("error2"))
+	b.report(errors.New("error3"))
+
+	Eventually(received).Should(Receive(MatchError("error1")))
+	Eventually(received).Should(Receive(MatchError("error2")))
+	Eventually(received).Should(Receive(MatchError("error3")))
+
+	b.ShutdownLoggers()
+	Eventually(ch).Should(BeClosed())
+	Eventually(received).Should(BeClosed())
 }
 
 func (s *BaseSuite) TestSetLogLevel(t *testing.T) {
