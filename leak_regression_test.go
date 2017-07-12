@@ -13,9 +13,23 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 		blocker = make(chan struct{})
 		l1      = newDefaultMemLogger()
 		l2      = &BlockingLogger{ch: blocker}
+		ch      = make(chan error)
+		errors  = make(chan int)
 	)
 
+	go func() {
+		defer close(errors)
+
+		count := 0
+		for range ch {
+			count++
+		}
+
+		errors <- count
+	}()
+
 	testBase = NewBase()
+	testBase.SetErrorChan(ch)
 	testBase.AddLogger(l1)
 	testBase.AddLogger(l2)
 	testBase.InitLoggers()
@@ -59,13 +73,15 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 	// message we should see that wasn't dropped should be the
 	// first message in the third chunk.
 
-	Expect(l1.Messages).To(HaveLen(2*TestMaxQueueSize + 1))
+	Expect(len(l1.Messages)).To(Equal(2*TestMaxQueueSize + 1))
 
 	// Skip checking "test 0" message
 
 	for i := 0; i < len(l1.Messages)-1; i++ {
 		Expect(l1.Messages[i+1].Message).To(Equal(fmt.Sprintf("test %d", i+2*TestMaxQueueSize)))
 	}
+
+	Eventually(errors).Should(Receive(Equal(2*TestMaxQueueSize - 1)))
 }
 
 //
