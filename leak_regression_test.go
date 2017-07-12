@@ -29,6 +29,7 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 	}()
 
 	testBase = NewBase()
+	testBase.SetConfig(&Config{MaxQueueSize: TestMaxQueueSize})
 	testBase.SetErrorChan(ch)
 	testBase.AddLogger(l1)
 	testBase.AddLogger(l2)
@@ -58,7 +59,7 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 	// was naughty.
 
 	close(blocker)
-	<-time.After(time.Second)
+	<-time.After(time.Millisecond * 100)
 
 	for i := TestMaxQueueSize * 3; i < TestMaxQueueSize*4; i++ {
 		testBase.Infof("test %d", i)

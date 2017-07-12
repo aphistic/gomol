@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-const TestMaxQueueSize = 10000
+const TestMaxQueueSize = 5000
 
 func (s *GomolSuite) TestPressure(t *testing.T) {
 	q := newQueue(NewBase(), TestMaxQueueSize)
