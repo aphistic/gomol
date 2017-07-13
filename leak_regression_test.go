@@ -29,7 +29,7 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 		errors <- count
 	}()
 
-	fmt.Printf("[LRT] setting up base wiith queue size of %d\n", TestMaxQueueSize)
+	fmt.Printf("[LRT] setting up base with queue size of %d\n", TestMaxQueueSize)
 
 	testBase = NewBase()
 	testBase.SetConfig(&Config{MaxQueueSize: TestMaxQueueSize})
