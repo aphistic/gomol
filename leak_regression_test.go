@@ -29,7 +29,7 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 		errors <- count
 	}()
 
-	fmt.Printf("[LRT] setting up base\n")
+	fmt.Printf("[LRT] setting up base wiith queue size of %d\n", TestMaxQueueSize)
 
 	testBase = NewBase()
 	testBase.SetConfig(&Config{MaxQueueSize: TestMaxQueueSize})
@@ -41,6 +41,7 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 	fmt.Printf("[LRT] sending first chunk\n")
 
 	for i := 0; i < TestMaxQueueSize; i++ {
+		fmt.Printf("[LRT] i=%d", i)
 		testBase.Infof("test %d", i)
 	}
 
@@ -57,6 +58,7 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 	fmt.Printf("[LRT] sending next two chunk\n")
 
 	for i := TestMaxQueueSize; i < TestMaxQueueSize*3; i++ {
+		fmt.Printf("[LRT] i=%d", i)
 		testBase.Infof("test %d", i)
 	}
 
@@ -73,6 +75,7 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 	fmt.Printf("[LRT] sending fourth chunk\n")
 
 	for i := TestMaxQueueSize * 3; i < TestMaxQueueSize*4; i++ {
+		fmt.Printf("[LRT] i=%d", i)
 		testBase.Infof("test %d", i)
 	}
 
@@ -113,6 +116,8 @@ func (l *BlockingLogger) IsInitialized() bool   { return true }
 func (l *BlockingLogger) ShutdownLogger() error { return nil }
 
 func (l *BlockingLogger) Logm(timestamp time.Time, level LogLevel, attrs map[string]interface{}, msg string) error {
+	fmt.Printf("[LRT] blocking\n")
 	<-l.ch
+	fmt.Printf("[LRT] unblocked\n")
 	return nil
 }
