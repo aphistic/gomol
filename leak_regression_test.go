@@ -41,7 +41,7 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 	fmt.Printf("[LRT] sending first chunk\n")
 
 	for i := 0; i < TestMaxQueueSize; i++ {
-		fmt.Printf("[LRT] i=%d", i)
+		fmt.Printf("[LRT] i=%d\n", i)
 		testBase.Infof("test %d", i)
 	}
 
@@ -58,7 +58,7 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 	fmt.Printf("[LRT] sending next two chunk\n")
 
 	for i := TestMaxQueueSize; i < TestMaxQueueSize*3; i++ {
-		fmt.Printf("[LRT] i=%d", i)
+		fmt.Printf("[LRT] i=%d\n", i)
 		testBase.Infof("test %d", i)
 	}
 
@@ -75,7 +75,7 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 	fmt.Printf("[LRT] sending fourth chunk\n")
 
 	for i := TestMaxQueueSize * 3; i < TestMaxQueueSize*4; i++ {
-		fmt.Printf("[LRT] i=%d", i)
+		fmt.Printf("[LRT] i=%d\n", i)
 		testBase.Infof("test %d", i)
 	}
 
