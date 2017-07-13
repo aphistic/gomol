@@ -25,8 +25,11 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 			count++
 		}
 
+		fmt.Printf("[LRT] error channel closed\n")
 		errors <- count
 	}()
+
+	fmt.Printf("[LRT] setting up base\n")
 
 	testBase = NewBase()
 	testBase.SetConfig(&Config{MaxQueueSize: TestMaxQueueSize})
@@ -34,6 +37,8 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 	testBase.AddLogger(l1)
 	testBase.AddLogger(l2)
 	testBase.InitLoggers()
+
+	fmt.Printf("[LRT] sending first chunk\n")
 
 	for i := 0; i < TestMaxQueueSize; i++ {
 		testBase.Infof("test %d", i)
@@ -49,6 +54,8 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 	// and the queue is full. This should NOT block the main
 	// app routine.
 
+	fmt.Printf("[LRT] sending next two chunk\n")
+
 	for i := TestMaxQueueSize; i < TestMaxQueueSize*3; i++ {
 		testBase.Infof("test %d", i)
 	}
@@ -58,14 +65,22 @@ func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
 	// messages made it through during the time the logger
 	// was naughty.
 
+	fmt.Printf("[LRT] unblocking\n")
+
 	close(blocker)
 	<-time.After(time.Millisecond * 100)
+
+	fmt.Printf("[LRT] sending fourth chunk\n")
 
 	for i := TestMaxQueueSize * 3; i < TestMaxQueueSize*4; i++ {
 		testBase.Infof("test %d", i)
 	}
 
+	fmt.Printf("[LRT] shutting down loggers\n")
+
 	testBase.ShutdownLoggers()
+
+	fmt.Printf("[LRT] epilogue\n")
 
 	// We ran into a situation where in order to keep the bound
 	// of the queue some messages had to be dropped - these must
