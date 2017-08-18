@@ -1,9 +1,9 @@
 package gomol
 
 import (
-	"testing"
 	"time"
 
+	"github.com/aphistic/sweet"
 	. "github.com/onsi/gomega"
 )
 
@@ -23,7 +23,7 @@ func (exiter *testExiter) Exit(code int) {
 
 var curTestExiter *testExiter
 
-func (s *BaseSuite) SetUpTest(t *testing.T) {
+func (s *BaseSuite) SetUpTest(t sweet.T) {
 	setFakeCallerInfo("", 0)
 	setClock(newTestClock(time.Now()))
 	gomolFiles = map[string]fileRecord{}
@@ -40,13 +40,13 @@ func (s *BaseSuite) SetUpTest(t *testing.T) {
 	curDefault.InitLoggers()
 }
 
-func (s *BaseSuite) TearDownTest(t *testing.T) {
+func (s *BaseSuite) TearDownTest(t sweet.T) {
 	curDefault.ShutdownLoggers()
 
 	testBase.ShutdownLoggers()
 }
 
-func (s *BaseSuite) TestShouldLog(t *testing.T) {
+func (s *BaseSuite) TestShouldLog(t sweet.T) {
 	b := NewBase()
 	b.SetLogLevel(LevelInfo)
 	Expect(b.shouldLog(LevelDebug)).To(Equal(false))
@@ -70,7 +70,7 @@ func (s *BaseSuite) TestShouldLog(t *testing.T) {
 	Expect(b.shouldLog(LevelFatal)).To(Equal(false))
 }
 
-func (s *BaseSuite) TestNewBase(t *testing.T) {
+func (s *BaseSuite) TestNewBase(t sweet.T) {
 	b := NewBase()
 	Expect(b.isInitialized).To(Equal(false))
 	Expect(b.config).ToNot(BeNil())
@@ -82,7 +82,7 @@ func (s *BaseSuite) TestNewBase(t *testing.T) {
 	Expect(b.BaseAttrs.Attrs()).To(HaveLen(0))
 }
 
-func (s *BaseSuite) TestSetConfig(t *testing.T) {
+func (s *BaseSuite) TestSetConfig(t sweet.T) {
 	b := NewBase()
 
 	Expect(b.config).ToNot(BeNil())
@@ -99,7 +99,7 @@ func (s *BaseSuite) TestSetConfig(t *testing.T) {
 	Expect(b.config.LineNumberAttr).To(Equal("line_number"))
 }
 
-func (s *BaseSuite) TestSetLogLevel(t *testing.T) {
+func (s *BaseSuite) TestSetLogLevel(t sweet.T) {
 	b := NewBase()
 	b.InitLoggers()
 	ml := newDefaultMemLogger()
@@ -115,7 +115,7 @@ func (s *BaseSuite) TestSetLogLevel(t *testing.T) {
 	Expect(ml.Messages).To(HaveLen(3))
 }
 
-func (s *BaseSuite) TestAddLogger(t *testing.T) {
+func (s *BaseSuite) TestAddLogger(t sweet.T) {
 	b := NewBase()
 	b.InitLoggers()
 	Expect(b.loggers).To(HaveLen(0))
@@ -131,7 +131,7 @@ func (s *BaseSuite) TestAddLogger(t *testing.T) {
 	Expect(ml.base).To(Equal(b))
 }
 
-func (s *BaseSuite) TestAddLoggerAfterInit(t *testing.T) {
+func (s *BaseSuite) TestAddLoggerAfterInit(t sweet.T) {
 	b := NewBase()
 	b.InitLoggers()
 
@@ -143,7 +143,7 @@ func (s *BaseSuite) TestAddLoggerAfterInit(t *testing.T) {
 	Expect(ml.IsInitialized()).To(Equal(true))
 }
 
-func (s *BaseSuite) TestAddLoggerAfterShutdown(t *testing.T) {
+func (s *BaseSuite) TestAddLoggerAfterShutdown(t sweet.T) {
 	b := NewBase()
 
 	ml := newDefaultMemLogger()
@@ -156,7 +156,7 @@ func (s *BaseSuite) TestAddLoggerAfterShutdown(t *testing.T) {
 	Expect(ml.IsInitialized()).To(Equal(false))
 }
 
-func (s *BaseSuite) TestAddLoggerAfterInitFail(t *testing.T) {
+func (s *BaseSuite) TestAddLoggerAfterInitFail(t sweet.T) {
 	b := NewBase()
 	b.InitLoggers()
 
@@ -173,7 +173,7 @@ func (s *BaseSuite) TestAddLoggerAfterInitFail(t *testing.T) {
 	Expect(b.loggers).To(HaveLen(0))
 }
 
-func (s *BaseSuite) TestAddLoggerAfterShutdownFail(t *testing.T) {
+func (s *BaseSuite) TestAddLoggerAfterShutdownFail(t sweet.T) {
 	b := NewBase()
 
 	mlCfg := newMemLoggerConfig()
@@ -191,7 +191,7 @@ func (s *BaseSuite) TestAddLoggerAfterShutdownFail(t *testing.T) {
 	Expect(b.loggers).To(HaveLen(0))
 }
 
-func (s *BaseSuite) TestBaseRemoveLogger(t *testing.T) {
+func (s *BaseSuite) TestBaseRemoveLogger(t sweet.T) {
 	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -216,7 +216,7 @@ func (s *BaseSuite) TestBaseRemoveLogger(t *testing.T) {
 	Expect(b.loggers).To(HaveLen(2))
 }
 
-func (s *BaseSuite) TestBaseRemoveLoggerNonExistent(t *testing.T) {
+func (s *BaseSuite) TestBaseRemoveLoggerNonExistent(t sweet.T) {
 	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -232,7 +232,7 @@ func (s *BaseSuite) TestBaseRemoveLoggerNonExistent(t *testing.T) {
 	Expect(err).To(BeNil())
 }
 
-func (s *BaseSuite) TestBaseClearLoggers(t *testing.T) {
+func (s *BaseSuite) TestBaseClearLoggers(t sweet.T) {
 	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -257,7 +257,7 @@ func (s *BaseSuite) TestBaseClearLoggers(t *testing.T) {
 	Expect(b.loggers).To(HaveLen(0))
 }
 
-func (s *BaseSuite) TestInitLoggers(t *testing.T) {
+func (s *BaseSuite) TestInitLoggers(t sweet.T) {
 	b := NewBase()
 	Expect(b.IsInitialized()).To(Equal(false))
 
@@ -274,7 +274,7 @@ func (s *BaseSuite) TestInitLoggers(t *testing.T) {
 	Expect(ml2.IsInitialized()).To(Equal(true))
 }
 
-func (s *BaseSuite) TestInitLoggersTwice(t *testing.T) {
+func (s *BaseSuite) TestInitLoggersTwice(t sweet.T) {
 	b := NewBase()
 	Expect(b.IsInitialized()).To(Equal(false))
 
@@ -292,7 +292,7 @@ func (s *BaseSuite) TestInitLoggersTwice(t *testing.T) {
 	Expect(ml2.IsInitialized()).To(Equal(true))
 }
 
-func (s *BaseSuite) TestInitLoggersFail(t *testing.T) {
+func (s *BaseSuite) TestInitLoggersFail(t sweet.T) {
 	b := NewBase()
 
 	mlCfg := newMemLoggerConfig()
@@ -314,7 +314,7 @@ func (s *BaseSuite) TestInitLoggersFail(t *testing.T) {
 	Expect(ml2.IsInitialized()).To(Equal(false))
 }
 
-func (s *BaseSuite) TestShutdownLoggers(t *testing.T) {
+func (s *BaseSuite) TestShutdownLoggers(t sweet.T) {
 	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -330,7 +330,7 @@ func (s *BaseSuite) TestShutdownLoggers(t *testing.T) {
 	Expect(ml2.isShutdown).To(Equal(true))
 }
 
-func (s *BaseSuite) TestShutdownLoggersFail(t *testing.T) {
+func (s *BaseSuite) TestShutdownLoggersFail(t sweet.T) {
 	b := NewBase()
 
 	mlCfg := newMemLoggerConfig()
@@ -352,7 +352,7 @@ func (s *BaseSuite) TestShutdownLoggersFail(t *testing.T) {
 	Expect(ml2.isShutdown).To(Equal(false))
 }
 
-func (s *BaseSuite) TestShutdownLoggersTwice(t *testing.T) {
+func (s *BaseSuite) TestShutdownLoggersTwice(t sweet.T) {
 	b := NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -369,7 +369,7 @@ func (s *BaseSuite) TestShutdownLoggersTwice(t *testing.T) {
 	Expect(ml2.isShutdown).To(Equal(true))
 }
 
-func (s *BaseSuite) TestSetAttr(t *testing.T) {
+func (s *BaseSuite) TestSetAttr(t sweet.T) {
 	b := NewBase()
 
 	b.SetAttr("attr1", 1)
@@ -380,7 +380,7 @@ func (s *BaseSuite) TestSetAttr(t *testing.T) {
 	Expect(b.BaseAttrs.GetAttr("attr2")).To(Equal("val2"))
 }
 
-func (s *BaseSuite) TestGetAttr(t *testing.T) {
+func (s *BaseSuite) TestGetAttr(t sweet.T) {
 	b := NewBase()
 
 	b.SetAttr("attr1", 1)
@@ -390,7 +390,7 @@ func (s *BaseSuite) TestGetAttr(t *testing.T) {
 	Expect(b.GetAttr("notakey")).To(BeNil())
 }
 
-func (s *BaseSuite) TestRemoveAttr(t *testing.T) {
+func (s *BaseSuite) TestRemoveAttr(t sweet.T) {
 	b := NewBase()
 
 	b.SetAttr("attr1", 1)
@@ -401,7 +401,7 @@ func (s *BaseSuite) TestRemoveAttr(t *testing.T) {
 	Expect(b.BaseAttrs.Attrs()).To(HaveLen(0))
 }
 
-func (s *BaseSuite) TestClearAttrs(t *testing.T) {
+func (s *BaseSuite) TestClearAttrs(t sweet.T) {
 	b := NewBase()
 
 	b.SetAttr("attr1", 1)
@@ -412,7 +412,7 @@ func (s *BaseSuite) TestClearAttrs(t *testing.T) {
 	Expect(b.BaseAttrs.Attrs()).To(HaveLen(0))
 }
 
-func (s *BaseSuite) TestSequenceDisabled(t *testing.T) {
+func (s *BaseSuite) TestSequenceDisabled(t sweet.T) {
 	b := NewBase()
 
 	b.InitLoggers()
@@ -426,7 +426,7 @@ func (s *BaseSuite) TestSequenceDisabled(t *testing.T) {
 	b.ShutdownLoggers()
 }
 
-func (s *BaseSuite) TestSequence(t *testing.T) {
+func (s *BaseSuite) TestSequence(t sweet.T) {
 	b := NewBase()
 	b.config.SequenceAttr = "seq"
 
@@ -455,7 +455,7 @@ func (s *BaseSuite) TestSequence(t *testing.T) {
 }
 
 // Base func tests
-func (s *BaseSuite) TestBaseDbgfWithFormattingParams(t *testing.T) {
+func (s *BaseSuite) TestBaseDbgfWithFormattingParams(t sweet.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -472,7 +472,7 @@ func (s *BaseSuite) TestBaseDbgfWithFormattingParams(t *testing.T) {
 	Expect(l1.Messages[0].Level).To(Equal(LevelDebug))
 }
 
-func (s *BaseSuite) TestBaseDbg(t *testing.T) {
+func (s *BaseSuite) TestBaseDbg(t sweet.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -496,7 +496,7 @@ func (s *BaseSuite) TestBaseDbg(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelDebug))
 }
 
-func (s *BaseSuite) TestBaseDbgf(t *testing.T) {
+func (s *BaseSuite) TestBaseDbgf(t sweet.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -520,7 +520,7 @@ func (s *BaseSuite) TestBaseDbgf(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelDebug))
 }
 
-func (s *BaseSuite) TestBaseDbgm(t *testing.T) {
+func (s *BaseSuite) TestBaseDbgm(t sweet.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -556,7 +556,7 @@ func (s *BaseSuite) TestBaseDbgm(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelDebug))
 }
 
-func (s *BaseSuite) TestBaseInfo(t *testing.T) {
+func (s *BaseSuite) TestBaseInfo(t sweet.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -580,7 +580,7 @@ func (s *BaseSuite) TestBaseInfo(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelInfo))
 }
 
-func (s *BaseSuite) TestBaseInfof(t *testing.T) {
+func (s *BaseSuite) TestBaseInfof(t sweet.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -604,7 +604,7 @@ func (s *BaseSuite) TestBaseInfof(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelInfo))
 }
 
-func (s *BaseSuite) TestBaseInfom(t *testing.T) {
+func (s *BaseSuite) TestBaseInfom(t sweet.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -640,7 +640,7 @@ func (s *BaseSuite) TestBaseInfom(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelInfo))
 }
 
-func (s *BaseSuite) TestBaseWarn(t *testing.T) {
+func (s *BaseSuite) TestBaseWarn(t sweet.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -664,7 +664,7 @@ func (s *BaseSuite) TestBaseWarn(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelWarning))
 }
 
-func (s *BaseSuite) TestBaseWarnf(t *testing.T) {
+func (s *BaseSuite) TestBaseWarnf(t sweet.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -688,7 +688,7 @@ func (s *BaseSuite) TestBaseWarnf(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelWarning))
 }
 
-func (s *BaseSuite) TestBaseWarnm(t *testing.T) {
+func (s *BaseSuite) TestBaseWarnm(t sweet.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -724,7 +724,7 @@ func (s *BaseSuite) TestBaseWarnm(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelWarning))
 }
 
-func (s *BaseSuite) TestBaseErr(t *testing.T) {
+func (s *BaseSuite) TestBaseErr(t sweet.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -748,7 +748,7 @@ func (s *BaseSuite) TestBaseErr(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelError))
 }
 
-func (s *BaseSuite) TestBaseErrf(t *testing.T) {
+func (s *BaseSuite) TestBaseErrf(t sweet.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -772,7 +772,7 @@ func (s *BaseSuite) TestBaseErrf(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelError))
 }
 
-func (s *BaseSuite) TestBaseErrm(t *testing.T) {
+func (s *BaseSuite) TestBaseErrm(t sweet.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -808,7 +808,7 @@ func (s *BaseSuite) TestBaseErrm(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelError))
 }
 
-func (s *BaseSuite) TestBaseFatal(t *testing.T) {
+func (s *BaseSuite) TestBaseFatal(t sweet.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -832,7 +832,7 @@ func (s *BaseSuite) TestBaseFatal(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
 }
 
-func (s *BaseSuite) TestBaseFatalf(t *testing.T) {
+func (s *BaseSuite) TestBaseFatalf(t sweet.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -856,7 +856,7 @@ func (s *BaseSuite) TestBaseFatalf(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
 }
 
-func (s *BaseSuite) TestBaseFatalm(t *testing.T) {
+func (s *BaseSuite) TestBaseFatalm(t sweet.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -892,7 +892,7 @@ func (s *BaseSuite) TestBaseFatalm(t *testing.T) {
 	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
 }
 
-func (s *BaseSuite) TestBaseDie(t *testing.T) {
+func (s *BaseSuite) TestBaseDie(t sweet.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -919,7 +919,7 @@ func (s *BaseSuite) TestBaseDie(t *testing.T) {
 	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *BaseSuite) TestBaseDief(t *testing.T) {
+func (s *BaseSuite) TestBaseDief(t sweet.T) {
 	b := NewBase()
 
 	l1 := newDefaultMemLogger()
@@ -946,7 +946,7 @@ func (s *BaseSuite) TestBaseDief(t *testing.T) {
 	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *BaseSuite) TestBaseDiem(t *testing.T) {
+func (s *BaseSuite) TestBaseDiem(t sweet.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 
@@ -987,7 +987,7 @@ func (s *BaseSuite) TestBaseDiem(t *testing.T) {
 	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *BaseSuite) TestBaseOrdering(t *testing.T) {
+func (s *BaseSuite) TestBaseOrdering(t sweet.T) {
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
 

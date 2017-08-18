@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"time"
 
-	"testing"
-
+	"github.com/aphistic/sweet"
 	. "github.com/onsi/gomega"
 )
 
 type LogAdapterSuite struct{}
 
-func (s *LogAdapterSuite) TestNewLogAdapterEmpty(t *testing.T) {
+func (s *LogAdapterSuite) TestNewLogAdapterEmpty(t sweet.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(nil)
@@ -21,7 +20,7 @@ func (s *LogAdapterSuite) TestNewLogAdapterEmpty(t *testing.T) {
 	Expect(la.attrs).ToNot(BeNil())
 }
 
-func (s *LogAdapterSuite) TestNewLogAdapter(t *testing.T) {
+func (s *LogAdapterSuite) TestNewLogAdapter(t sweet.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(NewAttrs().
@@ -35,7 +34,7 @@ func (s *LogAdapterSuite) TestNewLogAdapter(t *testing.T) {
 	Expect(la.attrs.GetAttr("testStr")).To(Equal("foo"))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterSetAttr(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterSetAttr(t sweet.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(nil)
@@ -43,7 +42,7 @@ func (s *LogAdapterSuite) TestLogAdapterSetAttr(t *testing.T) {
 	Expect(la.attrs.GetAttr("foo")).To(Equal("bar"))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterGetAttr(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterGetAttr(t sweet.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(nil)
@@ -54,7 +53,7 @@ func (s *LogAdapterSuite) TestLogAdapterGetAttr(t *testing.T) {
 	Expect(la.GetAttr("notakey")).To(BeNil())
 }
 
-func (s *LogAdapterSuite) TestLogAdapterRemoveAttr(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterRemoveAttr(t sweet.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
@@ -63,7 +62,7 @@ func (s *LogAdapterSuite) TestLogAdapterRemoveAttr(t *testing.T) {
 	Expect(la.attrs.GetAttr("foo")).To(BeNil())
 }
 
-func (s *LogAdapterSuite) TestLogAdapterClearAttrs(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterClearAttrs(t sweet.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(NewAttrs().
@@ -76,7 +75,7 @@ func (s *LogAdapterSuite) TestLogAdapterClearAttrs(t *testing.T) {
 	Expect(la.attrs.GetAttr("baz")).To(BeNil())
 }
 
-func (s *LogAdapterSuite) TestLogAdapterLogWithTime(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterLogWithTime(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -102,7 +101,7 @@ func (s *LogAdapterSuite) TestLogAdapterLogWithTime(t *testing.T) {
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogLevelLogWithTime(t *testing.T) {
+func (s *LogAdapterSuite) TestLogLevelLogWithTime(t sweet.T) {
 	b := NewBase()
 	b.SetLogLevel(LevelInfo)
 	ml := newDefaultMemLogger()
@@ -140,7 +139,7 @@ func (s *LogAdapterSuite) TestLogLevelLogWithTime(t *testing.T) {
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogLevelLog(t *testing.T) {
+func (s *LogAdapterSuite) TestLogLevelLog(t sweet.T) {
 	b := NewBase()
 	b.SetLogLevel(LevelInfo)
 	ml := newDefaultMemLogger()
@@ -176,7 +175,7 @@ func (s *LogAdapterSuite) TestLogLevelLog(t *testing.T) {
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterThing(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterThing(t sweet.T) {
 	b := NewBase()
 	b.SetAttr("base_attr", "foo")
 	ml := newDefaultMemLogger()
@@ -206,7 +205,7 @@ func (s *LogAdapterSuite) TestLogAdapterThing(t *testing.T) {
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterDebug(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -276,7 +275,7 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t *testing.T) {
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterInfo(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterInfo(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -319,7 +318,7 @@ func (s *LogAdapterSuite) TestLogAdapterInfo(t *testing.T) {
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterWarn(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -389,7 +388,7 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t *testing.T) {
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterError(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -459,7 +458,7 @@ func (s *LogAdapterSuite) TestLogAdapterError(t *testing.T) {
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterFatal(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterFatal(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -502,7 +501,7 @@ func (s *LogAdapterSuite) TestLogAdapterFatal(t *testing.T) {
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterDie(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterDie(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -528,7 +527,7 @@ func (s *LogAdapterSuite) TestLogAdapterDie(t *testing.T) {
 	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterDief(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterDief(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -554,7 +553,7 @@ func (s *LogAdapterSuite) TestLogAdapterDief(t *testing.T) {
 	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterDiem(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterDiem(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -595,7 +594,7 @@ func (mb *mockBase) ShutdownLoggers() error {
 	return fmt.Errorf("foo")
 }
 
-func (s *LogAdapterSuite) TestLogAdapterShutdownLoggers(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterShutdownLoggers(t sweet.T) {
 	la := NewLogAdapterFor(&mockBase{}, nil)
 	Expect(la.ShutdownLoggers()).To(MatchError("foo"))
 }

@@ -1,8 +1,7 @@
 package gomol
 
 import (
-	"testing"
-
+	"github.com/aphistic/sweet"
 	. "github.com/onsi/gomega"
 )
 
@@ -12,13 +11,13 @@ These tests are testing calling locations so putting them in their own
 file will limit the number of changes to that data.
 */
 
-func (s *GomolSuite) TestIsGomolCaller(t *testing.T) {
+func (s *GomolSuite) TestIsGomolCaller(t sweet.T) {
 	res, file := isGomolCaller("/home/gomoltest/some/sub/dir/that/is/long/filename.go")
 	Expect(res).To(Equal(false))
 	Expect(file).To(Equal("filename.go"))
 }
 
-func (s *GomolSuite) TestIsGomolCallerCached(t *testing.T) {
+func (s *GomolSuite) TestIsGomolCallerCached(t sweet.T) {
 	Expect(len(gomolFiles)).To(Equal(0))
 
 	res, file := isGomolCaller("/home/gomoltest/some/sub/dir/that/is/long/filename.go")
@@ -32,28 +31,28 @@ func (s *GomolSuite) TestIsGomolCallerCached(t *testing.T) {
 	Expect(file).To(Equal("filename.go"))
 }
 
-func (s *GomolSuite) TestIsGomolCallerDirTooShort(t *testing.T) {
+func (s *GomolSuite) TestIsGomolCallerDirTooShort(t sweet.T) {
 	res, file := isGomolCaller("1234/thiscanbesuperlong.go")
 	Expect(len(gomolFiles)).To(Equal(1))
 	Expect(res).To(Equal(false))
 	Expect(file).To(Equal("thiscanbesuperlong.go"))
 }
 
-func (s *GomolSuite) TestIsGomolCallerFileShort(t *testing.T) {
+func (s *GomolSuite) TestIsGomolCallerFileShort(t sweet.T) {
 	res, file := isGomolCaller("gomol/s.go")
 	Expect(len(gomolFiles)).To(Equal(1))
 	Expect(res).To(Equal(true))
 	Expect(file).To(Equal("s.go"))
 }
 
-func (s *GomolSuite) TestIsGomolCallerFileTest(t *testing.T) {
+func (s *GomolSuite) TestIsGomolCallerFileTest(t sweet.T) {
 	res, file := isGomolCaller("gomol/s_test.go")
 	Expect(len(gomolFiles)).To(Equal(1))
 	Expect(res).To(Equal(false))
 	Expect(file).To(Equal("s_test.go"))
 }
 
-func (s *GomolSuite) TestLogWithRuntimeInfo(t *testing.T) {
+func (s *GomolSuite) TestLogWithRuntimeInfo(t sweet.T) {
 	setFakeCallerInfo("fakefile.go", 1234)
 
 	b := NewBase()
