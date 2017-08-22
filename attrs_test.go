@@ -94,3 +94,18 @@ func (s *AttrsSuite) TestGetHashAttrMissing(t sweet.T) {
 	Expect(res).To(Equal(""))
 	Expect(err.Error()).To(Equal("Could not find attr for hash 1234"))
 }
+
+func (s *AttrsSuite) TestSetWithFuncValue(t sweet.T) {
+	attrs := NewAttrs()
+	attrs.SetAttr("attr1", func() int { return 1 })
+
+	Expect(attrs.GetAttr("attr1")).To(Equal("func() int"))
+}
+
+func (s *AttrsSuite) TestMapWithFuncValue(t sweet.T) {
+	attrs := NewAttrsFromMap(map[string]interface{}{
+		"attr1": func() int { return 1 },
+	})
+
+	Expect(attrs.GetAttr("attr1")).To(Equal("func() int"))
+}

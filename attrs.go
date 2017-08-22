@@ -4,6 +4,7 @@ import (
 	"github.com/spaolacci/murmur3"
 
 	"fmt"
+	"reflect"
 	"sync"
 )
 
@@ -64,6 +65,12 @@ func (a *Attrs) clone() *Attrs {
 func (a *Attrs) SetAttr(key string, value interface{}) *Attrs {
 	a.attrsLock.Lock()
 	defer a.attrsLock.Unlock()
+
+	valVal := reflect.ValueOf(value)
+	switch valVal.Kind() {
+	case reflect.Func:
+		value = valVal.Type().String()
+	}
 
 	hash := getAttrHash(key)
 	a.attrs[hash] = value

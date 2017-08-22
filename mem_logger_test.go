@@ -111,3 +111,34 @@ func (s *GomolSuite) TestMemBaseAttrs(t sweet.T) {
 	Expect(ml.Messages[0].Attrs["attr2"]).To(Equal("val2"))
 	Expect(ml.Messages[0].Attrs["attr3"]).To(Equal("val3"))
 }
+
+func (s *GomolSuite) TestMemStringAttrs(t sweet.T) {
+	setClock(newTestClock(time.Now()))
+
+	b := NewBase()
+	b.SetAttr("attr1", 1234)
+	b.SetAttr("attr2", "val2")
+
+	ml := newDefaultMemLogger()
+	b.AddLogger(ml)
+	ml.Logm(
+		clock().Now(),
+		LevelDebug,
+		map[string]interface{}{
+			"attr1": 4321,
+			"attr3": "val3",
+		},
+		"test 1234",
+	)
+	Expect(ml.Messages).To(HaveLen(1))
+	Expect(ml.Messages[0].Timestamp).To(Equal(clock().Now()))
+	Expect(ml.Messages[0].Level).To(Equal(LevelDebug))
+	Expect(ml.Messages[0].Message).To(Equal("test 1234"))
+	Expect(ml.Messages[0].Attrs).To(HaveLen(3))
+	Expect(ml.Messages[0].Attrs["attr1"]).To(Equal(4321))
+	Expect(ml.Messages[0].Attrs["attr2"]).To(Equal("val2"))
+	Expect(ml.Messages[0].Attrs["attr3"]).To(Equal("val3"))
+	Expect(ml.Messages[0].StringAttrs["attr1"]).To(Equal("4321"))
+	Expect(ml.Messages[0].StringAttrs["attr2"]).To(Equal("val2"))
+	Expect(ml.Messages[0].StringAttrs["attr3"]).To(Equal("val3"))
+}

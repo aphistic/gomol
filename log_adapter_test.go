@@ -98,6 +98,9 @@ func (s *LogAdapterSuite) TestLogAdapterLogWithTime(t sweet.T) {
 		Attrs: map[string]interface{}{
 			"foo": "newBar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "newBar",
+		},
 	}))
 }
 
@@ -128,12 +131,18 @@ func (s *LogAdapterSuite) TestLogLevelLogWithTime(t sweet.T) {
 		Attrs: map[string]interface{}{
 			"foo": "newBar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "newBar",
+		},
 	}))
 	Expect(ml.Messages[1]).To(Equal(&memMessage{
 		Timestamp: ts,
 		Level:     LevelError,
 		Message:   "MessageM 3",
 		Attrs: map[string]interface{}{
+			"foo": "newBar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "newBar",
 		},
 	}))
@@ -164,12 +173,18 @@ func (s *LogAdapterSuite) TestLogLevelLog(t sweet.T) {
 		Attrs: map[string]interface{}{
 			"foo": "newBar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "newBar",
+		},
 	}))
 	Expect(ml.Messages[1]).To(Equal(&memMessage{
 		Timestamp: ml.Messages[1].Timestamp,
 		Level:     LevelError,
 		Message:   "MessageM 3",
 		Attrs: map[string]interface{}{
+			"foo": "newBar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "newBar",
 		},
 	}))
@@ -198,6 +213,11 @@ func (s *LogAdapterSuite) TestLogAdapterThing(t sweet.T) {
 		Level:     LevelDebug,
 		Message:   "Message 1",
 		Attrs: map[string]interface{}{
+			"base_attr":    "foo",
+			"adapter_attr": "bar",
+			"log_attr":     "baz",
+		},
+		StringAttrs: map[string]string{
 			"base_attr":    "foo",
 			"adapter_attr": "bar",
 			"log_attr":     "baz",
@@ -231,12 +251,18 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[1]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelDebug,
 		Message:   "Message 2",
 		Attrs: map[string]interface{}{
+			"foo": "bar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "bar",
 		},
 	}))
@@ -247,12 +273,18 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[3]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelDebug,
 		Message:   "MessageF 2",
 		Attrs: map[string]interface{}{
+			"foo": "bar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "bar",
 		},
 	}))
@@ -264,12 +296,19 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 			"foo":   "bar",
 			"attr1": "val1",
 		},
+		StringAttrs: map[string]string{
+			"foo":   "bar",
+			"attr1": "val1",
+		},
 	}))
 	Expect(ml.Messages[5]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelDebug,
 		Message:   "MessageM 2",
 		Attrs: map[string]interface{}{
+			"foo": "newBar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "newBar",
 		},
 	}))
@@ -298,6 +337,9 @@ func (s *LogAdapterSuite) TestLogAdapterInfo(t sweet.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[1]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
@@ -306,12 +348,19 @@ func (s *LogAdapterSuite) TestLogAdapterInfo(t sweet.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[2]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelInfo,
 		Message:   "MessageM 1",
 		Attrs: map[string]interface{}{
+			"foo":   "bar",
+			"attr1": "val1",
+		},
+		StringAttrs: map[string]string{
 			"foo":   "bar",
 			"attr1": "val1",
 		},
@@ -344,12 +393,18 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[1]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelWarning,
 		Message:   "Message 2",
 		Attrs: map[string]interface{}{
+			"foo": "bar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "bar",
 		},
 	}))
@@ -360,12 +415,18 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[3]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelWarning,
 		Message:   "MessageF 2",
 		Attrs: map[string]interface{}{
+			"foo": "bar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "bar",
 		},
 	}))
@@ -377,12 +438,19 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 			"foo":   "bar",
 			"attr1": "val1",
 		},
+		StringAttrs: map[string]string{
+			"foo":   "bar",
+			"attr1": "val1",
+		},
 	}))
 	Expect(ml.Messages[5]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelWarning,
 		Message:   "MessageM 2",
 		Attrs: map[string]interface{}{
+			"foo": "newBar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "newBar",
 		},
 	}))
@@ -414,12 +482,18 @@ func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[1]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelError,
 		Message:   "Message 2",
 		Attrs: map[string]interface{}{
+			"foo": "bar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "bar",
 		},
 	}))
@@ -430,12 +504,18 @@ func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[3]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelError,
 		Message:   "MessageF 2",
 		Attrs: map[string]interface{}{
+			"foo": "bar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "bar",
 		},
 	}))
@@ -447,12 +527,19 @@ func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 			"foo":   "bar",
 			"attr1": "val1",
 		},
+		StringAttrs: map[string]string{
+			"foo":   "bar",
+			"attr1": "val1",
+		},
 	}))
 	Expect(ml.Messages[5]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelError,
 		Message:   "MessageM 2",
 		Attrs: map[string]interface{}{
+			"foo": "newBar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "newBar",
 		},
 	}))
@@ -481,6 +568,9 @@ func (s *LogAdapterSuite) TestLogAdapterFatal(t sweet.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[1]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
@@ -489,12 +579,19 @@ func (s *LogAdapterSuite) TestLogAdapterFatal(t sweet.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[2]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelFatal,
 		Message:   "MessageM 1",
 		Attrs: map[string]interface{}{
+			"foo":   "bar",
+			"attr1": "val1",
+		},
+		StringAttrs: map[string]string{
 			"foo":   "bar",
 			"attr1": "val1",
 		},
@@ -520,6 +617,9 @@ func (s *LogAdapterSuite) TestLogAdapterDie(t sweet.T) {
 		Level:     LevelFatal,
 		Message:   "Message 1",
 		Attrs: map[string]interface{}{
+			"foo": "bar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "bar",
 		},
 	}))
@@ -548,6 +648,9 @@ func (s *LogAdapterSuite) TestLogAdapterDief(t sweet.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(curTestExiter.exited).To(Equal(true))
 	Expect(curTestExiter.code).To(Equal(1234))
@@ -572,6 +675,10 @@ func (s *LogAdapterSuite) TestLogAdapterDiem(t sweet.T) {
 		Level:     LevelFatal,
 		Message:   "MessageM 1",
 		Attrs: map[string]interface{}{
+			"foo":   "bar",
+			"attr1": "val1",
+		},
+		StringAttrs: map[string]string{
 			"foo":   "bar",
 			"attr1": "val1",
 		},

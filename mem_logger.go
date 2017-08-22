@@ -1,7 +1,9 @@
 package gomol
 
 import (
+	"bytes"
 	"errors"
+	"text/template"
 	"time"
 )
 
@@ -22,28 +24,40 @@ type memLogger struct {
 
 	isInitialized bool
 	isShutdown    bool
+
+	tpl *template.Template
 }
 
 type memMessage struct {
-	Timestamp time.Time
-	Level     LogLevel
-	Message   string
-	Attrs     map[string]interface{}
+	Timestamp   time.Time
+	Level       LogLevel
+	Message     string
+	Attrs       map[string]interface{}
+	StringAttrs map[string]string
 }
 
 func newMemLogger(config *memLoggerConfig) (*memLogger, error) {
+	valTpl, err := template.New("memTpl").Parse("{{ . }}")
+	if err != nil {
+		return nil, err
+	}
+
 	l := &memLogger{
-		config:   config,
+		config: config,
+
 		Messages: make([]*memMessage, 0),
+
+		tpl: valTpl,
 	}
 	return l, nil
 }
 
 func newMemMessage() *memMessage {
 	msg := &memMessage{
-		Level:   LevelDebug,
-		Message: "",
-		Attrs:   make(map[string]interface{}, 0),
+		Level:       LevelDebug,
+		Message:     "",
+		Attrs:       make(map[string]interface{}),
+		StringAttrs: make(map[string]string),
 	}
 	return msg
 }
@@ -81,12 +95,26 @@ func (l *memLogger) Logm(timestamp time.Time, level LogLevel, m map[string]inter
 	if l.base != nil {
 		for k, v := range l.base.BaseAttrs.Attrs() {
 			nm.Attrs[k] = v
+
+			buf := bytes.NewBufferString("")
+			err := l.tpl.Execute(buf, v)
+			if err != nil {
+				return err
+			}
+			nm.StringAttrs[k] = buf.String()
 		}
 	}
 
 	if m != nil {
 		for k, v := range m {
 			nm.Attrs[k] = v
+
+			buf := bytes.NewBufferString("")
+			err := l.tpl.Execute(buf, v)
+			if err != nil {
+				return err
+			}
+			nm.StringAttrs[k] = buf.String()
 		}
 	}
 
