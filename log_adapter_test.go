@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"time"
 
-	"testing"
-
+	"github.com/aphistic/sweet"
 	. "github.com/onsi/gomega"
 )
 
 type LogAdapterSuite struct{}
 
-func (s *LogAdapterSuite) TestNewLogAdapterEmpty(t *testing.T) {
+func (s *LogAdapterSuite) TestNewLogAdapterEmpty(t sweet.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(nil)
@@ -21,7 +20,7 @@ func (s *LogAdapterSuite) TestNewLogAdapterEmpty(t *testing.T) {
 	Expect(la.attrs).ToNot(BeNil())
 }
 
-func (s *LogAdapterSuite) TestNewLogAdapter(t *testing.T) {
+func (s *LogAdapterSuite) TestNewLogAdapter(t sweet.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(NewAttrs().
@@ -35,7 +34,7 @@ func (s *LogAdapterSuite) TestNewLogAdapter(t *testing.T) {
 	Expect(la.attrs.GetAttr("testStr")).To(Equal("foo"))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterSetAttr(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterSetAttr(t sweet.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(nil)
@@ -43,7 +42,7 @@ func (s *LogAdapterSuite) TestLogAdapterSetAttr(t *testing.T) {
 	Expect(la.attrs.GetAttr("foo")).To(Equal("bar"))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterGetAttr(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterGetAttr(t sweet.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(nil)
@@ -54,7 +53,7 @@ func (s *LogAdapterSuite) TestLogAdapterGetAttr(t *testing.T) {
 	Expect(la.GetAttr("notakey")).To(BeNil())
 }
 
-func (s *LogAdapterSuite) TestLogAdapterRemoveAttr(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterRemoveAttr(t sweet.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
@@ -63,7 +62,7 @@ func (s *LogAdapterSuite) TestLogAdapterRemoveAttr(t *testing.T) {
 	Expect(la.attrs.GetAttr("foo")).To(BeNil())
 }
 
-func (s *LogAdapterSuite) TestLogAdapterClearAttrs(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterClearAttrs(t sweet.T) {
 	b := NewBase()
 
 	la := b.NewLogAdapter(NewAttrs().
@@ -76,7 +75,7 @@ func (s *LogAdapterSuite) TestLogAdapterClearAttrs(t *testing.T) {
 	Expect(la.attrs.GetAttr("baz")).To(BeNil())
 }
 
-func (s *LogAdapterSuite) TestLogAdapterLogWithTime(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterLogWithTime(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -99,10 +98,13 @@ func (s *LogAdapterSuite) TestLogAdapterLogWithTime(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "newBar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "newBar",
+		},
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogLevelLogWithTime(t *testing.T) {
+func (s *LogAdapterSuite) TestLogLevelLogWithTime(t sweet.T) {
 	b := NewBase()
 	b.SetLogLevel(LevelInfo)
 	ml := newDefaultMemLogger()
@@ -129,6 +131,9 @@ func (s *LogAdapterSuite) TestLogLevelLogWithTime(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "newBar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "newBar",
+		},
 	}))
 	Expect(ml.Messages[1]).To(Equal(&memMessage{
 		Timestamp: ts,
@@ -137,10 +142,13 @@ func (s *LogAdapterSuite) TestLogLevelLogWithTime(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "newBar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "newBar",
+		},
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogLevelLog(t *testing.T) {
+func (s *LogAdapterSuite) TestLogLevelLog(t sweet.T) {
 	b := NewBase()
 	b.SetLogLevel(LevelInfo)
 	ml := newDefaultMemLogger()
@@ -165,6 +173,9 @@ func (s *LogAdapterSuite) TestLogLevelLog(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "newBar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "newBar",
+		},
 	}))
 	Expect(ml.Messages[1]).To(Equal(&memMessage{
 		Timestamp: ml.Messages[1].Timestamp,
@@ -173,10 +184,13 @@ func (s *LogAdapterSuite) TestLogLevelLog(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "newBar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "newBar",
+		},
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterThing(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterThing(t sweet.T) {
 	b := NewBase()
 	b.SetAttr("base_attr", "foo")
 	ml := newDefaultMemLogger()
@@ -203,10 +217,15 @@ func (s *LogAdapterSuite) TestLogAdapterThing(t *testing.T) {
 			"adapter_attr": "bar",
 			"log_attr":     "baz",
 		},
+		StringAttrs: map[string]string{
+			"base_attr":    "foo",
+			"adapter_attr": "bar",
+			"log_attr":     "baz",
+		},
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterDebug(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -232,12 +251,18 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[1]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelDebug,
 		Message:   "Message 2",
 		Attrs: map[string]interface{}{
+			"foo": "bar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "bar",
 		},
 	}))
@@ -248,12 +273,18 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[3]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelDebug,
 		Message:   "MessageF 2",
 		Attrs: map[string]interface{}{
+			"foo": "bar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "bar",
 		},
 	}))
@@ -265,6 +296,10 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t *testing.T) {
 			"foo":   "bar",
 			"attr1": "val1",
 		},
+		StringAttrs: map[string]string{
+			"foo":   "bar",
+			"attr1": "val1",
+		},
 	}))
 	Expect(ml.Messages[5]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
@@ -273,10 +308,13 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "newBar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "newBar",
+		},
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterInfo(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterInfo(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -299,12 +337,18 @@ func (s *LogAdapterSuite) TestLogAdapterInfo(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[1]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelInfo,
 		Message:   "MessageF 1",
 		Attrs: map[string]interface{}{
+			"foo": "bar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "bar",
 		},
 	}))
@@ -316,10 +360,14 @@ func (s *LogAdapterSuite) TestLogAdapterInfo(t *testing.T) {
 			"foo":   "bar",
 			"attr1": "val1",
 		},
+		StringAttrs: map[string]string{
+			"foo":   "bar",
+			"attr1": "val1",
+		},
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterWarn(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -345,12 +393,18 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[1]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelWarning,
 		Message:   "Message 2",
 		Attrs: map[string]interface{}{
+			"foo": "bar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "bar",
 		},
 	}))
@@ -361,12 +415,18 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[3]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelWarning,
 		Message:   "MessageF 2",
 		Attrs: map[string]interface{}{
+			"foo": "bar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "bar",
 		},
 	}))
@@ -378,6 +438,10 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t *testing.T) {
 			"foo":   "bar",
 			"attr1": "val1",
 		},
+		StringAttrs: map[string]string{
+			"foo":   "bar",
+			"attr1": "val1",
+		},
 	}))
 	Expect(ml.Messages[5]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
@@ -386,10 +450,13 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "newBar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "newBar",
+		},
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterError(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -415,12 +482,18 @@ func (s *LogAdapterSuite) TestLogAdapterError(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[1]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelError,
 		Message:   "Message 2",
 		Attrs: map[string]interface{}{
+			"foo": "bar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "bar",
 		},
 	}))
@@ -431,12 +504,18 @@ func (s *LogAdapterSuite) TestLogAdapterError(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[3]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelError,
 		Message:   "MessageF 2",
 		Attrs: map[string]interface{}{
+			"foo": "bar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "bar",
 		},
 	}))
@@ -448,6 +527,10 @@ func (s *LogAdapterSuite) TestLogAdapterError(t *testing.T) {
 			"foo":   "bar",
 			"attr1": "val1",
 		},
+		StringAttrs: map[string]string{
+			"foo":   "bar",
+			"attr1": "val1",
+		},
 	}))
 	Expect(ml.Messages[5]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
@@ -456,10 +539,13 @@ func (s *LogAdapterSuite) TestLogAdapterError(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "newBar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "newBar",
+		},
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterFatal(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterFatal(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -482,12 +568,18 @@ func (s *LogAdapterSuite) TestLogAdapterFatal(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(ml.Messages[1]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelFatal,
 		Message:   "MessageF 1",
 		Attrs: map[string]interface{}{
+			"foo": "bar",
+		},
+		StringAttrs: map[string]string{
 			"foo": "bar",
 		},
 	}))
@@ -499,10 +591,14 @@ func (s *LogAdapterSuite) TestLogAdapterFatal(t *testing.T) {
 			"foo":   "bar",
 			"attr1": "val1",
 		},
+		StringAttrs: map[string]string{
+			"foo":   "bar",
+			"attr1": "val1",
+		},
 	}))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterDie(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterDie(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -523,12 +619,15 @@ func (s *LogAdapterSuite) TestLogAdapterDie(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(curTestExiter.exited).To(Equal(true))
 	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterDief(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterDief(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -549,12 +648,15 @@ func (s *LogAdapterSuite) TestLogAdapterDief(t *testing.T) {
 		Attrs: map[string]interface{}{
 			"foo": "bar",
 		},
+		StringAttrs: map[string]string{
+			"foo": "bar",
+		},
 	}))
 	Expect(curTestExiter.exited).To(Equal(true))
 	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *LogAdapterSuite) TestLogAdapterDiem(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterDiem(t sweet.T) {
 	b := NewBase()
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -573,6 +675,10 @@ func (s *LogAdapterSuite) TestLogAdapterDiem(t *testing.T) {
 		Level:     LevelFatal,
 		Message:   "MessageM 1",
 		Attrs: map[string]interface{}{
+			"foo":   "bar",
+			"attr1": "val1",
+		},
+		StringAttrs: map[string]string{
 			"foo":   "bar",
 			"attr1": "val1",
 		},
@@ -595,7 +701,7 @@ func (mb *mockBase) ShutdownLoggers() error {
 	return fmt.Errorf("foo")
 }
 
-func (s *LogAdapterSuite) TestLogAdapterShutdownLoggers(t *testing.T) {
+func (s *LogAdapterSuite) TestLogAdapterShutdownLoggers(t sweet.T) {
 	la := NewLogAdapterFor(&mockBase{}, nil)
 	Expect(la.ShutdownLoggers()).To(MatchError("foo"))
 }

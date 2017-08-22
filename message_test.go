@@ -1,13 +1,13 @@
 package gomol
 
 import (
-	"testing"
 	"time"
 
+	"github.com/aphistic/sweet"
 	. "github.com/onsi/gomega"
 )
 
-func (s *GomolSuite) TestLevelGetName(t *testing.T) {
+func (s *GomolSuite) TestLevelGetName(t sweet.T) {
 	Expect(getLevelName(LevelDebug)).To(Equal("debug"))
 	Expect(getLevelName(LevelInfo)).To(Equal("info"))
 	Expect(getLevelName(LevelWarning)).To(Equal("warn"))
@@ -18,7 +18,7 @@ func (s *GomolSuite) TestLevelGetName(t *testing.T) {
 	Expect(getLevelName(LogLevel(-1234))).To(Equal("unknown"))
 }
 
-func (s *GomolSuite) TestLevelString(t *testing.T) {
+func (s *GomolSuite) TestLevelString(t sweet.T) {
 	Expect(LevelDebug.String()).To(Equal("debug"))
 	Expect(LevelInfo.String()).To(Equal("info"))
 	Expect(LevelWarning.String()).To(Equal("warn"))
@@ -27,7 +27,7 @@ func (s *GomolSuite) TestLevelString(t *testing.T) {
 	Expect(LevelNone.String()).To(Equal("none"))
 }
 
-func (s *GomolSuite) TestToLogLevel(t *testing.T) {
+func (s *GomolSuite) TestToLogLevel(t sweet.T) {
 	var level LogLevel
 	var err error
 
@@ -65,7 +65,7 @@ func (s *GomolSuite) TestToLogLevel(t *testing.T) {
 	Expect(err).To(BeNil())
 }
 
-func (s *GomolSuite) TestToLogLevelError(t *testing.T) {
+func (s *GomolSuite) TestToLogLevelError(t sweet.T) {
 	var level LogLevel
 	var err error
 
@@ -74,7 +74,7 @@ func (s *GomolSuite) TestToLogLevelError(t *testing.T) {
 	Expect(err).To(Equal(ErrUnknownLevel))
 }
 
-func (s *GomolSuite) TestNewMessageAttrsNil(t *testing.T) {
+func (s *GomolSuite) TestNewMessageAttrsNil(t sweet.T) {
 	setClock(newTestClock(time.Now()))
 	m := newMessage(clock().Now(), curDefault, LevelDebug, nil, "test")
 	Expect(m.base).To(Equal(curDefault))
@@ -85,7 +85,7 @@ func (s *GomolSuite) TestNewMessageAttrsNil(t *testing.T) {
 	Expect(m.Msg).To(Equal("test"))
 }
 
-func (s *GomolSuite) TestNewMessageMsgAttrsNil(t *testing.T) {
+func (s *GomolSuite) TestNewMessageMsgAttrsNil(t sweet.T) {
 	setClock(newTestClock(time.Now()))
 
 	ma := NewAttrs().
@@ -103,7 +103,7 @@ func (s *GomolSuite) TestNewMessageMsgAttrsNil(t *testing.T) {
 	Expect(m.Msg).To(Equal("test"))
 }
 
-func (s *GomolSuite) TestNewMessageFormat(t *testing.T) {
+func (s *GomolSuite) TestNewMessageFormat(t sweet.T) {
 	setClock(newTestClock(time.Now()))
 	m := newMessage(clock().Now(), curDefault, LevelDebug, nil, "test %v %v", "str", 1234)
 	Expect(m.base).To(Equal(curDefault))
@@ -114,7 +114,7 @@ func (s *GomolSuite) TestNewMessageFormat(t *testing.T) {
 	Expect(m.Msg).To(Equal("test str 1234"))
 }
 
-func (s *GomolSuite) TestNewMessageFormatWithAttrs(t *testing.T) {
+func (s *GomolSuite) TestNewMessageFormatWithAttrs(t sweet.T) {
 	setClock(newTestClock(time.Now()))
 
 	ma := NewAttrs().

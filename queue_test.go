@@ -1,13 +1,13 @@
 package gomol
 
 import (
-	"testing"
 	"time"
 
+	"github.com/aphistic/sweet"
 	. "github.com/onsi/gomega"
 )
 
-func (s *GomolSuite) TestQueueLenChan(t *testing.T) {
+func (s *GomolSuite) TestQueueLenChan(t sweet.T) {
 	q := newQueue()
 
 	Expect(q.Length()).To(Equal(0))
@@ -15,7 +15,7 @@ func (s *GomolSuite) TestQueueLenChan(t *testing.T) {
 	Expect(q.Length()).To(Equal(1))
 }
 
-func (s *GomolSuite) TestQueueLenArray(t *testing.T) {
+func (s *GomolSuite) TestQueueLenArray(t sweet.T) {
 	q := newQueue()
 
 	Expect(q.Length()).To(Equal(0))
@@ -23,7 +23,7 @@ func (s *GomolSuite) TestQueueLenArray(t *testing.T) {
 	Expect(q.Length()).To(Equal(1))
 }
 
-func (s *GomolSuite) TestQueueLen(t *testing.T) {
+func (s *GomolSuite) TestQueueLen(t sweet.T) {
 	q := newQueue()
 
 	Expect(q.Length()).To(Equal(0))
@@ -32,14 +32,14 @@ func (s *GomolSuite) TestQueueLen(t *testing.T) {
 	Expect(q.Length()).To(Equal(2))
 }
 
-func (s *GomolSuite) TestQueueMessageWithoutWorkers(t *testing.T) {
+func (s *GomolSuite) TestQueueMessageWithoutWorkers(t sweet.T) {
 	q := newQueue()
 	err := q.QueueMessage(&Message{})
 	Expect(err).ToNot(BeNil())
 	Expect(err.Error()).To(Equal("The logging system is not running, has InitLoggers() been executed?"))
 }
 
-func (s *GomolSuite) TestQueueStartWorkers(t *testing.T) {
+func (s *GomolSuite) TestQueueStartWorkers(t sweet.T) {
 	q := newQueue()
 	q.startQueueWorkers()
 	Expect(q.IsActive()).To(Equal(true))
@@ -47,7 +47,7 @@ func (s *GomolSuite) TestQueueStartWorkers(t *testing.T) {
 	q.stopQueueWorkers()
 }
 
-func (s *GomolSuite) TestQueueStartWorkersTwice(t *testing.T) {
+func (s *GomolSuite) TestQueueStartWorkersTwice(t sweet.T) {
 	q := newQueue()
 	err := q.startQueueWorkers()
 	Expect(err).To(BeNil())
@@ -59,7 +59,7 @@ func (s *GomolSuite) TestQueueStartWorkersTwice(t *testing.T) {
 	q.stopQueueWorkers()
 }
 
-func (s *GomolSuite) TestQueueStopWorkers(t *testing.T) {
+func (s *GomolSuite) TestQueueStopWorkers(t sweet.T) {
 	q := newQueue()
 	q.startQueueWorkers()
 
@@ -69,7 +69,7 @@ func (s *GomolSuite) TestQueueStopWorkers(t *testing.T) {
 	Expect(len(q.queueChan)).To(Equal(0))
 }
 
-func (s *GomolSuite) TestQueueStopWorkersTwice(t *testing.T) {
+func (s *GomolSuite) TestQueueStopWorkersTwice(t sweet.T) {
 	q := newQueue()
 	q.startQueueWorkers()
 
@@ -83,7 +83,7 @@ func (s *GomolSuite) TestQueueStopWorkersTwice(t *testing.T) {
 	Expect(err.Error()).To(Equal("Workers are not running"))
 }
 
-func (s *GomolSuite) TestQueueFlushMessages(t *testing.T) {
+func (s *GomolSuite) TestQueueFlushMessages(t sweet.T) {
 	q := newQueue()
 	q.startQueueWorkers()
 

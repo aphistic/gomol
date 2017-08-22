@@ -126,13 +126,13 @@ func (queue *queue) senderWorker(exiting bool) {
 
 func (queue *queue) Flush() {
 	for {
+		<-time.After(1 * time.Millisecond)
 		queue.queueMut.RLock()
 		if len(queue.queue) == 0 {
 			queue.queueMut.RUnlock()
 			return
 		}
 		queue.queueMut.RUnlock()
-		<-time.After(1 * time.Millisecond)
 	}
 }
 
