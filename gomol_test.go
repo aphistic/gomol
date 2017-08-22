@@ -20,12 +20,13 @@ func TestMain(m *testing.M) {
 		s.AddSuite(&AttrsSuite{})
 		s.AddSuite(&BaseSuite{})
 		s.AddSuite(&LogAdapterSuite{})
+		s.AddSuite(&IssueSuite{})
 	})
 }
 
 type GomolSuite struct{}
 
-func (s *GomolSuite) SetUpTest(t *testing.T) {
+func (s *GomolSuite) SetUpTest(t sweet.T) {
 	setFakeCallerInfo("", 0)
 	setClock(newTestClock(time.Now()))
 	gomolFiles = map[string]fileRecord{}
@@ -42,7 +43,7 @@ func (s *GomolSuite) SetUpTest(t *testing.T) {
 	curDefault.InitLoggers()
 }
 
-func (s *GomolSuite) TearDownTest(t *testing.T) {
+func (s *GomolSuite) TearDownTest(t sweet.T) {
 	curDefault.ShutdownLoggers()
 
 	testBase.ShutdownLoggers()

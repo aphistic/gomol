@@ -134,17 +134,32 @@ func Infom(m *Attrs, msg string, a ...interface{}) error {
 
 // Warn executes the same function on the default Base instance
 func Warn(msg string) error {
-	return curDefault.Warn(msg)
+	return Warning(msg)
 }
 
 // Warnf executes the same function on the default Base instance
 func Warnf(msg string, a ...interface{}) error {
-	return curDefault.Warnf(msg, a...)
+	return Warningf(msg, a...)
 }
 
 // Warnm executes the same function on the default Base instance
 func Warnm(m *Attrs, msg string, a ...interface{}) error {
-	return curDefault.Warnm(m, msg, a...)
+	return Warningm(m, msg, a...)
+}
+
+// Warning executes the same function on the default Base instance
+func Warning(msg string) error {
+	return curDefault.Warning(msg)
+}
+
+// Warningf executes the same function on the default Base instance
+func Warningf(msg string, a ...interface{}) error {
+	return curDefault.Warningf(msg, a...)
+}
+
+// Warningm executes the same function on the default Base instance
+func Warningm(m *Attrs, msg string, a ...interface{}) error {
+	return curDefault.Warningm(m, msg, a...)
 }
 
 // Err executes the same function on the default Base instance
