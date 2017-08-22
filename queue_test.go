@@ -7,92 +7,69 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func (s *GomolSuite) TestQueueLenChan(t sweet.T) {
-	q := newQueue()
+const TestMaxQueueSize = 5000
 
-	Expect(q.Length()).To(Equal(0))
+func (s *GomolSuite) TestPressure(t sweet.T) {
+	q := newQueue(NewBase(), TestMaxQueueSize)
+	Expect(q.pressure()).To(Equal(0))
 	q.queueChan <- &Message{}
-	Expect(q.Length()).To(Equal(1))
-}
-
-func (s *GomolSuite) TestQueueLenArray(t sweet.T) {
-	q := newQueue()
-
-	Expect(q.Length()).To(Equal(0))
-	q.queue = append(q.queue, &Message{})
-	Expect(q.Length()).To(Equal(1))
-}
-
-func (s *GomolSuite) TestQueueLen(t sweet.T) {
-	q := newQueue()
-
-	Expect(q.Length()).To(Equal(0))
 	q.queueChan <- &Message{}
-	q.queue = append(q.queue, &Message{})
-	Expect(q.Length()).To(Equal(2))
+	Expect(q.pressure()).To(Equal(2))
 }
 
-func (s *GomolSuite) TestQueueMessageWithoutWorkers(t sweet.T) {
-	q := newQueue()
-	err := q.QueueMessage(&Message{})
+func (s *GomolSuite) TestQueueMessageWithoutWorker(t sweet.T) {
+	q := newQueue(NewBase(), TestMaxQueueSize)
+	err := q.queueMessage(&Message{})
 	Expect(err).ToNot(BeNil())
-	Expect(err.Error()).To(Equal("The logging system is not running, has InitLoggers() been executed?"))
+	Expect(err.Error()).To(Equal("the logging system is not running - has InitLoggers() been executed?"))
 }
 
-func (s *GomolSuite) TestQueueStartWorkers(t sweet.T) {
-	q := newQueue()
-	q.startQueueWorkers()
-	Expect(q.IsActive()).To(Equal(true))
-	Expect(q.queue).To(HaveLen(0))
-	q.stopQueueWorkers()
+func (s *GomolSuite) TestQueueStartWorker(t sweet.T) {
+	q := newQueue(NewBase(), TestMaxQueueSize)
+	q.startWorker()
+	Expect(q.pressure()).To(Equal(0))
+	q.stopWorker()
 }
 
-func (s *GomolSuite) TestQueueStartWorkersTwice(t sweet.T) {
-	q := newQueue()
-	err := q.startQueueWorkers()
+func (s *GomolSuite) TestQueueStartWorkerTwice(t sweet.T) {
+	q := newQueue(NewBase(), TestMaxQueueSize)
+	err := q.startWorker()
 	Expect(err).To(BeNil())
-	Expect(q.IsActive()).To(Equal(true))
-	Expect(q.queue).To(HaveLen(0))
-	err = q.startQueueWorkers()
+	Expect(q.pressure()).To(Equal(0))
+	err = q.startWorker()
 	Expect(err).ToNot(BeNil())
-	Expect(err.Error()).To(Equal("Workers are already running"))
-	q.stopQueueWorkers()
+	Expect(err.Error()).To(Equal("workers are already running"))
+	q.stopWorker()
 }
 
-func (s *GomolSuite) TestQueueStopWorkers(t sweet.T) {
-	q := newQueue()
-	q.startQueueWorkers()
+func (s *GomolSuite) TestQueueStopWorker(t sweet.T) {
+	q := newQueue(NewBase(), TestMaxQueueSize)
+	q.startWorker()
 
-	q.stopQueueWorkers()
-	Expect(q.IsActive()).To(Equal(false))
-	Expect(q.queue).To(HaveLen(0))
-	Expect(len(q.queueChan)).To(Equal(0))
+	q.stopWorker()
+	Expect(q.pressure()).To(Equal(0))
 }
 
-func (s *GomolSuite) TestQueueStopWorkersTwice(t sweet.T) {
-	q := newQueue()
-	q.startQueueWorkers()
+func (s *GomolSuite) TestQueueStopWorkerTwice(t sweet.T) {
+	q := newQueue(NewBase(), TestMaxQueueSize)
+	q.startWorker()
 
-	err := q.stopQueueWorkers()
+	err := q.stopWorker()
 	Expect(err).To(BeNil())
-	Expect(q.IsActive()).To(Equal(false))
-	Expect(q.queue).To(HaveLen(0))
-	Expect(len(q.queueChan)).To(Equal(0))
-	err = q.stopQueueWorkers()
+	Expect(q.pressure()).To(Equal(0))
+	err = q.stopWorker()
 	Expect(err).ToNot(BeNil())
-	Expect(err.Error()).To(Equal("Workers are not running"))
+	Expect(err.Error()).To(Equal("workers are not running"))
 }
 
 func (s *GomolSuite) TestQueueFlushMessages(t sweet.T) {
-	q := newQueue()
-	q.startQueueWorkers()
+	q := newQueue(NewBase(), TestMaxQueueSize)
+	q.startWorker()
 
 	for i := 0; i < 100; i++ {
-		q.QueueMessage(newMessage(time.Now(), testBase, LevelDebug, nil, "test"))
+		q.queueMessage(newMessage(time.Now(), testBase, LevelDebug, nil, "test"))
 	}
 
-	q.stopQueueWorkers()
-	Expect(q.IsActive()).To(Equal(false))
-	Expect(q.queue).To(HaveLen(0))
-	Expect(len(q.queueChan)).To(Equal(0))
+	q.stopWorker()
+	Expect(q.pressure()).To(Equal(0))
 }

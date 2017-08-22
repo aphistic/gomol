@@ -1,6 +1,7 @@
 package gomol
 
 import (
+	"errors"
 	"time"
 
 	"github.com/aphistic/sweet"
@@ -76,7 +77,6 @@ func (s *BaseSuite) TestNewBase(t sweet.T) {
 	Expect(b.config).ToNot(BeNil())
 	Expect(b.config.FilenameAttr).To(Equal(""))
 	Expect(b.config.LineNumberAttr).To(Equal(""))
-	Expect(b.queue).ToNot(BeNil())
 	Expect(b.logLevel).To(Equal(LevelDebug))
 	Expect(b.loggers).To(HaveLen(0))
 	Expect(b.BaseAttrs.Attrs()).To(HaveLen(0))
@@ -97,6 +97,34 @@ func (s *BaseSuite) TestSetConfig(t sweet.T) {
 	Expect(b.config).ToNot(BeNil())
 	Expect(b.config.FilenameAttr).To(Equal("filename"))
 	Expect(b.config.LineNumberAttr).To(Equal("line_number"))
+}
+
+func (s *BaseSuite) TestErrorChannel(t sweet.T) {
+	ch := make(chan error)
+	received := make(chan error, 3)
+
+	b := NewBase()
+	b.SetErrorChan(ch)
+
+	go func() {
+		defer close(received)
+
+		for val := range ch {
+			received <- val
+		}
+	}()
+
+	b.report(errors.New("error1"))
+	b.report(errors.New("error2"))
+	b.report(errors.New("error3"))
+
+	Eventually(received).Should(Receive(MatchError("error1")))
+	Eventually(received).Should(Receive(MatchError("error2")))
+	Eventually(received).Should(Receive(MatchError("error3")))
+
+	b.ShutdownLoggers()
+	Eventually(ch).Should(BeClosed())
+	Eventually(received).Should(BeClosed())
 }
 
 func (s *BaseSuite) TestSetLogLevel(t sweet.T) {
@@ -260,6 +288,7 @@ func (s *BaseSuite) TestBaseClearLoggers(t sweet.T) {
 func (s *BaseSuite) TestInitLoggers(t sweet.T) {
 	b := NewBase()
 	Expect(b.IsInitialized()).To(Equal(false))
+	Expect(b.queue).To(BeNil())
 
 	ml1 := newDefaultMemLogger()
 	ml2 := newDefaultMemLogger()
@@ -268,6 +297,7 @@ func (s *BaseSuite) TestInitLoggers(t sweet.T) {
 	b.AddLogger(ml2)
 
 	b.InitLoggers()
+	Expect(b.queue).ToNot(BeNil())
 
 	Expect(b.IsInitialized()).To(Equal(true))
 	Expect(ml1.IsInitialized()).To(Equal(true))

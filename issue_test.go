@@ -1,9 +1,10 @@
 package gomol
 
 import (
+	"time"
+
 	"github.com/aphistic/sweet"
 	. "github.com/onsi/gomega"
-	"time"
 )
 
 type IssueSuite struct{}

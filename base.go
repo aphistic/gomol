@@ -12,6 +12,7 @@ are desired.
 type Base struct {
 	isInitialized bool
 	config        *Config
+	errorChan     chan<- error
 	queue         *queue
 	logLevel      LogLevel
 	sequence      uint64
@@ -25,7 +26,6 @@ type Base struct {
 func NewBase() *Base {
 	b := &Base{
 		config:       NewConfig(),
-		queue:        newQueue(),
 		logLevel:     LevelDebug,
 		sequence:     0,
 		BaseAttrs:    NewAttrs(),
@@ -53,6 +53,20 @@ func setExiter(exiter appExiter) {
 // SetConfig will set the configuration for the Base to the given Config
 func (b *Base) SetConfig(config *Config) {
 	b.config = config
+}
+
+// SetErrorChan will register a channel as the consumer of internal error
+// events.  This channel will be closed once ShutdownLoggers has finished.
+// The consumer of this channel is expected to be efficient as writing to
+// this channel will block.
+func (b *Base) SetErrorChan(ch chan<- error) {
+	b.errorChan = ch
+}
+
+func (b *Base) report(err error) {
+	if b.errorChan != nil {
+		b.errorChan <- err
+	}
 }
 
 /*
@@ -136,6 +150,7 @@ func (b *Base) ClearLoggers() error {
 			return err
 		}
 	}
+
 	b.loggers = make([]Logger, 0)
 	b.hookPreQueue = make([]HookPreQueue, 0)
 
@@ -153,6 +168,10 @@ If an error occurs in initializing a logger, the loggers that have already been
 initialized will continue to be initialized.
 */
 func (b *Base) InitLoggers() error {
+	if b.queue == nil {
+		b.queue = newQueue(b, b.config.MaxQueueSize)
+	}
+
 	for _, logger := range b.loggers {
 		err := logger.InitLogger()
 		if err != nil {
@@ -160,7 +179,7 @@ func (b *Base) InitLoggers() error {
 		}
 	}
 
-	b.queue.startQueueWorkers()
+	b.queue.startWorker()
 	b.isInitialized = true
 
 	return nil
@@ -169,7 +188,9 @@ func (b *Base) InitLoggers() error {
 // Flush will wait until all messages currently queued are distributed to
 // all initialized loggers
 func (b *Base) Flush() {
-	b.queue.Flush()
+	if b.queue != nil {
+		b.queue.flush()
+	}
 }
 
 /*
@@ -178,8 +199,6 @@ while shutting down a Logger, the error will be returned and all the loggers tha
 were already shut down will remain shut down.
 */
 func (b *Base) ShutdownLoggers() error {
-	b.queue.stopQueueWorkers()
-
 	for _, logger := range b.loggers {
 		err := logger.ShutdownLogger()
 		if err != nil {
@@ -187,8 +206,16 @@ func (b *Base) ShutdownLoggers() error {
 		}
 	}
 
-	b.isInitialized = false
+	if b.queue != nil {
+		b.queue.stopWorker()
+	}
 
+	if b.errorChan != nil {
+		close(b.errorChan)
+		b.errorChan = nil
+	}
+
+	b.isInitialized = false
 	return nil
 }
 
@@ -262,7 +289,7 @@ func (b *Base) LogWithTime(level LogLevel, ts time.Time, m *Attrs, msg string, a
 		}
 	}
 
-	return b.queue.QueueMessage(nm)
+	return b.queue.queueMessage(nm)
 }
 
 // Log will log a message at the provided level to all added loggers with the timestamp set to the time
