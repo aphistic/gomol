@@ -44,14 +44,48 @@ func (queue *queue) stopWorker() error {
 func (queue *queue) work() {
 	defer close(queue.finished)
 
-	for msg := range queue.queueChan {
-		if msg == nil {
+	for {
+		// First, try to consume _all_ messages which are
+		// currently on the channel. If we hit the default
+		// block here it's because there's no message ready
+		// to process.
+
+		select {
+		case msg, ok := <-queue.queueChan:
+			if !ok {
+				return
+			}
+
+			queue.write(msg)
 			continue
+		default:
 		}
 
-		for _, l := range msg.base.loggers {
-			l.Logm(msg.Timestamp, msg.Level, msg.Attrs.Attrs(), msg.Msg)
+		// In that case, we're going to either try to process
+		// another message, or if someone is waiting in another
+		// goroutine for us to finish the queue (a flush sync),
+		// then we'll throw a value on that channel to inform
+		// them that we had a bit of downtime.
+
+		select {
+		case msg, ok := <-queue.queueChan:
+			if !ok {
+				return
+			}
+
+			queue.write(msg)
+		case queue.finished <- struct{}{}:
 		}
+	}
+}
+
+func (queue *queue) write(msg *Message) {
+	if msg == nil {
+		return
+	}
+
+	for _, l := range msg.base.loggers {
+		l.Logm(msg.Timestamp, msg.Level, msg.Attrs.Attrs(), msg.Msg)
 	}
 }
 
