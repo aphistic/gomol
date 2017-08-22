@@ -2,7 +2,6 @@ package gomol
 
 import (
 	"errors"
-	"testing"
 	"time"
 
 	"github.com/aphistic/sweet"
@@ -100,7 +99,7 @@ func (s *BaseSuite) TestSetConfig(t sweet.T) {
 	Expect(b.config.LineNumberAttr).To(Equal("line_number"))
 }
 
-func (s *BaseSuite) TestErrorChannel(t *testing.T) {
+func (s *BaseSuite) TestErrorChannel(t sweet.T) {
 	ch := make(chan error)
 	received := make(chan error, 3)
 

@@ -2,13 +2,13 @@ package gomol
 
 import (
 	"fmt"
-	"testing"
 	"time"
 
+	"github.com/aphistic/sweet"
 	. "github.com/onsi/gomega"
 )
 
-func (s *GomolSuite) TestLeakRegressionTest(t *testing.T) {
+func (s *GomolSuite) TestLeakRegressionTest(t sweet.T) {
 	var (
 		blocker = make(chan struct{})
 		l1      = newDefaultMemLogger()

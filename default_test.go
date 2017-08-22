@@ -1,8 +1,6 @@
 package gomol
 
 import (
-	"testing"
-
 	"github.com/aphistic/sweet"
 	. "github.com/onsi/gomega"
 )
@@ -21,7 +19,7 @@ func (s *GomolSuite) TestDefaultSetConfig(t sweet.T) {
 	Expect(curDefault.config).To(Equal(cfg))
 }
 
-func (s *GomolSuite) TestDefaultSetErrorChan(t *testing.T) {
+func (s *GomolSuite) TestDefaultSetErrorChan(t sweet.T) {
 	ch := make(chan error)
 	Expect(curDefault.errorChan).To(BeNil())
 	SetErrorChan(ch)
