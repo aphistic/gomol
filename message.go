@@ -26,6 +26,23 @@ const (
 	LevelNone LogLevel = math.MinInt32
 )
 
+func (ll *LogLevel) MarshalJSON() ([]byte, error) {
+	jsonLevel := getLevelName(*ll)
+	jsonData := append([]byte{'"'}, append([]byte(jsonLevel), '"')...)
+	return jsonData, nil
+}
+
+func (ll *LogLevel) UnmarshalJSON(data []byte) error {
+	levelStr := strings.Trim(string(data), `"`)
+
+	jsonLevel, err := ToLogLevel(levelStr)
+	if err != nil {
+		return err
+	}
+	*ll = jsonLevel
+	return nil
+}
+
 // ToLogLevel will take a string and return the appropriate log level for
 // the string if known.  If the string is not recognized it will return
 // an ErrUnknownLevel error.

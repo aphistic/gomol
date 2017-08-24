@@ -131,3 +131,21 @@ func (s *GomolSuite) TestNewMessageFormatWithAttrs(t sweet.T) {
 	Expect(m.Attrs.GetAttr("otherAttr")).To(Equal(4321))
 	Expect(m.Msg).To(Equal("test str 1234"))
 }
+
+type LogLevelSuite struct{}
+
+func (s *LogLevelSuite) TestMarshalJSON(t sweet.T) {
+	ll := LevelWarning
+
+	data, err := ll.MarshalJSON()
+	Expect(err).To(BeNil())
+	Expect(data).To(Equal([]byte(`"warn"`)))
+}
+
+func (s *LogLevelSuite) TestUnmarshalJSON(t sweet.T) {
+	var ll LogLevel
+
+	err := ll.UnmarshalJSON([]byte(`"warn"`))
+	Expect(err).To(BeNil())
+	Expect(ll).To(Equal(LevelWarning))
+}

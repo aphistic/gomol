@@ -21,6 +21,7 @@ func TestMain(m *testing.M) {
 		s.AddSuite(&BaseSuite{})
 		s.AddSuite(&LogAdapterSuite{})
 		s.AddSuite(&IssueSuite{})
+		s.AddSuite(&LogLevelSuite{})
 	})
 }
 
