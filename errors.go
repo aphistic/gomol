@@ -9,4 +9,8 @@ var (
 	// ErrMessageDropped is reported if loggers are backed up and an old log
 	// message has been forgotten
 	ErrMessageDropped = errors.New("queue full - dropping message")
+
+	// ErrNotInitialized is returned when a resource has not been completely
+	// initialized
+	ErrNotInitialized = errors.New("not initialized")
 )

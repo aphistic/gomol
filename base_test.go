@@ -399,6 +399,13 @@ func (s *BaseSuite) TestShutdownLoggersTwice(t sweet.T) {
 	Expect(ml2.isShutdown).To(Equal(true))
 }
 
+func (s *BaseSuite) TestLogWhileNotInitialized(t sweet.T) {
+	b := NewBase()
+
+	err := b.Log(LevelDebug, nil, "message")
+	Expect(err).To(Equal(ErrNotInitialized))
+}
+
 func (s *BaseSuite) TestSetAttr(t sweet.T) {
 	b := NewBase()
 

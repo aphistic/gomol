@@ -259,6 +259,10 @@ func (b *Base) LogWithTime(level LogLevel, ts time.Time, m *Attrs, msg string, a
 		return nil
 	}
 
+	if !b.isInitialized {
+		return ErrNotInitialized
+	}
+
 	if len(b.config.FilenameAttr) > 0 || len(b.config.LineNumberAttr) > 0 {
 		file, line := getCallerInfo()
 		if m == nil {
