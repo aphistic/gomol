@@ -36,8 +36,8 @@ func (s *IssueSuite) TestIssue22(t sweet.T) {
 
 	base.Flush()
 
-	Expect(ml.Messages).To(HaveLen(1))
-	Expect(ml.Messages[0]).To(Equal(&memMessage{
+	Expect(ml.Messages()).To(HaveLen(1))
+	Expect(ml.Messages()[0]).To(Equal(&memMessage{
 		Timestamp: time.Unix(10, 0),
 		Level:     LevelDebug,
 		Message:   "Message 1",
@@ -63,8 +63,8 @@ func (s *IssueSuite) TestIssue22(t sweet.T) {
 
 	base.Flush()
 
-	Expect(ml.Messages).To(HaveLen(2))
-	Expect(ml.Messages[1]).To(Equal(&memMessage{
+	Expect(ml.Messages()).To(HaveLen(2))
+	Expect(ml.Messages()[1]).To(Equal(&memMessage{
 		Timestamp: time.Unix(10, 0),
 		Level:     LevelDebug,
 		Message:   "Message 2",

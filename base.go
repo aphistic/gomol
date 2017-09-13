@@ -199,6 +199,9 @@ while shutting down a Logger, the error will be returned and all the loggers tha
 were already shut down will remain shut down.
 */
 func (b *Base) ShutdownLoggers() error {
+	// Before shutting down we should flush all the messsages
+	b.Flush()
+
 	for _, logger := range b.loggers {
 		err := logger.ShutdownLogger()
 		if err != nil {

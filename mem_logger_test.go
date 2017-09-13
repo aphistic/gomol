@@ -53,20 +53,22 @@ func (s *GomolSuite) TestMemShutdownLoggerFail(t sweet.T) {
 
 func (s *GomolSuite) TestMemClearMessages(t sweet.T) {
 	ml := newDefaultMemLogger()
-	Expect(ml.Messages).To(HaveLen(0))
+	Expect(ml.Messages()).To(HaveLen(0))
 	ml.Logm(time.Now(), LevelDebug, nil, "test")
-	Expect(ml.Messages).To(HaveLen(1))
+	Expect(ml.Messages()).To(HaveLen(1))
 	ml.ClearMessages()
-	Expect(ml.Messages).To(HaveLen(0))
+	Expect(ml.Messages()).To(HaveLen(0))
 }
 
 func (s *GomolSuite) TestMemLogmNoAttrs(t sweet.T) {
 	ml := newDefaultMemLogger()
 	ml.Logm(time.Now(), LevelDebug, nil, "test")
-	Expect(ml.Messages).To(HaveLen(1))
-	Expect(ml.Messages[0].Level).To(Equal(LevelDebug))
-	Expect(ml.Messages[0].Message).To(Equal("test"))
-	Expect(ml.Messages[0].Attrs).To(HaveLen(0))
+
+	Expect(ml.Messages()).To(HaveLen(1))
+	msg := ml.Messages()[0]
+	Expect(msg.Level).To(Equal(LevelDebug))
+	Expect(msg.Message).To(Equal("test"))
+	Expect(msg.Attrs).To(HaveLen(0))
 }
 
 func (s *GomolSuite) TestMemLogmAttrs(t sweet.T) {
@@ -77,12 +79,14 @@ func (s *GomolSuite) TestMemLogmAttrs(t sweet.T) {
 		LevelDebug,
 		map[string]interface{}{"attr1": 4321},
 		"test 1234")
-	Expect(ml.Messages).To(HaveLen(1))
-	Expect(ml.Messages[0].Timestamp).To(Equal(clock().Now()))
-	Expect(ml.Messages[0].Level).To(Equal(LevelDebug))
-	Expect(ml.Messages[0].Message).To(Equal("test 1234"))
-	Expect(ml.Messages[0].Attrs).To(HaveLen(1))
-	Expect(ml.Messages[0].Attrs["attr1"]).To(Equal(4321))
+
+	Expect(ml.Messages()).To(HaveLen(1))
+	msg := ml.Messages()[0]
+	Expect(msg.Timestamp).To(Equal(clock().Now()))
+	Expect(msg.Level).To(Equal(LevelDebug))
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(1))
+	Expect(msg.Attrs["attr1"]).To(Equal(4321))
 }
 
 func (s *GomolSuite) TestMemBaseAttrs(t sweet.T) {
@@ -102,14 +106,16 @@ func (s *GomolSuite) TestMemBaseAttrs(t sweet.T) {
 			"attr3": "val3",
 		},
 		"test 1234")
-	Expect(ml.Messages).To(HaveLen(1))
-	Expect(ml.Messages[0].Timestamp).To(Equal(clock().Now()))
-	Expect(ml.Messages[0].Level).To(Equal(LevelDebug))
-	Expect(ml.Messages[0].Message).To(Equal("test 1234"))
-	Expect(ml.Messages[0].Attrs).To(HaveLen(3))
-	Expect(ml.Messages[0].Attrs["attr1"]).To(Equal(4321))
-	Expect(ml.Messages[0].Attrs["attr2"]).To(Equal("val2"))
-	Expect(ml.Messages[0].Attrs["attr3"]).To(Equal("val3"))
+
+	Expect(ml.Messages()).To(HaveLen(1))
+	msg := ml.Messages()[0]
+	Expect(msg.Timestamp).To(Equal(clock().Now()))
+	Expect(msg.Level).To(Equal(LevelDebug))
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(4321))
+	Expect(msg.Attrs["attr2"]).To(Equal("val2"))
+	Expect(msg.Attrs["attr3"]).To(Equal("val3"))
 }
 
 func (s *GomolSuite) TestMemStringAttrs(t sweet.T) {
@@ -130,15 +136,17 @@ func (s *GomolSuite) TestMemStringAttrs(t sweet.T) {
 		},
 		"test 1234",
 	)
-	Expect(ml.Messages).To(HaveLen(1))
-	Expect(ml.Messages[0].Timestamp).To(Equal(clock().Now()))
-	Expect(ml.Messages[0].Level).To(Equal(LevelDebug))
-	Expect(ml.Messages[0].Message).To(Equal("test 1234"))
-	Expect(ml.Messages[0].Attrs).To(HaveLen(3))
-	Expect(ml.Messages[0].Attrs["attr1"]).To(Equal(4321))
-	Expect(ml.Messages[0].Attrs["attr2"]).To(Equal("val2"))
-	Expect(ml.Messages[0].Attrs["attr3"]).To(Equal("val3"))
-	Expect(ml.Messages[0].StringAttrs["attr1"]).To(Equal("4321"))
-	Expect(ml.Messages[0].StringAttrs["attr2"]).To(Equal("val2"))
-	Expect(ml.Messages[0].StringAttrs["attr3"]).To(Equal("val3"))
+
+	Expect(ml.Messages()).To(HaveLen(1))
+	msg := ml.Messages()[0]
+	Expect(msg.Timestamp).To(Equal(clock().Now()))
+	Expect(msg.Level).To(Equal(LevelDebug))
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(4321))
+	Expect(msg.Attrs["attr2"]).To(Equal("val2"))
+	Expect(msg.Attrs["attr3"]).To(Equal("val3"))
+	Expect(msg.StringAttrs["attr1"]).To(Equal("4321"))
+	Expect(msg.StringAttrs["attr2"]).To(Equal("val2"))
+	Expect(msg.StringAttrs["attr3"]).To(Equal("val3"))
 }

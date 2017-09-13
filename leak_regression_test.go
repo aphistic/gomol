@@ -42,8 +42,8 @@ func (s *GomolSuite) TestLeakRegressionTest(t sweet.T) {
 	// l1 gets a message, but then l2 blocks immediately
 	// after. We should not have any additional messages
 	// sent to the first logger.
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test 0"))
+	Expect(l1.Messages()).To(HaveLen(1))
+	Expect(l1.Messages()[0].Message).To(Equal("test 0"))
 
 	// Send additional messages while the loggers are blocked
 	// and the queue is full. This should NOT block the main
@@ -74,12 +74,12 @@ func (s *GomolSuite) TestLeakRegressionTest(t sweet.T) {
 	// message we should see that wasn't dropped should be the
 	// first message in the third chunk.
 
-	Expect(len(l1.Messages)).To(Equal(2*TestMaxQueueSize + 1))
+	Expect(l1.Messages()).To(HaveLen(2*TestMaxQueueSize + 1))
 
 	// Skip checking "test 0" message
 
-	for i := 0; i < len(l1.Messages)-1; i++ {
-		Expect(l1.Messages[i+1].Message).To(Equal(fmt.Sprintf("test %d", i+2*TestMaxQueueSize)))
+	for i := 0; i < len(l1.Messages())-1; i++ {
+		Expect(l1.Messages()[i+1].Message).To(Equal(fmt.Sprintf("test %d", i+2*TestMaxQueueSize)))
 	}
 
 	Eventually(errors).Should(Receive(Equal(2*TestMaxQueueSize - 1)))

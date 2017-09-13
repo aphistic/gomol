@@ -82,7 +82,7 @@ func (s *LogAdapterSuite) TestLogAdapterLogWithTime(t sweet.T) {
 	b.InitLoggers()
 
 	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
-	Expect(len(ml.Messages)).To(Equal(0))
+	Expect(ml.Messages()).To(HaveLen(0))
 
 	ts := time.Now()
 
@@ -90,8 +90,8 @@ func (s *LogAdapterSuite) TestLogAdapterLogWithTime(t sweet.T) {
 
 	b.ShutdownLoggers()
 
-	Expect(len(ml.Messages)).To(Equal(1))
-	Expect(ml.Messages[0]).To(Equal(&memMessage{
+	Expect(ml.Messages()).To(HaveLen(1))
+	Expect(ml.Messages()[0]).To(Equal(&memMessage{
 		Timestamp: ts,
 		Level:     LevelDebug,
 		Message:   "MessageM 2",
@@ -113,7 +113,7 @@ func (s *LogAdapterSuite) TestLogLevelLogWithTime(t sweet.T) {
 
 	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
 	la.SetLogLevel(LevelError)
-	Expect(len(ml.Messages)).To(Equal(0))
+	Expect(ml.Messages()).To(HaveLen(0))
 
 	ts := time.Now()
 
@@ -123,8 +123,8 @@ func (s *LogAdapterSuite) TestLogLevelLogWithTime(t sweet.T) {
 
 	b.ShutdownLoggers()
 
-	Expect(len(ml.Messages)).To(Equal(2))
-	Expect(ml.Messages[0]).To(Equal(&memMessage{
+	Expect(ml.Messages()).To(HaveLen(2))
+	Expect(ml.Messages()[0]).To(Equal(&memMessage{
 		Timestamp: ts,
 		Level:     LevelFatal,
 		Message:   "MessageM 2",
@@ -135,7 +135,7 @@ func (s *LogAdapterSuite) TestLogLevelLogWithTime(t sweet.T) {
 			"foo": "newBar",
 		},
 	}))
-	Expect(ml.Messages[1]).To(Equal(&memMessage{
+	Expect(ml.Messages()[1]).To(Equal(&memMessage{
 		Timestamp: ts,
 		Level:     LevelError,
 		Message:   "MessageM 3",
@@ -157,7 +157,7 @@ func (s *LogAdapterSuite) TestLogLevelLog(t sweet.T) {
 
 	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
 	la.SetLogLevel(LevelError)
-	Expect(len(ml.Messages)).To(Equal(0))
+	Expect(ml.Messages()).To(HaveLen(0))
 
 	la.Log(LevelFatal, NewAttrs().SetAttr("foo", "newBar"), "MessageM %d", LevelFatal)
 	la.Log(LevelError, NewAttrs().SetAttr("foo", "newBar"), "MessageM %d", LevelError)
@@ -165,9 +165,9 @@ func (s *LogAdapterSuite) TestLogLevelLog(t sweet.T) {
 
 	b.ShutdownLoggers()
 
-	Expect(len(ml.Messages)).To(Equal(2))
-	Expect(ml.Messages[0]).To(Equal(&memMessage{
-		Timestamp: ml.Messages[0].Timestamp,
+	Expect(ml.Messages()).To(HaveLen(2))
+	Expect(ml.Messages()[0]).To(Equal(&memMessage{
+		Timestamp: ml.Messages()[0].Timestamp,
 		Level:     LevelFatal,
 		Message:   "MessageM 2",
 		Attrs: map[string]interface{}{
@@ -177,8 +177,8 @@ func (s *LogAdapterSuite) TestLogLevelLog(t sweet.T) {
 			"foo": "newBar",
 		},
 	}))
-	Expect(ml.Messages[1]).To(Equal(&memMessage{
-		Timestamp: ml.Messages[1].Timestamp,
+	Expect(ml.Messages()[1]).To(Equal(&memMessage{
+		Timestamp: ml.Messages()[1].Timestamp,
 		Level:     LevelError,
 		Message:   "MessageM 3",
 		Attrs: map[string]interface{}{
@@ -207,8 +207,8 @@ func (s *LogAdapterSuite) TestLogAdapterThing(t sweet.T) {
 
 	b.ShutdownLoggers()
 
-	Expect(ml.Messages).To(HaveLen(1))
-	Expect(ml.Messages[0]).To(Equal(&memMessage{
+	Expect(ml.Messages()).To(HaveLen(1))
+	Expect(ml.Messages()[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelDebug,
 		Message:   "Message 1",
@@ -232,7 +232,7 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 	b.InitLoggers()
 
 	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
-	Expect(len(ml.Messages)).To(Equal(0))
+	Expect(ml.Messages()).To(HaveLen(0))
 
 	la.Dbg("Message 1")
 	la.Debug("Message 2")
@@ -243,8 +243,8 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 
 	b.ShutdownLoggers()
 
-	Expect(len(ml.Messages)).To(Equal(6))
-	Expect(ml.Messages[0]).To(Equal(&memMessage{
+	Expect(ml.Messages()).To(HaveLen(6))
+	Expect(ml.Messages()[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelDebug,
 		Message:   "Message 1",
@@ -255,7 +255,7 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 			"foo": "bar",
 		},
 	}))
-	Expect(ml.Messages[1]).To(Equal(&memMessage{
+	Expect(ml.Messages()[1]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelDebug,
 		Message:   "Message 2",
@@ -266,7 +266,7 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 			"foo": "bar",
 		},
 	}))
-	Expect(ml.Messages[2]).To(Equal(&memMessage{
+	Expect(ml.Messages()[2]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelDebug,
 		Message:   "MessageF 1",
@@ -277,7 +277,7 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 			"foo": "bar",
 		},
 	}))
-	Expect(ml.Messages[3]).To(Equal(&memMessage{
+	Expect(ml.Messages()[3]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelDebug,
 		Message:   "MessageF 2",
@@ -288,7 +288,7 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 			"foo": "bar",
 		},
 	}))
-	Expect(ml.Messages[4]).To(Equal(&memMessage{
+	Expect(ml.Messages()[4]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelDebug,
 		Message:   "MessageM 1",
@@ -301,7 +301,7 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 			"attr1": "val1",
 		},
 	}))
-	Expect(ml.Messages[5]).To(Equal(&memMessage{
+	Expect(ml.Messages()[5]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelDebug,
 		Message:   "MessageM 2",
@@ -321,7 +321,7 @@ func (s *LogAdapterSuite) TestLogAdapterInfo(t sweet.T) {
 	b.InitLoggers()
 
 	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
-	Expect(len(ml.Messages)).To(Equal(0))
+	Expect(ml.Messages()).To(HaveLen(0))
 
 	la.Info("Message 1")
 	la.Infof("MessageF %v", 1)
@@ -329,8 +329,8 @@ func (s *LogAdapterSuite) TestLogAdapterInfo(t sweet.T) {
 
 	b.ShutdownLoggers()
 
-	Expect(len(ml.Messages)).To(Equal(3))
-	Expect(ml.Messages[0]).To(Equal(&memMessage{
+	Expect(ml.Messages()).To(HaveLen(3))
+	Expect(ml.Messages()[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelInfo,
 		Message:   "Message 1",
@@ -341,7 +341,7 @@ func (s *LogAdapterSuite) TestLogAdapterInfo(t sweet.T) {
 			"foo": "bar",
 		},
 	}))
-	Expect(ml.Messages[1]).To(Equal(&memMessage{
+	Expect(ml.Messages()[1]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelInfo,
 		Message:   "MessageF 1",
@@ -352,7 +352,7 @@ func (s *LogAdapterSuite) TestLogAdapterInfo(t sweet.T) {
 			"foo": "bar",
 		},
 	}))
-	Expect(ml.Messages[2]).To(Equal(&memMessage{
+	Expect(ml.Messages()[2]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelInfo,
 		Message:   "MessageM 1",
@@ -374,7 +374,7 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 	b.InitLoggers()
 
 	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
-	Expect(len(ml.Messages)).To(Equal(0))
+	Expect(ml.Messages()).To(HaveLen(0))
 
 	la.Warn("Message 1")
 	la.Warning("Message 2")
@@ -385,8 +385,8 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 
 	b.ShutdownLoggers()
 
-	Expect(len(ml.Messages)).To(Equal(6))
-	Expect(ml.Messages[0]).To(Equal(&memMessage{
+	Expect(ml.Messages()).To(HaveLen(6))
+	Expect(ml.Messages()[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelWarning,
 		Message:   "Message 1",
@@ -397,7 +397,7 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 			"foo": "bar",
 		},
 	}))
-	Expect(ml.Messages[1]).To(Equal(&memMessage{
+	Expect(ml.Messages()[1]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelWarning,
 		Message:   "Message 2",
@@ -408,7 +408,7 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 			"foo": "bar",
 		},
 	}))
-	Expect(ml.Messages[2]).To(Equal(&memMessage{
+	Expect(ml.Messages()[2]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelWarning,
 		Message:   "MessageF 1",
@@ -419,7 +419,7 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 			"foo": "bar",
 		},
 	}))
-	Expect(ml.Messages[3]).To(Equal(&memMessage{
+	Expect(ml.Messages()[3]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelWarning,
 		Message:   "MessageF 2",
@@ -430,7 +430,7 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 			"foo": "bar",
 		},
 	}))
-	Expect(ml.Messages[4]).To(Equal(&memMessage{
+	Expect(ml.Messages()[4]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelWarning,
 		Message:   "MessageM 1",
@@ -443,7 +443,7 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 			"attr1": "val1",
 		},
 	}))
-	Expect(ml.Messages[5]).To(Equal(&memMessage{
+	Expect(ml.Messages()[5]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelWarning,
 		Message:   "MessageM 2",
@@ -463,7 +463,7 @@ func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 	b.InitLoggers()
 
 	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
-	Expect(len(ml.Messages)).To(Equal(0))
+	Expect(ml.Messages()).To(HaveLen(0))
 
 	la.Err("Message 1")
 	la.Error("Message 2")
@@ -474,8 +474,8 @@ func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 
 	b.ShutdownLoggers()
 
-	Expect(len(ml.Messages)).To(Equal(6))
-	Expect(ml.Messages[0]).To(Equal(&memMessage{
+	Expect(ml.Messages()).To(HaveLen(6))
+	Expect(ml.Messages()[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelError,
 		Message:   "Message 1",
@@ -486,7 +486,7 @@ func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 			"foo": "bar",
 		},
 	}))
-	Expect(ml.Messages[1]).To(Equal(&memMessage{
+	Expect(ml.Messages()[1]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelError,
 		Message:   "Message 2",
@@ -497,7 +497,7 @@ func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 			"foo": "bar",
 		},
 	}))
-	Expect(ml.Messages[2]).To(Equal(&memMessage{
+	Expect(ml.Messages()[2]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelError,
 		Message:   "MessageF 1",
@@ -508,7 +508,7 @@ func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 			"foo": "bar",
 		},
 	}))
-	Expect(ml.Messages[3]).To(Equal(&memMessage{
+	Expect(ml.Messages()[3]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelError,
 		Message:   "MessageF 2",
@@ -519,7 +519,7 @@ func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 			"foo": "bar",
 		},
 	}))
-	Expect(ml.Messages[4]).To(Equal(&memMessage{
+	Expect(ml.Messages()[4]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelError,
 		Message:   "MessageM 1",
@@ -532,7 +532,7 @@ func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 			"attr1": "val1",
 		},
 	}))
-	Expect(ml.Messages[5]).To(Equal(&memMessage{
+	Expect(ml.Messages()[5]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelError,
 		Message:   "MessageM 2",
@@ -552,7 +552,7 @@ func (s *LogAdapterSuite) TestLogAdapterFatal(t sweet.T) {
 	b.InitLoggers()
 
 	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
-	Expect(len(ml.Messages)).To(Equal(0))
+	Expect(ml.Messages()).To(HaveLen(0))
 
 	la.Fatal("Message 1")
 	la.Fatalf("MessageF %v", 1)
@@ -560,8 +560,8 @@ func (s *LogAdapterSuite) TestLogAdapterFatal(t sweet.T) {
 
 	b.ShutdownLoggers()
 
-	Expect(len(ml.Messages)).To(Equal(3))
-	Expect(ml.Messages[0]).To(Equal(&memMessage{
+	Expect(ml.Messages()).To(HaveLen(3))
+	Expect(ml.Messages()[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelFatal,
 		Message:   "Message 1",
@@ -572,7 +572,7 @@ func (s *LogAdapterSuite) TestLogAdapterFatal(t sweet.T) {
 			"foo": "bar",
 		},
 	}))
-	Expect(ml.Messages[1]).To(Equal(&memMessage{
+	Expect(ml.Messages()[1]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelFatal,
 		Message:   "MessageF 1",
@@ -583,7 +583,7 @@ func (s *LogAdapterSuite) TestLogAdapterFatal(t sweet.T) {
 			"foo": "bar",
 		},
 	}))
-	Expect(ml.Messages[2]).To(Equal(&memMessage{
+	Expect(ml.Messages()[2]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelFatal,
 		Message:   "MessageM 1",
@@ -605,14 +605,14 @@ func (s *LogAdapterSuite) TestLogAdapterDie(t sweet.T) {
 	b.InitLoggers()
 
 	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
-	Expect(len(ml.Messages)).To(Equal(0))
+	Expect(ml.Messages()).To(HaveLen(0))
 
 	la.Die(1234, "Message 1")
 
 	b.ShutdownLoggers()
 
-	Expect(len(ml.Messages)).To(Equal(1))
-	Expect(ml.Messages[0]).To(Equal(&memMessage{
+	Expect(ml.Messages()).To(HaveLen(1))
+	Expect(ml.Messages()[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelFatal,
 		Message:   "Message 1",
@@ -634,14 +634,14 @@ func (s *LogAdapterSuite) TestLogAdapterDief(t sweet.T) {
 	b.InitLoggers()
 
 	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
-	Expect(len(ml.Messages)).To(Equal(0))
+	Expect(ml.Messages()).To(HaveLen(0))
 
 	la.Dief(1234, "MessageF %v", 1)
 
 	b.ShutdownLoggers()
 
-	Expect(len(ml.Messages)).To(Equal(1))
-	Expect(ml.Messages[0]).To(Equal(&memMessage{
+	Expect(ml.Messages()).To(HaveLen(1))
+	Expect(ml.Messages()[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelFatal,
 		Message:   "MessageF 1",
@@ -663,14 +663,14 @@ func (s *LogAdapterSuite) TestLogAdapterDiem(t sweet.T) {
 	b.InitLoggers()
 
 	la := b.NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
-	Expect(len(ml.Messages)).To(Equal(0))
+	Expect(ml.Messages()).To(HaveLen(0))
 
 	la.Diem(1234, NewAttrs().SetAttr("attr1", "val1"), "MessageM %v", 1)
 
 	b.ShutdownLoggers()
 
-	Expect(len(ml.Messages)).To(Equal(1))
-	Expect(ml.Messages[0]).To(Equal(&memMessage{
+	Expect(ml.Messages()).To(HaveLen(1))
+	Expect(ml.Messages()[0]).To(Equal(&memMessage{
 		Timestamp: clock().Now(),
 		Level:     LevelFatal,
 		Message:   "MessageM 1",

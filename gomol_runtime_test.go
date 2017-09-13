@@ -67,10 +67,11 @@ func (s *GomolSuite) TestLogWithRuntimeInfo(t sweet.T) {
 	b.Info("test")
 	b.ShutdownLoggers()
 
-	Expect(l.Messages).To(HaveLen(1))
-	Expect(l.Messages[0].Message).To(Equal("test"))
-	Expect(l.Messages[0].Attrs).To(HaveLen(2))
-	Expect(l.Messages[0].Attrs["filename"]).To(Equal("fakefile.go"))
-	Expect(l.Messages[0].Attrs["line"]).To(Equal(1234))
-	Expect(l.Messages[0].Level).To(Equal(LevelInfo))
+	Expect(l.Messages()).To(HaveLen(1))
+	msg := l.Messages()[0]
+	Expect(msg.Message).To(Equal("test"))
+	Expect(msg.Attrs).To(HaveLen(2))
+	Expect(msg.Attrs["filename"]).To(Equal("fakefile.go"))
+	Expect(msg.Attrs["line"]).To(Equal(1234))
+	Expect(msg.Level).To(Equal(LevelInfo))
 }

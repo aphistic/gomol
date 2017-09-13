@@ -3,6 +3,7 @@ package gomol
 import (
 	"bytes"
 	"errors"
+	"sync"
 	"text/template"
 	"time"
 )
@@ -20,7 +21,8 @@ type memLogger struct {
 	base   *Base
 	config *memLoggerConfig
 
-	Messages []*memMessage
+	messageLock sync.Mutex
+	messages    []*memMessage
 
 	isInitialized bool
 	isShutdown    bool
@@ -45,7 +47,7 @@ func newMemLogger(config *memLoggerConfig) (*memLogger, error) {
 	l := &memLogger{
 		config: config,
 
-		Messages: make([]*memMessage, 0),
+		messages: make([]*memMessage, 0),
 
 		tpl: valTpl,
 	}
@@ -118,11 +120,23 @@ func (l *memLogger) Logm(timestamp time.Time, level LogLevel, m map[string]inter
 		}
 	}
 
-	l.Messages = append(l.Messages, nm)
+	l.messageLock.Lock()
+	l.messages = append(l.messages, nm)
+	l.messageLock.Unlock()
 
 	return nil
 }
 
+func (l *memLogger) Messages() []*memMessage {
+	l.messageLock.Lock()
+	defer l.messageLock.Unlock()
+
+	return l.messages
+}
+
 func (l *memLogger) ClearMessages() {
-	l.Messages = make([]*memMessage, 0)
+	l.messageLock.Lock()
+	defer l.messageLock.Unlock()
+
+	l.messages = make([]*memMessage, 0)
 }

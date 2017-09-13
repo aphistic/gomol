@@ -140,7 +140,7 @@ func (s *BaseSuite) TestSetLogLevel(t sweet.T) {
 	b.Err("test")
 	b.Fatal("test")
 	b.ShutdownLoggers()
-	Expect(ml.Messages).To(HaveLen(3))
+	Expect(ml.Messages()).To(HaveLen(3))
 }
 
 func (s *BaseSuite) TestAddLogger(t sweet.T) {
@@ -480,15 +480,17 @@ func (s *BaseSuite) TestSequence(t sweet.T) {
 
 	b.ShutdownLoggers()
 
-	Expect(l.Messages).To(HaveLen(2))
-	Expect(l.Messages[0].Message).To(Equal("test"))
-	Expect(l.Messages[0].Attrs).To(HaveLen(1))
-	Expect(l.Messages[0].Attrs["seq"]).To(Equal(uint64(1)))
-	Expect(l.Messages[0].Level).To(Equal(LevelDebug))
-	Expect(l.Messages[1].Message).To(Equal("test"))
-	Expect(l.Messages[1].Attrs).To(HaveLen(1))
-	Expect(l.Messages[1].Attrs["seq"]).To(Equal(uint64(2)))
-	Expect(l.Messages[1].Level).To(Equal(LevelDebug))
+	Expect(l.Messages()).To(HaveLen(2))
+	msg := l.Messages()[0]
+	Expect(msg.Message).To(Equal("test"))
+	Expect(msg.Attrs).To(HaveLen(1))
+	Expect(msg.Attrs["seq"]).To(Equal(uint64(1)))
+	Expect(msg.Level).To(Equal(LevelDebug))
+	msg = l.Messages()[1]
+	Expect(msg.Message).To(Equal("test"))
+	Expect(msg.Attrs).To(HaveLen(1))
+	Expect(msg.Attrs["seq"]).To(Equal(uint64(2)))
+	Expect(msg.Level).To(Equal(LevelDebug))
 }
 
 // Base func tests
@@ -503,10 +505,11 @@ func (s *BaseSuite) TestBaseDbgfWithFormattingParams(t sweet.T) {
 	b.Dbgf("LOG %s", "%2b")
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("LOG %2b"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l1.Messages[0].Level).To(Equal(LevelDebug))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("LOG %2b"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelDebug))
 }
 
 func (s *BaseSuite) TestBaseDbg(t sweet.T) {
@@ -522,15 +525,17 @@ func (s *BaseSuite) TestBaseDbg(t sweet.T) {
 	b.Dbg("test")
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l1.Messages[0].Level).To(Equal(LevelDebug))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelDebug))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l2.Messages[0].Level).To(Equal(LevelDebug))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelDebug))
 }
 
 func (s *BaseSuite) TestBaseDbgf(t sweet.T) {
@@ -546,15 +551,17 @@ func (s *BaseSuite) TestBaseDbgf(t sweet.T) {
 	b.Dbgf("test %v", 1234)
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l1.Messages[0].Level).To(Equal(LevelDebug))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelDebug))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l2.Messages[0].Level).To(Equal(LevelDebug))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelDebug))
 }
 
 func (s *BaseSuite) TestBaseDbgm(t sweet.T) {
@@ -576,21 +583,23 @@ func (s *BaseSuite) TestBaseDbgm(t sweet.T) {
 		1234)
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(3))
-	Expect(l1.Messages[0].Attrs["attr1"]).To(Equal(1234))
-	Expect(l1.Messages[0].Attrs["attr2"]).To(Equal(4321))
-	Expect(l1.Messages[0].Attrs["attr3"]).To(Equal("val3"))
-	Expect(l1.Messages[0].Level).To(Equal(LevelDebug))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(1234))
+	Expect(msg.Attrs["attr2"]).To(Equal(4321))
+	Expect(msg.Attrs["attr3"]).To(Equal("val3"))
+	Expect(msg.Level).To(Equal(LevelDebug))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(3))
-	Expect(l2.Messages[0].Attrs["attr1"]).To(Equal(1234))
-	Expect(l2.Messages[0].Attrs["attr2"]).To(Equal(4321))
-	Expect(l2.Messages[0].Attrs["attr3"]).To(Equal("val3"))
-	Expect(l2.Messages[0].Level).To(Equal(LevelDebug))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(1234))
+	Expect(msg.Attrs["attr2"]).To(Equal(4321))
+	Expect(msg.Attrs["attr3"]).To(Equal("val3"))
+	Expect(msg.Level).To(Equal(LevelDebug))
 }
 
 func (s *BaseSuite) TestBaseInfo(t sweet.T) {
@@ -606,15 +615,17 @@ func (s *BaseSuite) TestBaseInfo(t sweet.T) {
 	b.Info("test")
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l1.Messages[0].Level).To(Equal(LevelInfo))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelInfo))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l2.Messages[0].Level).To(Equal(LevelInfo))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelInfo))
 }
 
 func (s *BaseSuite) TestBaseInfof(t sweet.T) {
@@ -630,15 +641,17 @@ func (s *BaseSuite) TestBaseInfof(t sweet.T) {
 	b.Infof("test %v", 1234)
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l1.Messages[0].Level).To(Equal(LevelInfo))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelInfo))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l2.Messages[0].Level).To(Equal(LevelInfo))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelInfo))
 }
 
 func (s *BaseSuite) TestBaseInfom(t sweet.T) {
@@ -660,21 +673,23 @@ func (s *BaseSuite) TestBaseInfom(t sweet.T) {
 		1234)
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(3))
-	Expect(l1.Messages[0].Attrs["attr1"]).To(Equal(1234))
-	Expect(l1.Messages[0].Attrs["attr2"]).To(Equal(4321))
-	Expect(l1.Messages[0].Attrs["attr3"]).To(Equal("val3"))
-	Expect(l1.Messages[0].Level).To(Equal(LevelInfo))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(1234))
+	Expect(msg.Attrs["attr2"]).To(Equal(4321))
+	Expect(msg.Attrs["attr3"]).To(Equal("val3"))
+	Expect(msg.Level).To(Equal(LevelInfo))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(3))
-	Expect(l2.Messages[0].Attrs["attr1"]).To(Equal(1234))
-	Expect(l2.Messages[0].Attrs["attr2"]).To(Equal(4321))
-	Expect(l2.Messages[0].Attrs["attr3"]).To(Equal("val3"))
-	Expect(l2.Messages[0].Level).To(Equal(LevelInfo))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(1234))
+	Expect(msg.Attrs["attr2"]).To(Equal(4321))
+	Expect(msg.Attrs["attr3"]).To(Equal("val3"))
+	Expect(msg.Level).To(Equal(LevelInfo))
 }
 
 func (s *BaseSuite) TestBaseWarn(t sweet.T) {
@@ -690,15 +705,17 @@ func (s *BaseSuite) TestBaseWarn(t sweet.T) {
 	b.Warn("test")
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l1.Messages[0].Level).To(Equal(LevelWarning))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelWarning))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l2.Messages[0].Level).To(Equal(LevelWarning))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelWarning))
 }
 
 func (s *BaseSuite) TestBaseWarnf(t sweet.T) {
@@ -714,15 +731,17 @@ func (s *BaseSuite) TestBaseWarnf(t sweet.T) {
 	b.Warnf("test %v", 1234)
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l1.Messages[0].Level).To(Equal(LevelWarning))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelWarning))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l2.Messages[0].Level).To(Equal(LevelWarning))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelWarning))
 }
 
 func (s *BaseSuite) TestBaseWarnm(t sweet.T) {
@@ -744,21 +763,23 @@ func (s *BaseSuite) TestBaseWarnm(t sweet.T) {
 		1234)
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(3))
-	Expect(l1.Messages[0].Attrs["attr1"]).To(Equal(1234))
-	Expect(l1.Messages[0].Attrs["attr2"]).To(Equal(4321))
-	Expect(l1.Messages[0].Attrs["attr3"]).To(Equal("val3"))
-	Expect(l1.Messages[0].Level).To(Equal(LevelWarning))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(1234))
+	Expect(msg.Attrs["attr2"]).To(Equal(4321))
+	Expect(msg.Attrs["attr3"]).To(Equal("val3"))
+	Expect(msg.Level).To(Equal(LevelWarning))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(3))
-	Expect(l2.Messages[0].Attrs["attr1"]).To(Equal(1234))
-	Expect(l2.Messages[0].Attrs["attr2"]).To(Equal(4321))
-	Expect(l2.Messages[0].Attrs["attr3"]).To(Equal("val3"))
-	Expect(l2.Messages[0].Level).To(Equal(LevelWarning))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(1234))
+	Expect(msg.Attrs["attr2"]).To(Equal(4321))
+	Expect(msg.Attrs["attr3"]).To(Equal("val3"))
+	Expect(msg.Level).To(Equal(LevelWarning))
 }
 
 func (s *BaseSuite) TestBaseErr(t sweet.T) {
@@ -774,15 +795,17 @@ func (s *BaseSuite) TestBaseErr(t sweet.T) {
 	b.Err("test")
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l1.Messages[0].Level).To(Equal(LevelError))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelError))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l2.Messages[0].Level).To(Equal(LevelError))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelError))
 }
 
 func (s *BaseSuite) TestBaseErrf(t sweet.T) {
@@ -798,15 +821,17 @@ func (s *BaseSuite) TestBaseErrf(t sweet.T) {
 	b.Errf("test %v", 1234)
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l1.Messages[0].Level).To(Equal(LevelError))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelError))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l2.Messages[0].Level).To(Equal(LevelError))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelError))
 }
 
 func (s *BaseSuite) TestBaseErrm(t sweet.T) {
@@ -828,21 +853,23 @@ func (s *BaseSuite) TestBaseErrm(t sweet.T) {
 		1234)
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(3))
-	Expect(l1.Messages[0].Attrs["attr1"]).To(Equal(1234))
-	Expect(l1.Messages[0].Attrs["attr2"]).To(Equal(4321))
-	Expect(l1.Messages[0].Attrs["attr3"]).To(Equal("val3"))
-	Expect(l1.Messages[0].Level).To(Equal(LevelError))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(1234))
+	Expect(msg.Attrs["attr2"]).To(Equal(4321))
+	Expect(msg.Attrs["attr3"]).To(Equal("val3"))
+	Expect(msg.Level).To(Equal(LevelError))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(3))
-	Expect(l2.Messages[0].Attrs["attr1"]).To(Equal(1234))
-	Expect(l2.Messages[0].Attrs["attr2"]).To(Equal(4321))
-	Expect(l2.Messages[0].Attrs["attr3"]).To(Equal("val3"))
-	Expect(l2.Messages[0].Level).To(Equal(LevelError))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(1234))
+	Expect(msg.Attrs["attr2"]).To(Equal(4321))
+	Expect(msg.Attrs["attr3"]).To(Equal("val3"))
+	Expect(msg.Level).To(Equal(LevelError))
 }
 
 func (s *BaseSuite) TestBaseFatal(t sweet.T) {
@@ -858,15 +885,17 @@ func (s *BaseSuite) TestBaseFatal(t sweet.T) {
 	b.Fatal("test")
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l1.Messages[0].Level).To(Equal(LevelFatal))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelFatal))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelFatal))
 }
 
 func (s *BaseSuite) TestBaseFatalf(t sweet.T) {
@@ -882,15 +911,17 @@ func (s *BaseSuite) TestBaseFatalf(t sweet.T) {
 	b.Fatalf("test %v", 1234)
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l1.Messages[0].Level).To(Equal(LevelFatal))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelFatal))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelFatal))
 }
 
 func (s *BaseSuite) TestBaseFatalm(t sweet.T) {
@@ -912,21 +943,23 @@ func (s *BaseSuite) TestBaseFatalm(t sweet.T) {
 		1234)
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(3))
-	Expect(l1.Messages[0].Attrs["attr1"]).To(Equal(1234))
-	Expect(l1.Messages[0].Attrs["attr2"]).To(Equal(4321))
-	Expect(l1.Messages[0].Attrs["attr3"]).To(Equal("val3"))
-	Expect(l1.Messages[0].Level).To(Equal(LevelFatal))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(1234))
+	Expect(msg.Attrs["attr2"]).To(Equal(4321))
+	Expect(msg.Attrs["attr3"]).To(Equal("val3"))
+	Expect(msg.Level).To(Equal(LevelFatal))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(3))
-	Expect(l2.Messages[0].Attrs["attr1"]).To(Equal(1234))
-	Expect(l2.Messages[0].Attrs["attr2"]).To(Equal(4321))
-	Expect(l2.Messages[0].Attrs["attr3"]).To(Equal("val3"))
-	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(1234))
+	Expect(msg.Attrs["attr2"]).To(Equal(4321))
+	Expect(msg.Attrs["attr3"]).To(Equal("val3"))
+	Expect(msg.Level).To(Equal(LevelFatal))
 }
 
 func (s *BaseSuite) TestBaseDie(t sweet.T) {
@@ -941,15 +974,17 @@ func (s *BaseSuite) TestBaseDie(t sweet.T) {
 	b.InitLoggers()
 	b.Die(1234, "test")
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l1.Messages[0].Level).To(Equal(LevelFatal))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelFatal))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelFatal))
 
 	Expect(b.isInitialized).To(Equal(false))
 	Expect(curTestExiter.exited).To(Equal(true))
@@ -968,15 +1003,17 @@ func (s *BaseSuite) TestBaseDief(t sweet.T) {
 	b.InitLoggers()
 	b.Dief(1234, "test %v", 1234)
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l1.Messages[0].Level).To(Equal(LevelFatal))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelFatal))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(0))
-	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(0))
+	Expect(msg.Level).To(Equal(LevelFatal))
 
 	Expect(b.isInitialized).To(Equal(false))
 	Expect(curTestExiter.exited).To(Equal(true))
@@ -1003,21 +1040,23 @@ func (s *BaseSuite) TestBaseDiem(t sweet.T) {
 		1234)
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(1))
-	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(3))
-	Expect(l1.Messages[0].Attrs["attr1"]).To(Equal(1234))
-	Expect(l1.Messages[0].Attrs["attr2"]).To(Equal(4321))
-	Expect(l1.Messages[0].Attrs["attr3"]).To(Equal("val3"))
-	Expect(l1.Messages[0].Level).To(Equal(LevelFatal))
+	Expect(l1.Messages()).To(HaveLen(1))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(1234))
+	Expect(msg.Attrs["attr2"]).To(Equal(4321))
+	Expect(msg.Attrs["attr3"]).To(Equal("val3"))
+	Expect(msg.Level).To(Equal(LevelFatal))
 
-	Expect(l2.Messages).To(HaveLen(1))
-	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(3))
-	Expect(l2.Messages[0].Attrs["attr1"]).To(Equal(1234))
-	Expect(l2.Messages[0].Attrs["attr2"]).To(Equal(4321))
-	Expect(l2.Messages[0].Attrs["attr3"]).To(Equal("val3"))
-	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
+	Expect(l2.Messages()).To(HaveLen(1))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(1234))
+	Expect(msg.Attrs["attr2"]).To(Equal(4321))
+	Expect(msg.Attrs["attr3"]).To(Equal("val3"))
+	Expect(msg.Level).To(Equal(LevelFatal))
 
 	Expect(b.isInitialized).To(Equal(false))
 	Expect(curTestExiter.exited).To(Equal(true))
@@ -1049,31 +1088,35 @@ func (s *BaseSuite) TestBaseOrdering(t sweet.T) {
 		4321)
 	b.ShutdownLoggers()
 
-	Expect(l1.Messages).To(HaveLen(2))
-	Expect(l1.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l1.Messages[0].Attrs).To(HaveLen(3))
-	Expect(l1.Messages[0].Attrs["attr1"]).To(Equal(1234))
-	Expect(l1.Messages[0].Attrs["attr2"]).To(Equal(4321))
-	Expect(l1.Messages[0].Attrs["attr3"]).To(Equal("val3"))
-	Expect(l1.Messages[0].Level).To(Equal(LevelFatal))
-	Expect(l1.Messages[1].Message).To(Equal("test 4321"))
-	Expect(l1.Messages[1].Attrs).To(HaveLen(3))
-	Expect(l1.Messages[1].Attrs["attr1"]).To(Equal(1234))
-	Expect(l1.Messages[1].Attrs["attr4"]).To(Equal(4321))
-	Expect(l1.Messages[1].Attrs["attr5"]).To(Equal("val3"))
-	Expect(l1.Messages[1].Level).To(Equal(LevelFatal))
+	Expect(l1.Messages()).To(HaveLen(2))
+	msg := l1.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(1234))
+	Expect(msg.Attrs["attr2"]).To(Equal(4321))
+	Expect(msg.Attrs["attr3"]).To(Equal("val3"))
+	Expect(msg.Level).To(Equal(LevelFatal))
+	msg = l1.Messages()[1]
+	Expect(msg.Message).To(Equal("test 4321"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(1234))
+	Expect(msg.Attrs["attr4"]).To(Equal(4321))
+	Expect(msg.Attrs["attr5"]).To(Equal("val3"))
+	Expect(msg.Level).To(Equal(LevelFatal))
 
-	Expect(l2.Messages).To(HaveLen(2))
-	Expect(l2.Messages[0].Message).To(Equal("test 1234"))
-	Expect(l2.Messages[0].Attrs).To(HaveLen(3))
-	Expect(l2.Messages[0].Attrs["attr1"]).To(Equal(1234))
-	Expect(l2.Messages[0].Attrs["attr2"]).To(Equal(4321))
-	Expect(l2.Messages[0].Attrs["attr3"]).To(Equal("val3"))
-	Expect(l2.Messages[0].Level).To(Equal(LevelFatal))
-	Expect(l2.Messages[1].Message).To(Equal("test 4321"))
-	Expect(l2.Messages[1].Attrs).To(HaveLen(3))
-	Expect(l2.Messages[1].Attrs["attr1"]).To(Equal(1234))
-	Expect(l2.Messages[1].Attrs["attr4"]).To(Equal(4321))
-	Expect(l2.Messages[1].Attrs["attr5"]).To(Equal("val3"))
-	Expect(l2.Messages[1].Level).To(Equal(LevelFatal))
+	Expect(l2.Messages()).To(HaveLen(2))
+	msg = l2.Messages()[0]
+	Expect(msg.Message).To(Equal("test 1234"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(1234))
+	Expect(msg.Attrs["attr2"]).To(Equal(4321))
+	Expect(msg.Attrs["attr3"]).To(Equal("val3"))
+	Expect(msg.Level).To(Equal(LevelFatal))
+	msg = l2.Messages()[1]
+	Expect(msg.Message).To(Equal("test 4321"))
+	Expect(msg.Attrs).To(HaveLen(3))
+	Expect(msg.Attrs["attr1"]).To(Equal(1234))
+	Expect(msg.Attrs["attr4"]).To(Equal(4321))
+	Expect(msg.Attrs["attr5"]).To(Equal("val3"))
+	Expect(msg.Level).To(Equal(LevelFatal))
 }
