@@ -42,7 +42,7 @@ func (s *GomolSuite) TestLeakRegressionTest(t sweet.T) {
 	// l1 gets a message, but then l2 blocks immediately
 	// after. We should not have any additional messages
 	// sent to the first logger.
-	Expect(l1.Messages()).To(HaveLen(1))
+	Eventually(l1.Messages()).Should(HaveLen(1))
 	Expect(l1.Messages()[0].Message).To(Equal("test 0"))
 
 	// Send additional messages while the loggers are blocked
