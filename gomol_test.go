@@ -2,7 +2,6 @@ package gomol
 
 import (
 	"testing"
-	"time"
 
 	. "github.com/onsi/gomega"
 
@@ -19,6 +18,7 @@ func TestMain(m *testing.M) {
 		s.AddSuite(&GomolSuite{})
 		s.AddSuite(&AttrsSuite{})
 		s.AddSuite(&BaseSuite{})
+		s.AddSuite(&DefaultSuite{})
 		s.AddSuite(&LogAdapterSuite{})
 		s.AddSuite(&IssueSuite{})
 		s.AddSuite(&LogLevelSuite{})
@@ -29,7 +29,6 @@ type GomolSuite struct{}
 
 func (s *GomolSuite) SetUpTest(t sweet.T) {
 	setFakeCallerInfo("", 0)
-	setClock(newTestClock(time.Now()))
 	gomolFiles = map[string]fileRecord{}
 
 	curTestExiter = &testExiter{}

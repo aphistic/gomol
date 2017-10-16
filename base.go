@@ -1,8 +1,20 @@
 package gomol
 
-import "os"
-import "sync/atomic"
-import "time"
+import (
+	"os"
+	"sync/atomic"
+	"time"
+
+	"github.com/efritz/glock"
+)
+
+type baseConfigFunc func(b *Base)
+
+func withClock(clock glock.Clock) baseConfigFunc {
+	return func(b *Base) {
+		b.clock = clock
+	}
+}
 
 /*
 Base holds an instance of all information needed for logging.  It is possible
@@ -10,6 +22,8 @@ to create multiple instances of Base if multiple sets of loggers or attributes
 are desired.
 */
 type Base struct {
+	clock glock.Clock
+
 	isInitialized bool
 	config        *Config
 	errorChan     chan<- error
@@ -23,15 +37,23 @@ type Base struct {
 }
 
 // NewBase creates a new instance of Base with default values set.
-func NewBase() *Base {
+func NewBase(configs ...baseConfigFunc) *Base {
 	b := &Base{
-		config:       NewConfig(),
-		logLevel:     LevelDebug,
-		sequence:     0,
-		BaseAttrs:    NewAttrs(),
+		clock: glock.NewRealClock(),
+
+		config:    NewConfig(),
+		logLevel:  LevelDebug,
+		sequence:  0,
+		BaseAttrs: NewAttrs(),
+
 		loggers:      make([]Logger, 0),
 		hookPreQueue: make([]HookPreQueue, 0),
 	}
+
+	for _, f := range configs {
+		f(b)
+	}
+
 	return b
 }
 
@@ -302,7 +324,7 @@ func (b *Base) LogWithTime(level LogLevel, ts time.Time, m *Attrs, msg string, a
 // Log will log a message at the provided level to all added loggers with the timestamp set to the time
 // Log was called.
 func (b *Base) Log(level LogLevel, m *Attrs, msg string, a ...interface{}) error {
-	return b.LogWithTime(level, clock().Now(), m, msg, a...)
+	return b.LogWithTime(level, b.clock.Now(), m, msg, a...)
 }
 
 // Dbg is a short-hand version of Debug

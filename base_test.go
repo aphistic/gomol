@@ -2,9 +2,9 @@ package gomol
 
 import (
 	"errors"
-	"time"
 
 	"github.com/aphistic/sweet"
+	"github.com/efritz/glock"
 	. "github.com/onsi/gomega"
 )
 
@@ -26,17 +26,22 @@ var curTestExiter *testExiter
 
 func (s *BaseSuite) SetUpTest(t sweet.T) {
 	setFakeCallerInfo("", 0)
-	setClock(newTestClock(time.Now()))
 	gomolFiles = map[string]fileRecord{}
 
 	curTestExiter = &testExiter{}
 	setExiter(curTestExiter)
 
-	testBase = NewBase()
+	clock := glock.NewMockClock()
+
+	testBase = NewBase(
+		withClock(clock),
+	)
 	testBase.AddLogger(newDefaultMemLogger())
 	testBase.InitLoggers()
 
-	curDefault = NewBase()
+	curDefault = NewBase(
+		withClock(clock),
+	)
 	curDefault.AddLogger(newDefaultMemLogger())
 	curDefault.InitLoggers()
 }

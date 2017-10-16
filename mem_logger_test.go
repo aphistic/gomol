@@ -72,17 +72,17 @@ func (s *GomolSuite) TestMemLogmNoAttrs(t sweet.T) {
 }
 
 func (s *GomolSuite) TestMemLogmAttrs(t sweet.T) {
-	setClock(newTestClock(time.Now()))
+	ts := time.Unix(10, 0)
 	ml := newDefaultMemLogger()
 	ml.Logm(
-		clock().Now(),
+		ts,
 		LevelDebug,
 		map[string]interface{}{"attr1": 4321},
 		"test 1234")
 
 	Expect(ml.Messages()).To(HaveLen(1))
 	msg := ml.Messages()[0]
-	Expect(msg.Timestamp).To(Equal(clock().Now()))
+	Expect(msg.Timestamp).To(Equal(ts))
 	Expect(msg.Level).To(Equal(LevelDebug))
 	Expect(msg.Message).To(Equal("test 1234"))
 	Expect(msg.Attrs).To(HaveLen(1))
@@ -90,7 +90,7 @@ func (s *GomolSuite) TestMemLogmAttrs(t sweet.T) {
 }
 
 func (s *GomolSuite) TestMemBaseAttrs(t sweet.T) {
-	setClock(newTestClock(time.Now()))
+	ts := time.Unix(10, 0)
 
 	b := NewBase()
 	b.SetAttr("attr1", 7890)
@@ -99,7 +99,7 @@ func (s *GomolSuite) TestMemBaseAttrs(t sweet.T) {
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	ml.Logm(
-		clock().Now(),
+		ts,
 		LevelDebug,
 		map[string]interface{}{
 			"attr1": 4321,
@@ -109,7 +109,7 @@ func (s *GomolSuite) TestMemBaseAttrs(t sweet.T) {
 
 	Expect(ml.Messages()).To(HaveLen(1))
 	msg := ml.Messages()[0]
-	Expect(msg.Timestamp).To(Equal(clock().Now()))
+	Expect(msg.Timestamp).To(Equal(ts))
 	Expect(msg.Level).To(Equal(LevelDebug))
 	Expect(msg.Message).To(Equal("test 1234"))
 	Expect(msg.Attrs).To(HaveLen(3))
@@ -119,7 +119,7 @@ func (s *GomolSuite) TestMemBaseAttrs(t sweet.T) {
 }
 
 func (s *GomolSuite) TestMemStringAttrs(t sweet.T) {
-	setClock(newTestClock(time.Now()))
+	ts := time.Unix(10, 0)
 
 	b := NewBase()
 	b.SetAttr("attr1", 1234)
@@ -128,7 +128,7 @@ func (s *GomolSuite) TestMemStringAttrs(t sweet.T) {
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	ml.Logm(
-		clock().Now(),
+		ts,
 		LevelDebug,
 		map[string]interface{}{
 			"attr1": 4321,
@@ -139,7 +139,7 @@ func (s *GomolSuite) TestMemStringAttrs(t sweet.T) {
 
 	Expect(ml.Messages()).To(HaveLen(1))
 	msg := ml.Messages()[0]
-	Expect(msg.Timestamp).To(Equal(clock().Now()))
+	Expect(msg.Timestamp).To(Equal(ts))
 	Expect(msg.Level).To(Equal(LevelDebug))
 	Expect(msg.Message).To(Equal("test 1234"))
 	Expect(msg.Attrs).To(HaveLen(3))

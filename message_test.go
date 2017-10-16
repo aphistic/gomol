@@ -75,10 +75,10 @@ func (s *GomolSuite) TestToLogLevelError(t sweet.T) {
 }
 
 func (s *GomolSuite) TestNewMessageAttrsNil(t sweet.T) {
-	setClock(newTestClock(time.Now()))
-	m := newMessage(clock().Now(), curDefault, LevelDebug, nil, "test")
+	ts := time.Unix(10, 0)
+	m := newMessage(ts, curDefault, LevelDebug, nil, "test")
 	Expect(m.base).To(Equal(curDefault))
-	Expect(m.Timestamp).To(Equal(clock().Now()))
+	Expect(m.Timestamp).To(Equal(ts))
 	Expect(m.Level).To(Equal(LevelDebug))
 	Expect(m.Attrs).ToNot(BeNil())
 	Expect(m.Attrs.Attrs()).To(HaveLen(0))
@@ -86,15 +86,15 @@ func (s *GomolSuite) TestNewMessageAttrsNil(t sweet.T) {
 }
 
 func (s *GomolSuite) TestNewMessageMsgAttrsNil(t sweet.T) {
-	setClock(newTestClock(time.Now()))
+	ts := time.Unix(10, 0)
 
 	ma := NewAttrs().
 		SetAttr("msgAttr", "strVal").
 		SetAttr("otherAttr", 4321)
 
-	m := newMessage(clock().Now(), curDefault, LevelDebug, ma, "test")
+	m := newMessage(ts, curDefault, LevelDebug, ma, "test")
 	Expect(m.base).To(Equal(curDefault))
-	Expect(m.Timestamp).To(Equal(clock().Now()))
+	Expect(m.Timestamp).To(Equal(ts))
 	Expect(m.Level).To(Equal(LevelDebug))
 	Expect(m.Attrs).ToNot(BeNil())
 	Expect(m.Attrs.Attrs()).To(HaveLen(2))
@@ -104,10 +104,10 @@ func (s *GomolSuite) TestNewMessageMsgAttrsNil(t sweet.T) {
 }
 
 func (s *GomolSuite) TestNewMessageFormat(t sweet.T) {
-	setClock(newTestClock(time.Now()))
-	m := newMessage(clock().Now(), curDefault, LevelDebug, nil, "test %v %v", "str", 1234)
+	ts := time.Unix(10, 0)
+	m := newMessage(ts, curDefault, LevelDebug, nil, "test %v %v", "str", 1234)
 	Expect(m.base).To(Equal(curDefault))
-	Expect(m.Timestamp).To(Equal(clock().Now()))
+	Expect(m.Timestamp).To(Equal(ts))
 	Expect(m.Level).To(Equal(LevelDebug))
 	Expect(m.Attrs).ToNot(BeNil())
 	Expect(m.Attrs.Attrs()).To(HaveLen(0))
@@ -115,15 +115,15 @@ func (s *GomolSuite) TestNewMessageFormat(t sweet.T) {
 }
 
 func (s *GomolSuite) TestNewMessageFormatWithAttrs(t sweet.T) {
-	setClock(newTestClock(time.Now()))
+	ts := time.Unix(10, 0)
 
 	ma := NewAttrs().
 		SetAttr("msgAttr", "strVal").
 		SetAttr("otherAttr", 4321)
 
-	m := newMessage(clock().Now(), curDefault, LevelDebug, ma, "test %v %v", "str", 1234)
+	m := newMessage(ts, curDefault, LevelDebug, ma, "test %v %v", "str", 1234)
 	Expect(m.base).To(Equal(curDefault))
-	Expect(m.Timestamp).To(Equal(clock().Now()))
+	Expect(m.Timestamp).To(Equal(ts))
 	Expect(m.Level).To(Equal(LevelDebug))
 	Expect(m.Attrs).ToNot(BeNil())
 	Expect(m.Attrs.Attrs()).To(HaveLen(2))

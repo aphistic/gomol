@@ -31,9 +31,8 @@ func (s *GomolSuite) TestNewTemplateMsgError(t sweet.T) {
 }
 
 func (s *GomolSuite) TestTemplateExecuteError(t sweet.T) {
-	setClock(newTestClock(time.Unix(1000000000, 100)))
-
-	msg := newMessage(clock().Now(), nil, LevelError,
+	ts := time.Unix(1000000000, 100)
+	msg := newMessage(ts, nil, LevelError,
 		NewAttrs().
 			SetAttr("attr1", "val1").
 			SetAttr("attr2", 1234),
@@ -50,8 +49,7 @@ func (s *GomolSuite) TestTemplateExecuteError(t sweet.T) {
 }
 
 func (s *GomolSuite) TestTplColorsNone(t sweet.T) {
-	setClock(newTestClock(time.Now()))
-	msg := newMessage(clock().Now(), nil, LevelNone, nil, "colors!")
+	msg := newMessage(time.Unix(10, 0), nil, LevelNone, nil, "colors!")
 	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
 	Expect(err).To(BeNil())
 
@@ -62,8 +60,7 @@ func (s *GomolSuite) TestTplColorsNone(t sweet.T) {
 }
 
 func (s *GomolSuite) TestTplColorsDebug(t sweet.T) {
-	setClock(newTestClock(time.Now()))
-	msg := newMessage(clock().Now(), nil, LevelDebug, nil, "colors!")
+	msg := newMessage(time.Unix(10, 0), nil, LevelDebug, nil, "colors!")
 	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
 	Expect(err).To(BeNil())
 
@@ -74,8 +71,7 @@ func (s *GomolSuite) TestTplColorsDebug(t sweet.T) {
 }
 
 func (s *GomolSuite) TestTplColorsInfo(t sweet.T) {
-	setClock(newTestClock(time.Now()))
-	msg := newMessage(clock().Now(), nil, LevelInfo, nil, "colors!")
+	msg := newMessage(time.Unix(10, 0), nil, LevelInfo, nil, "colors!")
 	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
 	Expect(err).To(BeNil())
 
@@ -86,8 +82,7 @@ func (s *GomolSuite) TestTplColorsInfo(t sweet.T) {
 }
 
 func (s *GomolSuite) TestTplColorsWarning(t sweet.T) {
-	setClock(newTestClock(time.Now()))
-	msg := newMessage(clock().Now(), nil, LevelWarning, nil, "colors!")
+	msg := newMessage(time.Unix(10, 0), nil, LevelWarning, nil, "colors!")
 	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
 	Expect(err).To(BeNil())
 
@@ -98,8 +93,7 @@ func (s *GomolSuite) TestTplColorsWarning(t sweet.T) {
 }
 
 func (s *GomolSuite) TestTplColorsError(t sweet.T) {
-	setClock(newTestClock(time.Now()))
-	msg := newMessage(clock().Now(), nil, LevelError, nil, "colors!")
+	msg := newMessage(time.Unix(10, 0), nil, LevelError, nil, "colors!")
 	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
 	Expect(err).To(BeNil())
 
@@ -110,8 +104,7 @@ func (s *GomolSuite) TestTplColorsError(t sweet.T) {
 }
 
 func (s *GomolSuite) TestTplColorsFatal(t sweet.T) {
-	setClock(newTestClock(time.Now()))
-	msg := newMessage(clock().Now(), nil, LevelFatal, nil, "colors!")
+	msg := newMessage(time.Unix(10, 0), nil, LevelFatal, nil, "colors!")
 	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
 	Expect(err).To(BeNil())
 
@@ -122,8 +115,7 @@ func (s *GomolSuite) TestTplColorsFatal(t sweet.T) {
 }
 
 func (s *GomolSuite) TestTplColorsUnknown(t sweet.T) {
-	setClock(newTestClock(time.Now()))
-	msg := newMessage(clock().Now(), nil, LogLevel(-1000), nil, "colors!")
+	msg := newMessage(time.Unix(10, 0), nil, LogLevel(-1000), nil, "colors!")
 	tpl, err := NewTemplate("{{color}}hascolor{{reset}} {{.Message}}")
 	Expect(err).To(BeNil())
 
@@ -132,8 +124,7 @@ func (s *GomolSuite) TestTplColorsUnknown(t sweet.T) {
 }
 
 func (s *GomolSuite) TestTplFuncsCase(t sweet.T) {
-	setClock(newTestClock(time.Now()))
-	msg := newMessage(clock().Now(), nil, LevelError, nil, "UPPER")
+	msg := newMessage(time.Unix(10, 0), nil, LevelError, nil, "UPPER")
 	tpl, err := NewTemplate("{{ucase .LevelName}} {{lcase .Message}} {{title .LevelName}}")
 	Expect(err).To(BeNil())
 
@@ -144,12 +135,12 @@ func (s *GomolSuite) TestTplFuncsCase(t sweet.T) {
 }
 
 func (s *GomolSuite) TestTplMsgFromInternal(t sweet.T) {
-	setClock(newTestClock(time.Now()))
+	ts := time.Unix(10, 0)
 
 	b := NewBase()
 	b.SetAttr("baseAttr", 1234)
 	b.SetAttr("overrideAttr", 1234)
-	msg := newMessage(clock().Now(), b, LevelInfo,
+	msg := newMessage(ts, b, LevelInfo,
 		NewAttrs().
 			SetAttr("msgAttr", 4321).
 			SetAttr("overrideAttr", "test"),
@@ -157,7 +148,7 @@ func (s *GomolSuite) TestTplMsgFromInternal(t sweet.T) {
 
 	tplMsg, err := newTemplateMsgFromMessage(msg)
 	Expect(err).To(BeNil())
-	Expect(tplMsg.Timestamp).To(Equal(clock().Now()))
+	Expect(tplMsg.Timestamp).To(Equal(ts))
 	Expect(tplMsg.Level).To(Equal(LevelInfo))
 	Expect(tplMsg.LevelName).To(Equal("info"))
 	Expect(tplMsg.Message).To(Equal("Format 1234 asdf"))
@@ -168,12 +159,12 @@ func (s *GomolSuite) TestTplMsgFromInternal(t sweet.T) {
 }
 
 func (s *GomolSuite) TestTplMsgAttrs(t sweet.T) {
-	setClock(newTestClock(time.Now()))
+	ts := time.Unix(10, 0)
 
 	b := NewBase()
 	b.SetAttr("baseAttr", 1234)
 	b.SetAttr("overrideAttr", 1234)
-	msg := newMessage(clock().Now(), b, LevelInfo,
+	msg := newMessage(ts, b, LevelInfo,
 		NewAttrs().
 			SetAttr("msgAttr", 4321).
 			SetAttr("overrideAttr", "test"),
@@ -181,6 +172,7 @@ func (s *GomolSuite) TestTplMsgAttrs(t sweet.T) {
 
 	tplMsg, err := newTemplateMsgFromMessage(msg)
 	Expect(err).To(BeNil())
+	Expect(tplMsg.Timestamp).To(Equal(ts))
 	Expect(tplMsg.Level).To(Equal(LevelInfo))
 	Expect(tplMsg.LevelName).To(Equal("info"))
 	Expect(tplMsg.Message).To(Equal("Format 1234 asdf"))
@@ -199,22 +191,22 @@ func (s *GomolSuite) TestTplMsgAttrs(t sweet.T) {
 }
 
 func (s *GomolSuite) TestTplTimestamp(t sweet.T) {
-	setClock(newTestClock(time.Now()))
+	ts := time.Unix(10, 0)
 
-	msg := newMessage(clock().Now(), nil, LevelError, nil, "message")
+	msg := newMessage(ts, nil, LevelError, nil, "message")
 	tpl, err := NewTemplate("{{ .Timestamp.Format \"2006-01-02T15:04:05.999999999Z07:00\" }}")
 	Expect(err).To(BeNil())
 
 	out, err := tpl.executeInternalMsg(msg, false)
 	Expect(err).To(BeNil())
 
-	Expect(out).To(Equal(clock().Now().Format("2006-01-02T15:04:05.999999999Z07:00")))
+	Expect(out).To(Equal(ts.Format("2006-01-02T15:04:05.999999999Z07:00")))
 }
 
 func (s *GomolSuite) TestTplJSON(t sweet.T) {
-	setClock(newTestClock(time.Unix(1000000000, 100)))
+	ts := time.Unix(1000000000, 100)
 
-	msg := newMessage(clock().Now(), nil, LevelError,
+	msg := newMessage(ts, nil, LevelError,
 		NewAttrs().
 			SetAttr("attr1", "val1").
 			SetAttr("attr2", 1234),
@@ -253,12 +245,13 @@ func (s *GomolSuite) TestTplJSON(t sweet.T) {
 }
 
 func (s *GomolSuite) TestTplAttrTemplate(t sweet.T) {
-	setClock(newTestClock(time.Now()))
-	msg := newMessage(clock().Now(),
+	msg := newMessage(
+		time.Unix(10, 0),
 		nil,
 		LevelFatal,
 		NewAttrs().SetAttr("attrName", "attrVal"),
-		"test")
+		"test",
+	)
 	tpl, err := NewTemplate("[{{.Attrs.attrName}}] {{.Message}}")
 	Expect(err).To(BeNil())
 
@@ -277,10 +270,10 @@ func (s *GomolSuite) TestTplJSONError(t sweet.T) {
 }
 
 func (s *GomolSuite) TestNewTemplateMsgMinimal(t sweet.T) {
-	setClock(newTestClock(time.Now()))
+	ts := time.Unix(10, 0)
 
-	tmsg := NewTemplateMsg(clock().Now(), LevelDebug, nil, "test")
-	Expect(tmsg.Timestamp).To(Equal(clock().Now()))
+	tmsg := NewTemplateMsg(ts, LevelDebug, nil, "test")
+	Expect(tmsg.Timestamp).To(Equal(ts))
 	Expect(tmsg.Level).To(Equal(LevelDebug))
 	Expect(tmsg.LevelName).To(Equal(LevelDebug.String()))
 	Expect(tmsg.Attrs).To(Equal(map[string]interface{}{}))

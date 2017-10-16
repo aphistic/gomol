@@ -2,10 +2,31 @@ package gomol
 
 import (
 	"github.com/aphistic/sweet"
+	"github.com/efritz/glock"
 	. "github.com/onsi/gomega"
 )
 
-func (s *GomolSuite) TestDefaultSetConfig(t sweet.T) {
+// These tests cannot be run in parallel because they depend on global state (the default logger)
+type DefaultSuite struct {
+	currentClock glock.Clock
+}
+
+func (s *DefaultSuite) SetUpTest(t sweet.T) {
+	s.currentClock = glock.NewMockClock()
+	curDefault = NewBase(
+		withClock(s.currentClock),
+	)
+	cfg := newMemLoggerConfig()
+	memL, _ := newMemLogger(cfg)
+	curDefault.AddLogger(memL)
+	curDefault.InitLoggers()
+}
+
+func (s *DefaultSuite) TearDownTest(t sweet.T) {
+	curDefault.ShutdownLoggers()
+}
+
+func (s *DefaultSuite) TestDefaultSetConfig(t sweet.T) {
 	cfg := NewConfig()
 
 	Expect(curDefault.config).To(Equal(cfg))
@@ -19,14 +40,14 @@ func (s *GomolSuite) TestDefaultSetConfig(t sweet.T) {
 	Expect(curDefault.config).To(Equal(cfg))
 }
 
-func (s *GomolSuite) TestDefaultSetErrorChan(t sweet.T) {
+func (s *DefaultSuite) TestDefaultSetErrorChan(t sweet.T) {
 	ch := make(chan error)
 	Expect(curDefault.errorChan).To(BeNil())
 	SetErrorChan(ch)
 	Expect(curDefault.errorChan).To(Equal((chan<- error)(ch)))
 }
 
-func (s *GomolSuite) TestDefaultInitLogger(t sweet.T) {
+func (s *DefaultSuite) TestDefaultInitLogger(t sweet.T) {
 	curDefault = NewBase()
 	Expect(IsInitialized()).To(Equal(false))
 	AddLogger(newDefaultMemLogger())
@@ -38,7 +59,7 @@ func (s *GomolSuite) TestDefaultInitLogger(t sweet.T) {
 	ShutdownLoggers()
 }
 
-func (s *GomolSuite) TestDefaultShutdownLogger(t sweet.T) {
+func (s *DefaultSuite) TestDefaultShutdownLogger(t sweet.T) {
 	curDefault = NewBase()
 	Expect(IsInitialized()).To(Equal(false))
 	AddLogger(newDefaultMemLogger())
@@ -51,14 +72,14 @@ func (s *GomolSuite) TestDefaultShutdownLogger(t sweet.T) {
 	Expect(IsInitialized()).To(Equal(false))
 }
 
-func (s *GomolSuite) TestDefaultAddLogger(t sweet.T) {
+func (s *DefaultSuite) TestDefaultAddLogger(t sweet.T) {
 	curDefault = NewBase()
 	Expect(curDefault.loggers).To(HaveLen(0))
 	AddLogger(newDefaultMemLogger())
 	Expect(curDefault.loggers).To(HaveLen(1))
 }
 
-func (s *GomolSuite) TestDefaultRemoveLogger(t sweet.T) {
+func (s *DefaultSuite) TestDefaultRemoveLogger(t sweet.T) {
 	curDefault = NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -83,7 +104,7 @@ func (s *GomolSuite) TestDefaultRemoveLogger(t sweet.T) {
 	Expect(curDefault.loggers).To(HaveLen(2))
 }
 
-func (s *GomolSuite) TestDefaultClearLoggers(t sweet.T) {
+func (s *DefaultSuite) TestDefaultClearLoggers(t sweet.T) {
 	curDefault = NewBase()
 
 	ml1 := newDefaultMemLogger()
@@ -108,7 +129,7 @@ func (s *GomolSuite) TestDefaultClearLoggers(t sweet.T) {
 	Expect(curDefault.loggers).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestDefaultSetLogLevel(t sweet.T) {
+func (s *DefaultSuite) TestDefaultSetLogLevel(t sweet.T) {
 	curDefault = NewBase()
 	InitLoggers()
 	ml := newDefaultMemLogger()
@@ -124,7 +145,7 @@ func (s *GomolSuite) TestDefaultSetLogLevel(t sweet.T) {
 	Expect(ml.Messages()).To(HaveLen(3))
 }
 
-func (s *GomolSuite) TestDefaultSetAttr(t sweet.T) {
+func (s *DefaultSuite) TestDefaultSetAttr(t sweet.T) {
 	curDefault = NewBase()
 	Expect(curDefault.BaseAttrs.Attrs()).To(HaveLen(0))
 	SetAttr("attr", 1234)
@@ -132,7 +153,7 @@ func (s *GomolSuite) TestDefaultSetAttr(t sweet.T) {
 	Expect(curDefault.BaseAttrs.GetAttr("attr")).To(Equal(1234))
 }
 
-func (s *GomolSuite) TestDefaultGetAttr(t sweet.T) {
+func (s *DefaultSuite) TestDefaultGetAttr(t sweet.T) {
 	curDefault = NewBase()
 	SetAttr("attr1", 1)
 	SetAttr("attr2", "val2")
@@ -141,7 +162,7 @@ func (s *GomolSuite) TestDefaultGetAttr(t sweet.T) {
 	Expect(GetAttr("notakey")).To(BeNil())
 }
 
-func (s *GomolSuite) TestDefaultRemoveAttr(t sweet.T) {
+func (s *DefaultSuite) TestDefaultRemoveAttr(t sweet.T) {
 	curDefault = NewBase()
 	Expect(curDefault.BaseAttrs.Attrs()).To(HaveLen(0))
 	SetAttr("attr", 1234)
@@ -151,7 +172,7 @@ func (s *GomolSuite) TestDefaultRemoveAttr(t sweet.T) {
 	Expect(curDefault.BaseAttrs.Attrs()).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestDefaultClearAttrs(t sweet.T) {
+func (s *DefaultSuite) TestDefaultClearAttrs(t sweet.T) {
 	curDefault = NewBase()
 	Expect(curDefault.BaseAttrs.Attrs()).To(HaveLen(0))
 	SetAttr("attr", 1234)
@@ -164,7 +185,7 @@ func (s *GomolSuite) TestDefaultClearAttrs(t sweet.T) {
 	Expect(curDefault.BaseAttrs.Attrs()).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestDefaultNewLogAdapter(t sweet.T) {
+func (s *DefaultSuite) TestDefaultNewLogAdapter(t sweet.T) {
 	la := NewLogAdapter(NewAttrs().SetAttr("foo", "bar"))
 	defLogger := curDefault.loggers[0].(*memLogger)
 
@@ -174,7 +195,7 @@ func (s *GomolSuite) TestDefaultNewLogAdapter(t sweet.T) {
 
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: s.currentClock.Now(),
 		Level:     LevelDebug,
 		Message:   "test",
 		Attrs: map[string]interface{}{
@@ -188,13 +209,13 @@ func (s *GomolSuite) TestDefaultNewLogAdapter(t sweet.T) {
 	}))
 }
 
-func (s *GomolSuite) TestDefaultDbg(t sweet.T) {
+func (s *DefaultSuite) TestDefaultDbg(t sweet.T) {
 	Dbg("test")
-	curDefault.queue.stopWorker()
+	curDefault.Flush()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp:   clock().Now(),
+		Timestamp:   s.currentClock.Now(),
 		Level:       LevelDebug,
 		Message:     "test",
 		Attrs:       map[string]interface{}{},
@@ -202,13 +223,13 @@ func (s *GomolSuite) TestDefaultDbg(t sweet.T) {
 	}))
 }
 
-func (s *GomolSuite) TestDefaultDbgf(t sweet.T) {
+func (s *DefaultSuite) TestDefaultDbgf(t sweet.T) {
 	Dbgf("test %v", 1234)
 	curDefault.queue.stopWorker()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp:   clock().Now(),
+		Timestamp:   s.currentClock.Now(),
 		Level:       LevelDebug,
 		Message:     "test 1234",
 		Attrs:       map[string]interface{}{},
@@ -216,7 +237,7 @@ func (s *GomolSuite) TestDefaultDbgf(t sweet.T) {
 	}))
 }
 
-func (s *GomolSuite) TestDefaultDbgm(t sweet.T) {
+func (s *DefaultSuite) TestDefaultDbgm(t sweet.T) {
 	Dbgm(
 		NewAttrs().SetAttr("attr1", 4321),
 		"test %v", 1234)
@@ -224,7 +245,7 @@ func (s *GomolSuite) TestDefaultDbgm(t sweet.T) {
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: s.currentClock.Now(),
 		Level:     LevelDebug,
 		Message:   "test 1234",
 		Attrs: map[string]interface{}{
@@ -236,13 +257,13 @@ func (s *GomolSuite) TestDefaultDbgm(t sweet.T) {
 	}))
 }
 
-func (s *GomolSuite) TestDefaultInfo(t sweet.T) {
+func (s *DefaultSuite) TestDefaultInfo(t sweet.T) {
 	Info("test")
-	curDefault.queue.stopWorker()
+	curDefault.Flush()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp:   clock().Now(),
+		Timestamp:   s.currentClock.Now(),
 		Level:       LevelInfo,
 		Message:     "test",
 		Attrs:       map[string]interface{}{},
@@ -250,13 +271,13 @@ func (s *GomolSuite) TestDefaultInfo(t sweet.T) {
 	}))
 }
 
-func (s *GomolSuite) TestDefaultInfof(t sweet.T) {
+func (s *DefaultSuite) TestDefaultInfof(t sweet.T) {
 	Infof("test %v", 1234)
-	curDefault.queue.stopWorker()
+	curDefault.Flush()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp:   clock().Now(),
+		Timestamp:   s.currentClock.Now(),
 		Level:       LevelInfo,
 		Message:     "test 1234",
 		Attrs:       map[string]interface{}{},
@@ -264,15 +285,17 @@ func (s *GomolSuite) TestDefaultInfof(t sweet.T) {
 	}))
 }
 
-func (s *GomolSuite) TestDefaultInfom(t sweet.T) {
+func (s *DefaultSuite) TestDefaultInfom(t sweet.T) {
 	Infom(
 		NewAttrs().SetAttr("attr1", 4321),
-		"test %v", 1234)
-	curDefault.queue.stopWorker()
+		"test %v",
+		1234,
+	)
+	curDefault.Flush()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: s.currentClock.Now(),
 		Level:     LevelInfo,
 		Message:   "test 1234",
 		Attrs: map[string]interface{}{
@@ -284,13 +307,13 @@ func (s *GomolSuite) TestDefaultInfom(t sweet.T) {
 	}))
 }
 
-func (s *GomolSuite) TestDefaultWarn(t sweet.T) {
+func (s *DefaultSuite) TestDefaultWarn(t sweet.T) {
 	Warn("test")
-	curDefault.queue.stopWorker()
+	curDefault.Flush()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp:   clock().Now(),
+		Timestamp:   s.currentClock.Now(),
 		Level:       LevelWarning,
 		Message:     "test",
 		Attrs:       map[string]interface{}{},
@@ -298,13 +321,13 @@ func (s *GomolSuite) TestDefaultWarn(t sweet.T) {
 	}))
 }
 
-func (s *GomolSuite) TestDefaultWarnf(t sweet.T) {
+func (s *DefaultSuite) TestDefaultWarnf(t sweet.T) {
 	Warnf("test %v", 1234)
-	curDefault.queue.stopWorker()
+	curDefault.Flush()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp:   clock().Now(),
+		Timestamp:   s.currentClock.Now(),
 		Level:       LevelWarning,
 		Message:     "test 1234",
 		Attrs:       map[string]interface{}{},
@@ -312,15 +335,17 @@ func (s *GomolSuite) TestDefaultWarnf(t sweet.T) {
 	}))
 }
 
-func (s *GomolSuite) TestDefaultWarnm(t sweet.T) {
+func (s *DefaultSuite) TestDefaultWarnm(t sweet.T) {
 	Warnm(
 		NewAttrs().SetAttr("attr1", 4321),
-		"test %v", 1234)
-	curDefault.queue.stopWorker()
+		"test %v",
+		1234,
+	)
+	curDefault.Flush()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: s.currentClock.Now(),
 		Level:     LevelWarning,
 		Message:   "test 1234",
 		Attrs: map[string]interface{}{
@@ -332,13 +357,13 @@ func (s *GomolSuite) TestDefaultWarnm(t sweet.T) {
 	}))
 }
 
-func (s *GomolSuite) TestDefaultErr(t sweet.T) {
+func (s *DefaultSuite) TestDefaultErr(t sweet.T) {
 	Err("test")
-	curDefault.queue.stopWorker()
+	curDefault.Flush()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp:   clock().Now(),
+		Timestamp:   s.currentClock.Now(),
 		Level:       LevelError,
 		Message:     "test",
 		Attrs:       map[string]interface{}{},
@@ -346,13 +371,13 @@ func (s *GomolSuite) TestDefaultErr(t sweet.T) {
 	}))
 }
 
-func (s *GomolSuite) TestDefaultErrf(t sweet.T) {
+func (s *DefaultSuite) TestDefaultErrf(t sweet.T) {
 	Errf("test %v", 1234)
 	curDefault.queue.stopWorker()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp:   clock().Now(),
+		Timestamp:   s.currentClock.Now(),
 		Level:       LevelError,
 		Message:     "test 1234",
 		Attrs:       map[string]interface{}{},
@@ -360,7 +385,7 @@ func (s *GomolSuite) TestDefaultErrf(t sweet.T) {
 	}))
 }
 
-func (s *GomolSuite) TestDefaultErrm(t sweet.T) {
+func (s *DefaultSuite) TestDefaultErrm(t sweet.T) {
 	Errm(
 		NewAttrs().SetAttr("attr1", 4321),
 		"test %v", 1234)
@@ -368,7 +393,7 @@ func (s *GomolSuite) TestDefaultErrm(t sweet.T) {
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: s.currentClock.Now(),
 		Level:     LevelError,
 		Message:   "test 1234",
 		Attrs: map[string]interface{}{
@@ -380,13 +405,13 @@ func (s *GomolSuite) TestDefaultErrm(t sweet.T) {
 	}))
 }
 
-func (s *GomolSuite) TestDefaultFatal(t sweet.T) {
+func (s *DefaultSuite) TestDefaultFatal(t sweet.T) {
 	Fatal("test")
 	curDefault.queue.stopWorker()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp:   clock().Now(),
+		Timestamp:   s.currentClock.Now(),
 		Level:       LevelFatal,
 		Message:     "test",
 		Attrs:       map[string]interface{}{},
@@ -394,13 +419,13 @@ func (s *GomolSuite) TestDefaultFatal(t sweet.T) {
 	}))
 }
 
-func (s *GomolSuite) TestDefaultFatalf(t sweet.T) {
+func (s *DefaultSuite) TestDefaultFatalf(t sweet.T) {
 	Fatalf("test %v", 1234)
 	curDefault.queue.stopWorker()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp:   clock().Now(),
+		Timestamp:   s.currentClock.Now(),
 		Level:       LevelFatal,
 		Message:     "test 1234",
 		Attrs:       map[string]interface{}{},
@@ -408,7 +433,7 @@ func (s *GomolSuite) TestDefaultFatalf(t sweet.T) {
 	}))
 }
 
-func (s *GomolSuite) TestDefaultFatalm(t sweet.T) {
+func (s *DefaultSuite) TestDefaultFatalm(t sweet.T) {
 	Fatalm(
 		NewAttrs().SetAttr("attr1", 4321),
 		"test %v", 1234)
@@ -416,7 +441,7 @@ func (s *GomolSuite) TestDefaultFatalm(t sweet.T) {
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: s.currentClock.Now(),
 		Level:     LevelFatal,
 		Message:   "test 1234",
 		Attrs: map[string]interface{}{
@@ -428,13 +453,13 @@ func (s *GomolSuite) TestDefaultFatalm(t sweet.T) {
 	}))
 }
 
-func (s *GomolSuite) TestDefaultDie(t sweet.T) {
+func (s *DefaultSuite) TestDefaultDie(t sweet.T) {
 	Die(1234, "test")
 	curDefault.queue.stopWorker()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp:   clock().Now(),
+		Timestamp:   s.currentClock.Now(),
 		Level:       LevelFatal,
 		Message:     "test",
 		Attrs:       map[string]interface{}{},
@@ -446,13 +471,13 @@ func (s *GomolSuite) TestDefaultDie(t sweet.T) {
 	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *GomolSuite) TestDefaultDief(t sweet.T) {
+func (s *DefaultSuite) TestDefaultDief(t sweet.T) {
 	Dief(1234, "test %v", 1234)
 	curDefault.queue.stopWorker()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp:   clock().Now(),
+		Timestamp:   s.currentClock.Now(),
 		Level:       LevelFatal,
 		Message:     "test 1234",
 		Attrs:       map[string]interface{}{},
@@ -467,7 +492,7 @@ func (s *GomolSuite) TestDefaultDief(t sweet.T) {
 	Expect(curTestExiter.code).To(Equal(1234))
 }
 
-func (s *GomolSuite) TestDefaultDiem(t sweet.T) {
+func (s *DefaultSuite) TestDefaultDiem(t sweet.T) {
 	Diem(
 		1234,
 		NewAttrs().SetAttr("attr1", 4321),
@@ -476,7 +501,7 @@ func (s *GomolSuite) TestDefaultDiem(t sweet.T) {
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: s.currentClock.Now(),
 		Level:     LevelFatal,
 		Message:   "test 1234",
 		Attrs: map[string]interface{}{

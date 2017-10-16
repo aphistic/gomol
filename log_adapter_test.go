@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/aphistic/sweet"
+	"github.com/efritz/glock"
 	. "github.com/onsi/gomega"
 )
 
@@ -191,7 +192,8 @@ func (s *LogAdapterSuite) TestLogLevelLog(t sweet.T) {
 }
 
 func (s *LogAdapterSuite) TestLogAdapterThing(t sweet.T) {
-	b := NewBase()
+	clock := glock.NewMockClock()
+	b := NewBase(withClock(clock))
 	b.SetAttr("base_attr", "foo")
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
@@ -209,7 +211,7 @@ func (s *LogAdapterSuite) TestLogAdapterThing(t sweet.T) {
 
 	Expect(ml.Messages()).To(HaveLen(1))
 	Expect(ml.Messages()[0]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelDebug,
 		Message:   "Message 1",
 		Attrs: map[string]interface{}{
@@ -226,7 +228,9 @@ func (s *LogAdapterSuite) TestLogAdapterThing(t sweet.T) {
 }
 
 func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
-	b := NewBase()
+	clock := glock.NewMockClock()
+
+	b := NewBase(withClock(clock))
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	b.InitLoggers()
@@ -245,7 +249,7 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 
 	Expect(ml.Messages()).To(HaveLen(6))
 	Expect(ml.Messages()[0]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelDebug,
 		Message:   "Message 1",
 		Attrs: map[string]interface{}{
@@ -256,7 +260,7 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[1]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelDebug,
 		Message:   "Message 2",
 		Attrs: map[string]interface{}{
@@ -267,7 +271,7 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[2]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelDebug,
 		Message:   "MessageF 1",
 		Attrs: map[string]interface{}{
@@ -278,7 +282,7 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[3]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelDebug,
 		Message:   "MessageF 2",
 		Attrs: map[string]interface{}{
@@ -289,7 +293,7 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[4]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelDebug,
 		Message:   "MessageM 1",
 		Attrs: map[string]interface{}{
@@ -302,7 +306,7 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[5]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelDebug,
 		Message:   "MessageM 2",
 		Attrs: map[string]interface{}{
@@ -315,7 +319,8 @@ func (s *LogAdapterSuite) TestLogAdapterDebug(t sweet.T) {
 }
 
 func (s *LogAdapterSuite) TestLogAdapterInfo(t sweet.T) {
-	b := NewBase()
+	clock := glock.NewMockClock()
+	b := NewBase(withClock(clock))
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	b.InitLoggers()
@@ -331,7 +336,7 @@ func (s *LogAdapterSuite) TestLogAdapterInfo(t sweet.T) {
 
 	Expect(ml.Messages()).To(HaveLen(3))
 	Expect(ml.Messages()[0]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelInfo,
 		Message:   "Message 1",
 		Attrs: map[string]interface{}{
@@ -342,7 +347,7 @@ func (s *LogAdapterSuite) TestLogAdapterInfo(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[1]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelInfo,
 		Message:   "MessageF 1",
 		Attrs: map[string]interface{}{
@@ -353,7 +358,7 @@ func (s *LogAdapterSuite) TestLogAdapterInfo(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[2]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelInfo,
 		Message:   "MessageM 1",
 		Attrs: map[string]interface{}{
@@ -368,7 +373,8 @@ func (s *LogAdapterSuite) TestLogAdapterInfo(t sweet.T) {
 }
 
 func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
-	b := NewBase()
+	clock := glock.NewMockClock()
+	b := NewBase(withClock(clock))
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	b.InitLoggers()
@@ -387,7 +393,7 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 
 	Expect(ml.Messages()).To(HaveLen(6))
 	Expect(ml.Messages()[0]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelWarning,
 		Message:   "Message 1",
 		Attrs: map[string]interface{}{
@@ -398,7 +404,7 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[1]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelWarning,
 		Message:   "Message 2",
 		Attrs: map[string]interface{}{
@@ -409,7 +415,7 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[2]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelWarning,
 		Message:   "MessageF 1",
 		Attrs: map[string]interface{}{
@@ -420,7 +426,7 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[3]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelWarning,
 		Message:   "MessageF 2",
 		Attrs: map[string]interface{}{
@@ -431,7 +437,7 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[4]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelWarning,
 		Message:   "MessageM 1",
 		Attrs: map[string]interface{}{
@@ -444,7 +450,7 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[5]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelWarning,
 		Message:   "MessageM 2",
 		Attrs: map[string]interface{}{
@@ -457,7 +463,8 @@ func (s *LogAdapterSuite) TestLogAdapterWarn(t sweet.T) {
 }
 
 func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
-	b := NewBase()
+	clock := glock.NewMockClock()
+	b := NewBase(withClock(clock))
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	b.InitLoggers()
@@ -476,7 +483,7 @@ func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 
 	Expect(ml.Messages()).To(HaveLen(6))
 	Expect(ml.Messages()[0]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelError,
 		Message:   "Message 1",
 		Attrs: map[string]interface{}{
@@ -487,7 +494,7 @@ func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[1]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelError,
 		Message:   "Message 2",
 		Attrs: map[string]interface{}{
@@ -498,7 +505,7 @@ func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[2]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelError,
 		Message:   "MessageF 1",
 		Attrs: map[string]interface{}{
@@ -509,7 +516,7 @@ func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[3]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelError,
 		Message:   "MessageF 2",
 		Attrs: map[string]interface{}{
@@ -520,7 +527,7 @@ func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[4]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelError,
 		Message:   "MessageM 1",
 		Attrs: map[string]interface{}{
@@ -533,7 +540,7 @@ func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[5]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelError,
 		Message:   "MessageM 2",
 		Attrs: map[string]interface{}{
@@ -546,7 +553,8 @@ func (s *LogAdapterSuite) TestLogAdapterError(t sweet.T) {
 }
 
 func (s *LogAdapterSuite) TestLogAdapterFatal(t sweet.T) {
-	b := NewBase()
+	clock := glock.NewMockClock()
+	b := NewBase(withClock(clock))
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	b.InitLoggers()
@@ -562,7 +570,7 @@ func (s *LogAdapterSuite) TestLogAdapterFatal(t sweet.T) {
 
 	Expect(ml.Messages()).To(HaveLen(3))
 	Expect(ml.Messages()[0]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelFatal,
 		Message:   "Message 1",
 		Attrs: map[string]interface{}{
@@ -573,7 +581,7 @@ func (s *LogAdapterSuite) TestLogAdapterFatal(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[1]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelFatal,
 		Message:   "MessageF 1",
 		Attrs: map[string]interface{}{
@@ -584,7 +592,7 @@ func (s *LogAdapterSuite) TestLogAdapterFatal(t sweet.T) {
 		},
 	}))
 	Expect(ml.Messages()[2]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelFatal,
 		Message:   "MessageM 1",
 		Attrs: map[string]interface{}{
@@ -599,7 +607,8 @@ func (s *LogAdapterSuite) TestLogAdapterFatal(t sweet.T) {
 }
 
 func (s *LogAdapterSuite) TestLogAdapterDie(t sweet.T) {
-	b := NewBase()
+	clock := glock.NewMockClock()
+	b := NewBase(withClock(clock))
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	b.InitLoggers()
@@ -613,7 +622,7 @@ func (s *LogAdapterSuite) TestLogAdapterDie(t sweet.T) {
 
 	Expect(ml.Messages()).To(HaveLen(1))
 	Expect(ml.Messages()[0]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelFatal,
 		Message:   "Message 1",
 		Attrs: map[string]interface{}{
@@ -628,7 +637,8 @@ func (s *LogAdapterSuite) TestLogAdapterDie(t sweet.T) {
 }
 
 func (s *LogAdapterSuite) TestLogAdapterDief(t sweet.T) {
-	b := NewBase()
+	clock := glock.NewMockClock()
+	b := NewBase(withClock(clock))
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	b.InitLoggers()
@@ -642,7 +652,7 @@ func (s *LogAdapterSuite) TestLogAdapterDief(t sweet.T) {
 
 	Expect(ml.Messages()).To(HaveLen(1))
 	Expect(ml.Messages()[0]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelFatal,
 		Message:   "MessageF 1",
 		Attrs: map[string]interface{}{
@@ -657,7 +667,8 @@ func (s *LogAdapterSuite) TestLogAdapterDief(t sweet.T) {
 }
 
 func (s *LogAdapterSuite) TestLogAdapterDiem(t sweet.T) {
-	b := NewBase()
+	clock := glock.NewMockClock()
+	b := NewBase(withClock(clock))
 	ml := newDefaultMemLogger()
 	b.AddLogger(ml)
 	b.InitLoggers()
@@ -671,7 +682,7 @@ func (s *LogAdapterSuite) TestLogAdapterDiem(t sweet.T) {
 
 	Expect(ml.Messages()).To(HaveLen(1))
 	Expect(ml.Messages()[0]).To(Equal(&memMessage{
-		Timestamp: clock().Now(),
+		Timestamp: clock.Now(),
 		Level:     LevelFatal,
 		Message:   "MessageM 1",
 		Attrs: map[string]interface{}{
