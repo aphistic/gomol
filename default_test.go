@@ -72,6 +72,15 @@ func (s *DefaultSuite) TestDefaultShutdownLogger(t sweet.T) {
 	Expect(IsInitialized()).To(Equal(false))
 }
 
+func (s *DefaultSuite) TestSetFallbackLogger(t sweet.T) {
+	curDefault = NewBase()
+	Expect(curDefault.fallbackLogger).To(BeNil())
+
+	ml := newDefaultMemLogger()
+	SetFallbackLogger(ml)
+	Expect(curDefault.fallbackLogger).To(Equal(ml))
+}
+
 func (s *DefaultSuite) TestDefaultAddLogger(t sweet.T) {
 	curDefault = NewBase()
 	Expect(curDefault.loggers).To(HaveLen(0))

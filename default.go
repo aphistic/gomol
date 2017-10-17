@@ -26,6 +26,11 @@ func SetLogLevel(level LogLevel) {
 	curDefault.SetLogLevel(level)
 }
 
+// SetFallbackLogger executes the same function on the default Base instance
+func SetFallbackLogger(logger Logger) error {
+	return curDefault.SetFallbackLogger(logger)
+}
+
 // AddLogger executes the same function on the default Base instance
 func AddLogger(logger Logger) {
 	curDefault.AddLogger(logger)

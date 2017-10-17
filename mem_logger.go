@@ -24,11 +24,15 @@ type memLogger struct {
 	messageLock sync.Mutex
 	messages    []*memMessage
 
+	healthy       bool
 	isInitialized bool
 	isShutdown    bool
 
 	tpl *template.Template
 }
+
+var _ Logger = &memLogger{}
+var _ HealthCheckLogger = &memLogger{}
 
 type memMessage struct {
 	Timestamp   time.Time
@@ -86,6 +90,14 @@ func (l *memLogger) ShutdownLogger() error {
 	l.isInitialized = false
 	l.isShutdown = true
 	return nil
+}
+
+func (l *memLogger) Healthy() bool {
+	return l.healthy
+}
+
+func (l *memLogger) SetHealthy(healthy bool) {
+	l.healthy = healthy
 }
 
 func (l *memLogger) Logm(timestamp time.Time, level LogLevel, m map[string]interface{}, msg string) error {
