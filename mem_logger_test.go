@@ -13,14 +13,16 @@ func newDefaultMemLogger() *memLogger {
 	return l
 }
 
-func (s *GomolSuite) TestMemInitLogger(t sweet.T) {
+type MemLoggerSuite struct{}
+
+func (s *MemLoggerSuite) TestMemInitLogger(t sweet.T) {
 	ml := newDefaultMemLogger()
 	Expect(ml.IsInitialized()).To(Equal(false))
 	ml.InitLogger()
 	Expect(ml.IsInitialized()).To(Equal(true))
 }
 
-func (s *GomolSuite) TestMemInitLoggerFail(t sweet.T) {
+func (s *MemLoggerSuite) TestMemInitLoggerFail(t sweet.T) {
 	mlCfg := newMemLoggerConfig()
 	mlCfg.FailInit = true
 	ml, err := newMemLogger(mlCfg)
@@ -32,14 +34,14 @@ func (s *GomolSuite) TestMemInitLoggerFail(t sweet.T) {
 	Expect(err.Error()).To(Equal("Init failed"))
 }
 
-func (s *GomolSuite) TestMemShutdownLogger(t sweet.T) {
+func (s *MemLoggerSuite) TestMemShutdownLogger(t sweet.T) {
 	ml := newDefaultMemLogger()
 	Expect(ml.isShutdown).To(Equal(false))
 	ml.ShutdownLogger()
 	Expect(ml.isShutdown).To(Equal(true))
 }
 
-func (s *GomolSuite) TestMemShutdownLoggerFail(t sweet.T) {
+func (s *MemLoggerSuite) TestMemShutdownLoggerFail(t sweet.T) {
 	mlCfg := newMemLoggerConfig()
 	mlCfg.FailShutdown = true
 	ml, err := newMemLogger(mlCfg)
@@ -51,7 +53,7 @@ func (s *GomolSuite) TestMemShutdownLoggerFail(t sweet.T) {
 	Expect(err.Error()).To(Equal("Shutdown failed"))
 }
 
-func (s *GomolSuite) TestMemClearMessages(t sweet.T) {
+func (s *MemLoggerSuite) TestMemClearMessages(t sweet.T) {
 	ml := newDefaultMemLogger()
 	Expect(ml.Messages()).To(HaveLen(0))
 	ml.Logm(time.Now(), LevelDebug, nil, "test")
@@ -60,7 +62,7 @@ func (s *GomolSuite) TestMemClearMessages(t sweet.T) {
 	Expect(ml.Messages()).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestMemLogmNoAttrs(t sweet.T) {
+func (s *MemLoggerSuite) TestMemLogmNoAttrs(t sweet.T) {
 	ml := newDefaultMemLogger()
 	ml.Logm(time.Now(), LevelDebug, nil, "test")
 
@@ -71,7 +73,7 @@ func (s *GomolSuite) TestMemLogmNoAttrs(t sweet.T) {
 	Expect(msg.Attrs).To(HaveLen(0))
 }
 
-func (s *GomolSuite) TestMemLogmAttrs(t sweet.T) {
+func (s *MemLoggerSuite) TestMemLogmAttrs(t sweet.T) {
 	ts := time.Unix(10, 0)
 	ml := newDefaultMemLogger()
 	ml.Logm(
@@ -89,7 +91,7 @@ func (s *GomolSuite) TestMemLogmAttrs(t sweet.T) {
 	Expect(msg.Attrs["attr1"]).To(Equal(4321))
 }
 
-func (s *GomolSuite) TestMemBaseAttrs(t sweet.T) {
+func (s *MemLoggerSuite) TestMemBaseAttrs(t sweet.T) {
 	ts := time.Unix(10, 0)
 
 	b := NewBase()
@@ -118,7 +120,7 @@ func (s *GomolSuite) TestMemBaseAttrs(t sweet.T) {
 	Expect(msg.Attrs["attr3"]).To(Equal("val3"))
 }
 
-func (s *GomolSuite) TestMemStringAttrs(t sweet.T) {
+func (s *MemLoggerSuite) TestMemStringAttrs(t sweet.T) {
 	ts := time.Unix(10, 0)
 
 	b := NewBase()
@@ -149,4 +151,18 @@ func (s *GomolSuite) TestMemStringAttrs(t sweet.T) {
 	Expect(msg.StringAttrs["attr1"]).To(Equal("4321"))
 	Expect(msg.StringAttrs["attr2"]).To(Equal("val2"))
 	Expect(msg.StringAttrs["attr3"]).To(Equal("val3"))
+}
+
+func (s *MemLoggerSuite) TestHealthy(t sweet.T) {
+	ml := newDefaultMemLogger()
+
+	Expect(ml.Healthy()).To(BeFalse())
+
+	ml.SetHealthy(true)
+
+	Expect(ml.Healthy()).To(BeTrue())
+
+	ml.SetHealthy(false)
+
+	Expect(ml.Healthy()).To(BeFalse())
 }

@@ -131,3 +131,50 @@ func main() {
 	}
 }
 ```
+
+Fallback Logger
+===============
+
+One feature gomol supports is the concept of a fallback logger.  In some cases a logger
+may go unhealthy (a logger to a remote server, for example) and you want to log to a
+different logger to ensure log messages are not lost.  The SetFallbackLogger method is
+available for these such instances.
+
+A fallback logger will be triggered if any of the primary loggers goes unhealthy even if
+all others are fine. It's recommended the fallback logger not be added to the primary
+loggers or you may see duplicate messages.  This does mean if multiple loggers are added
+as primary loggers and just one is unhealthy the fallback logger logger will be triggered.
+
+To add a fallback logger there are two options.  One is to use the default gomol instance
+(`gomol.SetFallbackLogger()`) and the other is to use the method on a Base instance:
+
+```go
+import (
+	"github.com/aphistic/gomol"
+	"github.com/aphistic/gomol-console"
+	"github.com/aphistic/gomol-json"
+)
+
+func main() {
+	// Create a logger that logs over TCP using JSON
+	jsonCfg := gomoljson.NewJSONLoggerConfig("tcp://192.0.2.125:4321")
+	// Continue startup even if we can't connect initially
+	jsonCfg.AllowDisconnectedInit = true
+	jsonLogger, _ := gomoljson.NewJSONLogger(jsonCfg)
+	gomol.AddLogger(jsonLogger)
+
+	// Create a logger that logs to the console
+	consoleCfg := gomolconsole.NewConsoleLoggerConfig()
+	consoleLogger, _ := gomolconsole.NewConsoleLogger(consoleCfg)
+
+	// Set the fallback logger to the console so if the
+	// TCP JSON logger is unhealthy we still get logs
+	// to stdout.
+	_ = gomol.SetFallbackLogger(consoleLogger)
+
+	gomol.InitLoggers()
+	defer gomol.ShutdownLoggers()
+
+	gomol.Debug("This is my message!")
+}
+```

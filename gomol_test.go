@@ -15,13 +15,15 @@ func TestMain(m *testing.M) {
 	sweet.Run(m, func(s *sweet.S) {
 		s.RegisterPlugin(junit.NewPlugin())
 
-		s.AddSuite(&GomolSuite{})
 		s.AddSuite(&AttrsSuite{})
 		s.AddSuite(&BaseSuite{})
 		s.AddSuite(&DefaultSuite{})
-		s.AddSuite(&LogAdapterSuite{})
+		s.AddSuite(&FallbackLoggerSuite{})
+		s.AddSuite(&GomolSuite{})
 		s.AddSuite(&IssueSuite{})
+		s.AddSuite(&LogAdapterSuite{})
 		s.AddSuite(&LogLevelSuite{})
+		s.AddSuite(&MemLoggerSuite{})
 	})
 }
 

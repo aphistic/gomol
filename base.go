@@ -32,8 +32,9 @@ type Base struct {
 	sequence      uint64
 	BaseAttrs     *Attrs
 
-	loggers      []Logger
-	hookPreQueue []HookPreQueue
+	loggers        []Logger
+	fallbackLogger Logger
+	hookPreQueue   []HookPreQueue
 }
 
 // NewBase creates a new instance of Base with default values set.
@@ -104,6 +105,36 @@ func (b *Base) shouldLog(level LogLevel) bool {
 		return true
 	}
 	return false
+}
+
+// SetFallbackLogger sets a Logger to be used if there aren't any loggers added or any of
+// the added loggers are in a degraded or unhealthy state.  A Logger passed to SetFallbackLogger
+// will be initialized if it hasn't been already.  In addition, if the Logger fails to initialize
+// completely the fallback logger will fail to be set.
+func (b *Base) SetFallbackLogger(logger Logger) error {
+	if logger == nil {
+		if b.fallbackLogger != nil && b.fallbackLogger.IsInitialized() {
+			b.fallbackLogger.ShutdownLogger()
+		}
+		b.fallbackLogger = nil
+		return nil
+	}
+
+	if !logger.IsInitialized() {
+		err := logger.InitLogger()
+		if err != nil {
+			return err
+		}
+	}
+
+	// Shut down any old logger we might already have a reference to
+	if b.fallbackLogger != nil && b.fallbackLogger.IsInitialized() {
+		b.fallbackLogger.ShutdownLogger()
+	}
+
+	b.fallbackLogger = logger
+
+	return nil
 }
 
 // AddLogger adds a new logger instance to the Base

@@ -1,6 +1,8 @@
 package gomol
 
-import "errors"
+import (
+	"errors"
+)
 
 type queue struct {
 	base      *Base
@@ -84,8 +86,23 @@ func (queue *queue) write(msg *Message) {
 		return
 	}
 
+	unhealthy := len(msg.base.loggers) == 0
 	for _, l := range msg.base.loggers {
+		if hcLogger, ok := l.(HealthCheckLogger); ok {
+			if !hcLogger.Healthy() {
+				unhealthy = true
+			}
+		}
 		l.Logm(msg.Timestamp, msg.Level, msg.Attrs.Attrs(), msg.Msg)
+	}
+	if unhealthy && msg.base.fallbackLogger != nil {
+		logFallback := true
+		if hcLogger, ok := msg.base.fallbackLogger.(HealthCheckLogger); ok {
+			logFallback = hcLogger.Healthy()
+		}
+		if logFallback {
+			msg.base.fallbackLogger.Logm(msg.Timestamp, msg.Level, msg.Attrs.Attrs(), msg.Msg)
+		}
 	}
 }
 
