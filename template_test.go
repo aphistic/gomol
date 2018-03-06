@@ -2,6 +2,7 @@ package gomol
 
 import (
 	"encoding/json"
+	"text/template"
 	"time"
 
 	"github.com/aphistic/sweet"
@@ -132,6 +133,29 @@ func (s *GomolSuite) TestTplFuncsCase(t sweet.T) {
 	Expect(err).To(BeNil())
 
 	Expect(out).To(Equal("ERROR upper Error"))
+}
+
+func reverseString(s string) string {
+	runes := []rune(s)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+
+	return string(runes)
+}
+
+func (s *GomolSuite) TestTplFuncMap(t sweet.T) {
+	msg := newMessage(time.Unix(10, 0), nil, LevelDebug, nil, "forward message")
+	tpl, err := NewTemplateWithFuncMap("{{reverse .Message}} {{color}}colored{{reset}}", template.FuncMap{
+		"color":   func() string { return colorFatal },
+		"reverse": reverseString,
+	})
+	Expect(err).To(BeNil())
+
+	out, err := tpl.executeInternalMsg(msg, false)
+	Expect(err).To(BeNil())
+
+	Expect(out).To(Equal("egassem drawrof \x1b[1;31mcolored\x1b[0m"))
 }
 
 func (s *GomolSuite) TestTplMsgFromInternal(t sweet.T) {

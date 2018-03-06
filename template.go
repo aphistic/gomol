@@ -68,14 +68,15 @@ type Template struct {
 	tpls map[LogLevel]*template.Template
 }
 
-func getFuncMap(level LogLevel) template.FuncMap {
+func getFuncMap(level LogLevel, forceReset bool) template.FuncMap {
 	fMap := template.FuncMap{
 		"title": strings.Title,
 		"lcase": strings.ToLower,
 		"ucase": strings.ToUpper,
 		"json":  tplJSON,
+		"reset": tplColorReset,
 	}
-	fMap["reset"] = tplColorReset
+
 	switch level {
 	case LevelDebug:
 		fMap["color"] = tplColorDebug
@@ -89,7 +90,10 @@ func getFuncMap(level LogLevel) template.FuncMap {
 		fMap["color"] = tplColorFatal
 	default:
 		fMap["color"] = tplColorNone
-		fMap["reset"] = tplColorNone
+
+		if !forceReset {
+			fMap["reset"] = tplColorNone
+		}
 	}
 
 	return fMap
@@ -97,11 +101,25 @@ func getFuncMap(level LogLevel) template.FuncMap {
 
 // NewTemplate creates a new Template from the given string. An error is returned if the template fails to compile.
 func NewTemplate(tpl string) (*Template, error) {
+	return NewTemplateWithFuncMap(tpl, nil)
+}
+
+// NewTemplateWithFuncMap creates a new Template from the given string and a template FuncMap. The FuncMap available
+// to the template during evaluation will also include the default values, if not overridden. An error is returned
+// if the template fails to compile.
+func NewTemplateWithFuncMap(tpl string, funcMap template.FuncMap) (*Template, error) {
 	var levels = []LogLevel{LevelNone, LevelDebug, LevelInfo, LevelWarning, LevelError, LevelFatal}
 	tpls := make(map[LogLevel]*template.Template, 0)
 	for _, level := range levels {
+		// If color is overridden, we need to ensure that {{reset}} resets for all levels.
+		_, forceReset := funcMap["color"]
+		fMap := getFuncMap(level, forceReset)
+		for name, f := range funcMap {
+			fMap[name] = f
+		}
+
 		parsedTpl, err := template.New(getLevelName(level)).
-			Funcs(getFuncMap(level)).
+			Funcs(fMap).
 			Parse(tpl)
 		if err != nil {
 			return nil, err
