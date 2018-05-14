@@ -264,6 +264,7 @@ func (b *Base) ShutdownLoggers() error {
 
 	if b.queue != nil {
 		b.queue.stopWorker()
+		b.queue = nil
 	}
 
 	if b.errorChan != nil {
