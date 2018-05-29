@@ -464,7 +464,6 @@ func (s *DefaultSuite) TestDefaultFatalm(t sweet.T) {
 
 func (s *DefaultSuite) TestDefaultDie(t sweet.T) {
 	Die(1234, "test")
-	curDefault.queue.stopWorker()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
@@ -482,7 +481,6 @@ func (s *DefaultSuite) TestDefaultDie(t sweet.T) {
 
 func (s *DefaultSuite) TestDefaultDief(t sweet.T) {
 	Dief(1234, "test %v", 1234)
-	curDefault.queue.stopWorker()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
@@ -506,7 +504,6 @@ func (s *DefaultSuite) TestDefaultDiem(t sweet.T) {
 		1234,
 		NewAttrs().SetAttr("attr1", 4321),
 		"test %v", 1234)
-	curDefault.queue.stopWorker()
 	defLogger := curDefault.loggers[0].(*memLogger)
 	Expect(defLogger.Messages()).To(HaveLen(1))
 	Expect(defLogger.Messages()[0]).To(Equal(&memMessage{
