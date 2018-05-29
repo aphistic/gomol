@@ -1,5 +1,6 @@
 package gomol
 
+/*
 import . "gopkg.in/check.v1"
 
 func (s *GomolSuite) BenchmarkBasicLogInsertion(c *C) {
@@ -127,3 +128,4 @@ func (s *GomolSuite) BenchmarkGetCallerInfo(c *C) {
 		getCallerInfo()
 	}
 }
+*/

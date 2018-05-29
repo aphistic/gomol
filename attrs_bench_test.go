@@ -1,5 +1,6 @@
 package gomol
 
+/*
 import . "gopkg.in/check.v1"
 
 func (s *GomolSuite) BenchmarkNewAttrFromMap(c *C) {
@@ -25,3 +26,4 @@ func (s *GomolSuite) BenchmarkAttrChaining(c *C) {
 			SetAttr("attr4", 4)
 	}
 }
+*/
