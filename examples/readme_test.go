@@ -32,8 +32,8 @@ func Example() {
 	// Log some debug messages with message-level attrs
 	// that will be sent only with that message
 	for idx := 1; idx <= 10; idx++ {
-		gomol.Dbgm(map[string]interface{}{
+		gomol.Dbgm(gomol.NewAttrsFromMap(map[string]interface{}{
 			"msg_attr1": 4321,
-		}, "Test message %v", idx)
+		}), "Test message %v", idx)
 	}
 }

@@ -22,6 +22,11 @@ to create multiple instances of Base if multiple sets of loggers or attributes
 are desired.
 */
 type Base struct {
+	// This must be at the beginning of the struct due to
+	// how 64 bit atomic values are handled on 32 bit systems
+	// in Go.
+	sequence uint64
+
 	clock glock.Clock
 
 	isInitialized bool
@@ -29,7 +34,6 @@ type Base struct {
 	errorChan     chan<- error
 	queue         *queue
 	logLevel      LogLevel
-	sequence      uint64
 	BaseAttrs     *Attrs
 
 	loggers        []Logger
